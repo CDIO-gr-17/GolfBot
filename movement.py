@@ -57,6 +57,7 @@ def moveToNeighbor(neighbor, heading):
 
 
 
+
 def moveToPoint(point):
     # Define the grid size and the distance between grid points
     grid_size = 100  # Assuming each grid is 100 units wide
