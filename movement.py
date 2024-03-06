@@ -47,6 +47,7 @@ def moveForward():
 
 def moveBackward():
     robot.straight(-100)
+    robot.stop()
 
 
 def moveToNeighbor(target : Heading , currentHeading : Heading):
