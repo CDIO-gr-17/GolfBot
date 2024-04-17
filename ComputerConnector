@@ -11,7 +11,7 @@ port = 9999
 s.connect((host, port))
 
 # Send a command
-command = 'BACKWARD'
+command = 'MOVE'
 s.send(command.encode('utf-8'))
 
 # Close the connection
