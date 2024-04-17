@@ -7,7 +7,8 @@ import socket
 import PathfindingAlgorithm
 from PathfindingAlgorithm import grid, start, end
 import math
-import Heading.py
+import Heading
+from Heading import Heading
 
 # Initialize the EV3 Brick.
 ev3 = EV3Brick()
@@ -31,25 +32,27 @@ serversocket.listen(5)
 
 # Initialize the drive base.
 WHEEL_DIAMETER = 52
-AXLE_TRACK = 166
+AXLE_TRACK = 75
 robot = DriveBase(left_motor, right_motor, WHEEL_DIAMETER, AXLE_TRACK)
 #robot.settings(1000,100,90,45)
 #settings(straight_speed, straight_acceleration, turn_rate, turn_acceleration)
 
-def turnRight():
-    robot.turn(-45)
+GRID_DISTANCE = 50
 
-def turnLeft():
+def turnRight():
     robot.turn(45)
 
+def turnLeft():
+    robot.turn(-45)
+
 def moveForward():
-    robot.straight(-GRID_DISTANCE)
+    robot.straight(GRID_DISTANCE)
 
 def moveForwardCross():
-    robot.straight(-GRID_DISTANCE*1.414)
+    robot.straight(GRID_DISTANCE*1.414)
 
 def moveBackward():
-    robot.straight(100)
+    robot.straight(-100)
 
 def moveToNeighbor(target : Heading , currentHeading: Heading):
     while currentHeading != target:
@@ -112,24 +115,17 @@ while True:
     command = clientsocket.recv(1024).decode('utf-8')
     
     if command == 'MOVE':
-        # Code to move the robot forward
-        # Go forward for one meter.
-
         path = PathfindingAlgorithm.a_star(grid, start, end)
-
-        node = path[1]
-
-        newHeading = moveToPoint(node.x, node.y, currentX, currentY, NORTH)
-
         for node in path:
-            newHeading = movetoPoint(node.x, node.y, currentX, currentY, newHeading)
+            print(node.x, node.y)
+        currentHeading = Heading.SOUTH  # Assuming initial heading is north
 
-
-        print(node.x, node.y)
-
-        #for node in path:
-        #    moveToPoint((node.x, node.y))
-        #    print(node.x, node.y)
-        pass
+        currentX = path[0].x
+        currentY = path[0].y
+        
+        for node in path[1:]:  # Skip the starting node as it's the current position
+            currentHeading = moveToPoint(node.x, node.y, currentX, currentY, currentHeading)
+            ev3.speaker.beep()  # Optional: beep after each move
+            currentX, currentY = node.x, node.y  # Update current position
 
     clientsocket.close()
