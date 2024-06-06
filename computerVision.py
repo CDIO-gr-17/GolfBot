@@ -4,14 +4,14 @@ import numpy as np
 algorithm = __import__('algorithms')
 displacement = __import__('displacement')
 
-videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
+video_capture = cv.VideoCapture(1, cv.CAP_DSHOW)
 
 #Kamera 0
-red_lower1 = np.array([0, 100, 20], dtype="uint8")
-red_upper1 = np.array([5, 255, 255], dtype="uint8")
+red_lower_1 = np.array([0, 100, 20], dtype="uint8")
+red_upper_1 = np.array([5, 255, 255], dtype="uint8")
 
-red_lower2 = np.array([170, 100, 20], dtype="uint8")
-red_upper2 = np.array([180, 255, 255], dtype="uint8")
+red_lower_2 = np.array([170, 100, 20], dtype="uint8")
+red_upper_2 = np.array([180, 255, 255], dtype="uint8")
 
 orange_lower = np.array([15, 100, 20], dtype="uint8")
 orange_upper = np.array([25, 255, 255], dtype="uint8")
@@ -72,37 +72,37 @@ def write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, matrix):
     #print(algorithm.ball_detector(balls_grid))
 
     # Save the grids to files - Unneccessary should be removed, but might be nice for visualization and debugging
-    with open("gridOutput/Obstacle.txt", "w") as file:
+    with open("grid_output/obstacle.txt", "w") as file:
         np.savetxt(file, obstacle_grid, fmt="%.0f")
-    with open("gridOutput/Balls.txt", "w") as file:
+    with open("grid_output/balls.txt", "w") as file:
         np.savetxt(file, balls_grid, fmt="%.0f")
-    with open("gridOutput/Goal.txt", "w") as file:
+    with open("grid_output/goal.txt", "w") as file:
         np.savetxt(file, goal_grid, fmt="%.0f")
-    with open("gridOutput/CombinedGrid.txt", "w") as file:
+    with open("grid_output/combined_grid.txt", "w") as file:
         np.savetxt(file, combined_grid, fmt="%.0f")
 
     return combined_grid # Returns the combined grid
 
 while True:
-    ret, frame = videoCapture.read()
+    ret, frame = video_capture.read()
     if not ret: break 
 
     #Make the frame blurry
-    blurFrame = cv.GaussianBlur(frame, (17, 17), 0)
+    blur_frame = cv.GaussianBlur(frame, (17, 17), 0)
     #Make the frame hsv
-    hsvFrame = cv.cvtColor(blurFrame, cv.COLOR_BGR2HSV)
+    hsv_frame = cv.cvtColor(blur_frame, cv.COLOR_BGR2HSV)
     #Make the frame
-    resizedFrame = cv.resize(hsvFrame, resolution, interpolation=cv.INTER_NEAREST)
+    resized_frame = cv.resize(hsv_frame, resolution, interpolation=cv.INTER_NEAREST)
 
     # Create masks for red, green, blue
-    mask_red1 = cv.inRange(resizedFrame, red_lower1, red_upper1)
-    mask_red2 = cv.inRange(resizedFrame, red_lower2, red_upper2)
-    mask_red = cv.bitwise_or(mask_red1, mask_red2)
-    mask_green = cv.inRange(resizedFrame, green_lower, green_upper)
-    mask_orange = cv.inRange(resizedFrame, orange_lower, orange_upper)
-    mask_white = cv.inRange(resizedFrame, white_lower, white_upper)
+    mask_red_1 = cv.inRange(resized_frame, red_lower_1, red_upper_1)
+    mask_red_2 = cv.inRange(resized_frame, red_lower_2, red_upper_2)
+    mask_red = cv.bitwise_or(mask_red_1, mask_red_2)
+    mask_green = cv.inRange(resized_frame, green_lower, green_upper)
+    mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
+    mask_white = cv.inRange(resized_frame, white_lower, white_upper)
 
-    ret, mask = cv.threshold(resizedFrame, 200, 255, cv.THRESH_BINARY) #Hvad gør den her linje?
+    ret, mask = cv.threshold(resized_frame, 200, 255, cv.THRESH_BINARY) #Hvad gør den her linje?
     if ret: 
         #kernel = np.ones((5, 5), np.uint8) #den binære repræsentation af et billede 
         #mask_cleaned = cv.morphologyEx(mask_to_use, cv.MORPH_OPEN, kernel) #mask isolere arealer i et billede
@@ -115,11 +115,11 @@ while True:
         mask_red = cv.dilate(mask_red,obstacle_kernel)
         display_mask = mask_red
 
-        upscaledResizedFrame = cv.resize(display_mask, (x*7, y*7), interpolation=cv.INTER_NEAREST)
-        upscaledResizedFrameHsv = cv.resize(resizedFrame, (x*7, y*7), interpolation=cv.INTER_NEAREST)
+        upscaled_resized_frame = cv.resize(display_mask, (x*7, y*7), interpolation=cv.INTER_NEAREST)
+        upscaled_resized_frame_hsv = cv.resize(resized_frame, (x*7, y*7), interpolation=cv.INTER_NEAREST)
         write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, mask_grid)
 
-    cv.imshow('', upscaledResizedFrame)
+    cv.imshow('', upscaled_resized_frame)
     if cv.waitKey(1) & 0xFF == ord('q'): break
 
 videoCapture.release()
