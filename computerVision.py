@@ -1,64 +1,10 @@
 import cv2 as cv
 import numpy as np
 
-def ball_detector(grid):
-  """
-  Identifies clusters of ones in a 2D grid and counts the number of balls.
-
-  Args:
-      grid: A 2D numpy array representing the grid (0s and 1s).
-
-  Returns:
-      The number of balls (clusters) found in the grid.
-  """
-
-  rows, cols = grid.shape
-  visited = np.zeros_like(grid, dtype=bool)  # Keep track of visited cells
-  ball_count = 0
-
-  for i in range(rows):
-    for j in range(cols):
-      if grid[i, j] == 1 and not visited[i, j]:
-        # Found a new ball (unvisited 1)
-        ball_count += 1
-
-        # Use a stack for iterative exploration
-        stack = [(i, j)]
-        while stack:
-          row, col = stack.pop()
-          visited[row, col] = True
-
-          # Explore neighbors (up, down, left, right) within grid boundaries
-          for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-            new_row, new_col = row + dr, col + dc
-            if 0 <= new_row < grid.shape[0] and 0 <= new_col < grid.shape[1] and grid[new_row, new_col] == 1 and not visited[new_row, new_col]:
-              stack.append((new_row, new_col))  # Add neighbor to stack for exploration
-
-  return ball_count
-
-def dfs(grid, visited, row, col):
-  """
-  Performs Depth-First Search to explore a cluster of connected ones.
-
-  Args:
-      grid: The 2D grid.
-      visited: A boolean array to track visited cells.
-      row: The current row index.
-      col: The current column index.
-  """
-
-  # Mark current cell as visited
-  visited[row, col] = True
-
-  # Explore neighbors (up, down, left, right) within grid boundaries
-  for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-    new_row, new_col = row + dr, col + dc
-    if 0 <= new_row < grid.shape[0] and 0 <= new_col < grid.shape[1] and grid[new_row, new_col] == 1 and not visited[new_row, new_col]:
-      dfs(grid, visited, new_row, new_col)  # Recursive call for neighbor
-
+algorithm = __import__('algorithms')
+displacement = __import__('displacement')
 
 videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
-
 
 #Kamera 0
 red_lower1 = np.array([0, 100, 20], dtype="uint8")
@@ -123,8 +69,9 @@ def write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, matrix):
             elif balls_grid[i][j] == 1:
                 combined_grid[i][j] = 2
 
-    #print(ball_detector(balls_grid))
+    #print(algorithm.ball_detector(balls_grid))
 
+    # Save the grids to files - Unneccessary should be removed, but might be nice for visualization and debugging
     with open("gridOutput/Obstacle.txt", "w") as file:
         np.savetxt(file, obstacle_grid, fmt="%.0f")
     with open("gridOutput/Balls.txt", "w") as file:
@@ -134,7 +81,7 @@ def write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, matrix):
     with open("gridOutput/CombinedGrid.txt", "w") as file:
         np.savetxt(file, combined_grid, fmt="%.0f")
 
-    return obstacle_grid, balls_grid, goal_grid, combined_grid # Return the grids // Is it actually possible to do it like this?
+    return combined_grid # Returns the combined grid
 
 while True:
     ret, frame = videoCapture.read()
@@ -155,7 +102,7 @@ while True:
     mask_orange = cv.inRange(resizedFrame, orange_lower, orange_upper)
     mask_white = cv.inRange(resizedFrame, white_lower, white_upper)
 
-    ret, mask = cv.threshold(resizedFrame, 200, 255, cv.THRESH_BINARY)
+    ret, mask = cv.threshold(resizedFrame, 200, 255, cv.THRESH_BINARY) #Hvad gør den her linje?
     if ret: 
         #kernel = np.ones((5, 5), np.uint8) #den binære repræsentation af et billede 
         #mask_cleaned = cv.morphologyEx(mask_to_use, cv.MORPH_OPEN, kernel) #mask isolere arealer i et billede
