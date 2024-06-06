@@ -21,7 +21,13 @@ class Node:
             if neighbor_x >= 0 and neighbor_y >= 0 and neighbor_x < cols and neighbor_y < rows:
                 neighbors.append(self.grid[neighbor_y][neighbor_x])
         return neighbors
+    
+    def to_json(self):
+        return {"x": self.x, "y": self.y}
 
+    @classmethod
+    def from_json(cls, json_dict):
+        return cls(json_dict["x"], json_dict["y"])
 
 rows = 24
 cols = 36
@@ -115,7 +121,6 @@ def a_star(grid, start, end):
             came_from[str(neighbor.x) + ' ' + str(neighbor.y)] = current
             neighbor.g_score = tentative_g_score
             neighbor.f_score = neighbor.g_score + h_score(neighbor, end)
-
 
 def lowest_f_score(node_list):
     final_node = None
