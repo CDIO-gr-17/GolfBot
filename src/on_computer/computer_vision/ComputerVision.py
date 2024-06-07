@@ -19,8 +19,8 @@ white_upper = np.array([180, 100, 255], dtype="uint8")
 green_lower = np.array([50, 100, 20], dtype="uint8")
 green_upper = np.array([70, 255, 255], dtype="uint8")
 
-x = 100
-y = 100
+x = 25
+y = 25
 resolution = (x, y) # Det skal vel ikke være kvadratisk?
 mask_grid = np.zeros((resolution))
 
