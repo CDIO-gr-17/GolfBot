@@ -2,6 +2,7 @@ import socket
 import PathfindingAlgorithm
 from PathfindingAlgorithm import grid, start, end, Node
 import json
+from computer_vision.ComputerVision import get_grid
 
 # Creates a socket object, and established a connection to the robot
 socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,7 +13,7 @@ port = 9999
 socket.connect((host, port))
 
 # Send the path to the robot
-path = PathfindingAlgorithm.a_star(grid, start, end)
+path = PathfindingAlgorithm.a_star(get_grid, start, end)
 path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
 path_as_json = json.dumps(path_as_dictionaries)
 

@@ -1,5 +1,6 @@
 import math
 
+
 class Node:
     def __init__(self, grid, x, y):
         self.x = x
@@ -33,14 +34,14 @@ rows = 24
 cols = 36
 grid = []
 
-file = open('a_star.in', 'r')
+file = open(r'C:\Users\Esben\CDIO_navigation\GolfBot\a_star.in', 'r')
 lines = file.read().split('\n')
 file.close()
 
 start = None
 end = None
 
-# set test data
+# set test data. THIS IS THE GRID THAT IS BEING USED RIGHT NOW.
 for i in range(rows):
     row = list(map(int, lines[i].split()))
     row_nodes = []
