@@ -2,7 +2,6 @@ import cv2 as cv
 import numpy as np
 
 
-video_capture = cv.VideoCapture(1, cv.CAP_DSHOW)
 
 #Kamera 0
 red_lower_1 = np.array([0, 100, 20], dtype="uint8")
@@ -87,42 +86,45 @@ def display_grid(frame, mask):
     cv.imshow('', upscaled_resized_frame)
 
 def get_grid():
+    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW)
+    
+    ret, frame = video_capture.read()
+    if not ret:
+        print("No frame")
+
+    #Make the frame blurry
+    blur_frame = cv.GaussianBlur(frame, (17, 17), 0)
+    #Make the frame hsv
+    hsv_frame = cv.cvtColor(blur_frame, cv.COLOR_BGR2HSV)
+    #Make the frame
+    resized_frame = cv.resize(hsv_frame, resolution, interpolation=cv.INTER_NEAREST)
+
+    # Create masks for red, green, blue
+    mask_red_1 = cv.inRange(resized_frame, red_lower_1, red_upper_1)
+    mask_red_2 = cv.inRange(resized_frame, red_lower_2, red_upper_2)
+    mask_red = cv.bitwise_or(mask_red_1, mask_red_2)
+    mask_green = cv.inRange(resized_frame, green_lower, green_upper)
+    mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
+    mask_white = cv.inRange(resized_frame, white_lower, white_upper)
+
+    ret, mask = cv.threshold(resized_frame, 200, 255, cv.THRESH_BINARY) #Hvad gør den her linje?
+    if ret: 
+        #kernel = np.ones((5, 5), np.uint8) #den binære repræsentation af et billede 
+        #mask_cleaned = cv.morphologyEx(mask_to_use, cv.MORPH_OPEN, kernel) #mask isolere arealer i et billede
+        #mask_cleaned = cv.morphologyEx(mask_cleaned, cv.MORPH_CLOSE, kernel) #siger nej tak til farver og siger ja tak til HVID 
+        #contours, hierarchy = cv.findContours(mask_to_use, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE) #hierarchy er moralsk support her
+        obstacle_kernel = np.ones((15, 15), np.uint8)
+        ball_kernel = np.ones((3, 3), np.uint8)
+        mask_white = cv.dilate(mask_white, ball_kernel)
+        mask_orange = cv.dilate(mask_orange, ball_kernel)
+        mask_red = cv.dilate(mask_red,obstacle_kernel)
         
-        ret, frame = video_capture.read()
+        display_grid(resized_frame, mask_white)
+        grid = write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, mask_grid)
+        video_capture.release()
+        cv.destroyAllWindows()
+    return grid
 
-        #Make the frame blurry
-        blur_frame = cv.GaussianBlur(frame, (17, 17), 0)
-        #Make the frame hsv
-        hsv_frame = cv.cvtColor(blur_frame, cv.COLOR_BGR2HSV)
-        #Make the frame
-        resized_frame = cv.resize(hsv_frame, resolution, interpolation=cv.INTER_NEAREST)
-
-        # Create masks for red, green, blue
-        mask_red_1 = cv.inRange(resized_frame, red_lower_1, red_upper_1)
-        mask_red_2 = cv.inRange(resized_frame, red_lower_2, red_upper_2)
-        mask_red = cv.bitwise_or(mask_red_1, mask_red_2)
-        mask_green = cv.inRange(resized_frame, green_lower, green_upper)
-        mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
-        mask_white = cv.inRange(resized_frame, white_lower, white_upper)
-
-        ret, mask = cv.threshold(resized_frame, 200, 255, cv.THRESH_BINARY) #Hvad gør den her linje?
-        if ret: 
-            #kernel = np.ones((5, 5), np.uint8) #den binære repræsentation af et billede 
-            #mask_cleaned = cv.morphologyEx(mask_to_use, cv.MORPH_OPEN, kernel) #mask isolere arealer i et billede
-            #mask_cleaned = cv.morphologyEx(mask_cleaned, cv.MORPH_CLOSE, kernel) #siger nej tak til farver og siger ja tak til HVID 
-            #contours, hierarchy = cv.findContours(mask_to_use, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE) #hierarchy er moralsk support her
-            obstacle_kernel = np.ones((15, 15), np.uint8)
-            ball_kernel = np.ones((3, 3), np.uint8)
-            mask_white = cv.dilate(mask_white, ball_kernel)
-            mask_orange = cv.dilate(mask_orange, ball_kernel)
-            mask_red = cv.dilate(mask_red,obstacle_kernel)
-            
-            display_grid(resized_frame, mask_white)
-            grid = write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, mask_grid)
-        return grid
-
-while True:
-    get_grid()  
-    if cv.waitKey(1) & 0xFF == ord('q'): break
-video_capture.release()
-cv.destroyAllWindows()
+#while True:
+get_grid()  
+#if cv.waitKey(1) & 0xFF == ord('q'): break
