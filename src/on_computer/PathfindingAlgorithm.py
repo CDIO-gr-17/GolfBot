@@ -34,7 +34,7 @@ rows = 24
 cols = 36
 grid = []
 
-file = open(r'C:\Users\Esben\CDIO_navigation\GolfBot\a_star.in', 'r')
+file = open('a_star.in', 'r')
 lines = file.read().split('\n')
 file.close()
 
