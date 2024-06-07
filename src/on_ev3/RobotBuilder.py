@@ -6,7 +6,7 @@ import math
 from Heading import Heading
 
 class Robot:
-    
+
     # Initialize the EV3 Brick.
     def __init__(self):
         self.ev3 = EV3Brick()
@@ -14,6 +14,7 @@ class Robot:
         # Initialize the motors.
         self.left_motor = Motor(Port.D)
         self.right_motor = Motor(Port.A)
+        self.front_motor = Motor(Port.C)
 
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
