@@ -1,4 +1,4 @@
-class Heading:
+class Heading():
     NORTH = 1
     NORTHEAST = 2
     EAST = 3
