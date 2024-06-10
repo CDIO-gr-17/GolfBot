@@ -28,18 +28,27 @@ def convert_to_grid(data):
 
 grid = convert_to_grid(raw_grid_data)
 
+def get_ball_position(data):
+    rows = len(data)
+    cols = len(data[0])
+
+    for i in range(rows):
+        for j in range(cols):
+            if data[i][j] == 2:
+                return grid[i][j] # Skal jeg returnere convert_to_grid(data)[i][j] i stedet?
+
+    return None # No ball found
+
 start_node = grid[2][2]
 
-end_node = grid[7][7]
+# Get this from the computer vision of the balls
+end_node = get_ball_position(raw_grid_data)
 
 print(raw_grid_data)
-print("1")
 path = PathfindingAlgorithm.a_star(grid, start_node, end_node)
 print(path)
-print("2")
+print("Start: ", start_node.x, start_node.y, "End: ", end_node.x, end_node.y)
 path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
-print("3")
 path_as_json = json.dumps(path_as_dictionaries)
-print("4")
 
 print(path_as_dictionaries)
