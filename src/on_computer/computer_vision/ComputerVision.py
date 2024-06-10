@@ -128,3 +128,21 @@ def get_grid():
 #while True:
 get_grid()  
 #if cv.waitKey(1) & 0xFF == ord('q'): break
+
+
+def get_robot_position_and_heading():
+    heading = 'NORTH'
+    grid  = write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, mask_grid)
+    blue_square = grid[1][1]
+    green_square = grid[1][2]
+    if (blue_square[0] > green_square[0]):
+        heading = 'NORTH'
+    if (blue_square[1]< green_square[1]):
+        heading = 'EAST'
+    if (blue_square[0] < green_square[0]):
+        heading = 'SOUTH' 
+    if (blue_square[1] > green_square[1]):  
+        heading = 'WEST'
+    
+    pos = (green_square , heading)
+    return pos
