@@ -19,11 +19,31 @@ white_upper = np.array([180, 100, 255], dtype="uint8")
 green_lower = np.array([50, 100, 20], dtype="uint8")
 green_upper = np.array([70, 255, 255], dtype="uint8")
 
-x = 1000
-y = 1000
+green_lower = np.array([65, 50, 20], dtype="uint8")
+green_upper = np.array([85, 255, 255], dtype="uint8")
+
+blue_lower = np.array([100, 150, 20], dtype="uint8")
+blue_upper = np.array([110, 255, 255], dtype="uint8")
+
+x = 300
+y = 170
 resolution = (x, y) # Det skal vel ikke være kvadratisk?
 mask_grid = np.zeros((resolution))
 
+def get_robot_head(mask_green):
+    coordinates = np.argwhere(mask_green != 0)
+    if len(coordinates) == 0:
+        return None
+    return coordinates[0] # Return the first green pixel found, but should be the middle //TODO
+
+def get_robot_tail(mask_blue):
+    coordinates = np.argwhere(mask_blue != 0)
+    if len(coordinates) == 0:
+        return None
+    return coordinates[0] # Return the first green pixel found, but should be the middle //TODO
+
+
+#This should be rewritten to use np.argwhere instead of nested for loops
 def write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, matrix):
     obstacle_grid = matrix.copy()
     balls_grid = matrix.copy()
@@ -86,7 +106,7 @@ def display_grid(mask):
 
 def get_grid():
     video_capture = cv.VideoCapture(0)
-    
+
     while True:
         ret, frame = video_capture.read()
         if not ret:
@@ -104,22 +124,23 @@ def get_grid():
         mask_red_2 = cv.inRange(resized_frame, red_lower_2, red_upper_2)
         mask_red = cv.bitwise_or(mask_red_1, mask_red_2)
         mask_green = cv.inRange(resized_frame, green_lower, green_upper)
+        mask_blue = cv.inRange(resized_frame, blue_lower, blue_upper)
         mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
         mask_white = cv.inRange(resized_frame, white_lower, white_upper)
 
         ret, mask = cv.threshold(resized_frame, 200, 255, cv.THRESH_BINARY) #Hvad gør den her linje?
-        if ret: 
-            #kernel = np.ones((5, 5), np.uint8) #den binære repræsentation af et billede 
+        if ret:
+            #kernel = np.ones((5, 5), np.uint8) #den binære repræsentation af et billede
             #mask_cleaned = cv.morphologyEx(mask_to_use, cv.MORPH_OPEN, kernel) #mask isolere arealer i et billede
-            #mask_cleaned = cv.morphologyEx(mask_cleaned, cv.MORPH_CLOSE, kernel) #siger nej tak til farver og siger ja tak til HVID 
+            #mask_cleaned = cv.morphologyEx(mask_cleaned, cv.MORPH_CLOSE, kernel) #siger nej tak til farver og siger ja tak til HVID
             #contours, hierarchy = cv.findContours(mask_to_use, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE) #hierarchy er moralsk support her
             obstacle_kernel = np.ones((15, 15), np.uint8)
             ball_kernel = np.ones((3, 3), np.uint8)
             mask_white = cv.dilate(mask_white, ball_kernel)
             mask_orange = cv.dilate(mask_orange, ball_kernel)
             mask_red = cv.dilate(mask_red,obstacle_kernel)
-            
-            upscaled_resized_frame = cv.resize(mask_red, (x, y), interpolation=cv.INTER_NEAREST)
+
+            upscaled_resized_frame = cv.resize(mask_white, (x, y), interpolation=cv.INTER_NEAREST)
             #grid = write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, mask_grid)
         #display_grid(frame)
         cv.imshow('ImageWindow', upscaled_resized_frame)
@@ -144,9 +165,9 @@ def get_robot_position_and_heading():
     if (blue_square[1]< green_square[1]):
         heading = 'EAST'
     if (blue_square[0] < green_square[0]):
-        heading = 'SOUTH' 
-    if (blue_square[1] > green_square[1]):  
+        heading = 'SOUTH'
+    if (blue_square[1] > green_square[1]):
         heading = 'WEST'
-    
+
     pos = (green_square , heading)
     return pos
