@@ -14,14 +14,14 @@ class Robot:
         # Initialize the motors.
         self.left_motor = Motor(Port.D)
         self.right_motor = Motor(Port.A)
-        self.front_motor = Motor(Port.C)
+        #self.front_motor = Motor(Port.C)
 
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
-        self.AXLE_TRACK = 95
+        self.AXLE_TRACK = 140
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
-        self.GRID_DISTANCE = 10
+        self.GRID_DISTANCE = 20
 
     def turnRight(self):
         self.robot.turn(45)
@@ -45,7 +45,7 @@ class Robot:
                 currentHeading = currentHeading + 1
             else:
                 self.turnLeft()
-                currentHeading = currentHeading +1
+                currentHeading = currentHeading - 1
         if target % 2 == 0:
             self.moveForwardCross()
         else:
