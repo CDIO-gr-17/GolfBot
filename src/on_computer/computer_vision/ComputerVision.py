@@ -86,7 +86,7 @@ def display_grid(frame, mask):
     cv.imshow('', upscaled_resized_frame)
 
 def get_grid():
-    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW)
+    video_capture = cv.VideoCapture(0)
     
     ret, frame = video_capture.read()
     if not ret:

@@ -27,7 +27,7 @@ while True:
     print('Connection established')
 
     # Receive the command
-    command = clientsocket.recv(1024).decode('utf-8').strip()
+    command = clientsocket.recv(4).decode('utf-8').strip()
 
     if command == 'PATH':
         print('Recieved command')
