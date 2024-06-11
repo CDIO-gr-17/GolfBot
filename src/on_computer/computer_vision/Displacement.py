@@ -41,7 +41,6 @@ def find_displacement_of_robot(grid, robot_field_position):
 def move_point(robot_position, grid):
     # Convert points to numpy arrays
     distance = find_displacement_of_robot(grid, robot_position)
-    print(find_displacement_of_robot(grid, robot_position))
     point_b = find_middle(grid)
     a = np.array(robot_position)
     b = np.array(point_b)
