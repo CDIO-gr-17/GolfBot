@@ -1,33 +1,35 @@
-from Displacement import find_displacement_of_robot, find_distance_from_middle, find_middle, find_angle_to_field
+from Displacement import find_displacement_of_robot, find_angle_from_centre_to_robot, find_middle, find_angle_to_field
 import numpy as np
+import math
 
 
-def get_robot_position(blue_square, green_square):
-    heading = 'UNKNOWN'
+def get_robot_position(initial_position:tuple):
     resolution = (int(300), int(170))
-    grid = np.zeros(resolution)
+    grid = np.zeros(resolution) #Def should take a grid as argument
     #blue_square = (0,1)
     #green_square = (0,0)
-    middle = find_middle(grid)
-    theta = find_angle_to_field(grid, green_square)
+    #theta = find_angle_to_field(grid, green_square)
+    angle = find_angle_from_centre_to_robot(grid, initial_position)
+    displacement = find_displacement_of_robot(grid, initial_position)
+    x_displacement = displacement * math.cos(angle)
+    y_displacement = displacement * math.sin(angle) 
+    final_position = (initial_position[0]+x_displacement,initial_position[1]+ y_displacement)
+
     
-    pos_without_displacement = (green_square)
-    displacement = find_displacement_of_robot(grid, pos_without_displacement)
-    #pos = tuple(x + displacement for x in pos_without_displacement[0])
-    if (pos_without_displacement):
-        temppos = pos_without_displacement[0]+displacement
-        pos_without_displacement = (temppos,) + pos_without_displacement[1:]
-        pos = pos_without_displacement
+    #pos = tuple(x + displacement for x in initial_position[0])
+    #temppos = initial_position[0]+displacement
+    #initial_position = (temppos,) + initial_position[1:]
+    #pos = initial_position
   
- #   if (pos_without_displacement is righUpperCorner):
+ #   if (initial_position is righUpperCorner):
 
-  #  if(pos_without_displacement is leftUpperCorner):
+  #  if(initial_position is leftUpperCorner):
 
-   # if (pos_without_displacement is leftLowerCorner):
+   # if (initial_position is leftLowerCorner):
    #Kig i moveToNeighbour
     
-    return pos
-print (get_robot_position((0,1),(0,0)))
+    return final_position
+print (get_robot_position((170,150)))
 
 
 
