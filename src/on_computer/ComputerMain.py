@@ -2,52 +2,42 @@ import socket
 import PathfindingAlgorithm
 from PathfindingAlgorithm import grid, Node
 import json
-from computer_vision.ComputerVision import get_grid
+from ArrayGenerator import create_border_array
+#from computer_vision.ComputerVision import get_grid
 
-raw_grid_data = get_grid()
-index = ()
-ball_node = PathfindingAlgorithm.node
-end_node = type(Node)
+raw_grid_data = create_border_array(260, 140, 12)
+
 def convert_to_grid(data):
-    rows = len(data[0])
-    cols = len(data)
+    rows = len(data)
+    cols = len(data[0])
     grid = []
+
     print(rows)
     print(cols)
 
-    for i in range(cols):
+    for i in range(rows):
         row_nodes = []
-        for j in range(rows):
-            node = Node(grid, i, j)
+        for j in range(cols):
+            node = Node(grid, j, i)
             element = data[i][j]
             if element == 1:
                 node.type = 'wall'
             elif element == 0:
                 node.type = 'road'
-            elif element == 2:
-                node.type = 'road'
-                ball_node.x = i
-                ball_node.y = j
             row_nodes.append(node)
         grid.append(row_nodes)
-
-    
 
     return grid
 
 grid = convert_to_grid(raw_grid_data)
 
-start_node = grid[36][83]
-end_node = grid[ball_node.x][ball_node.y]
-print(end_node.x, end_node.y)
-print(ball_node.x, ball_node.y)
+# below, y is first and x is second as the grid is a matrix not a cartesian plane
 
-# Get this from the computer vision of the balls
-#end_node = get_ball_position(grid)
+start_node = grid[70][130]
+end_node = grid[70][238]
 
-print("Start: ", start_node.x, start_node.y, "End: ", end_node.x, end_node.y)
+#Creates a socket object, and established a connection to the robot
 
-# Creates a socket object, and established a connection to the robot
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 host = "192.168.8.111"
