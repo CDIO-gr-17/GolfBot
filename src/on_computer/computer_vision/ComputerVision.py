@@ -95,7 +95,7 @@ def get_grid():
             mask_red = cv.dilate(mask_red,obstacle_kernel)
             grid = create_combined_grid(mask_red, mask_orange, mask_white, mask_grid)
             #display_grid(frame)
-            cv.imshow('ImageWindow', mask_robot)
+            cv.imshow('ImageWindow', mask_white)
             if cv.waitKey(1) & 0xFF == ord('q'): break
         video_capture.release()
         cv.destroyAllWindows()

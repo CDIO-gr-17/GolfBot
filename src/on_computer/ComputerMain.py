@@ -26,9 +26,7 @@ def convert_to_grid(data):
             elif element == 0:
                 node.type = 'road'
             elif element == 2:
-                node.type = 'road'
-                ball_node.x = j
-                ball_node.y = i
+                node.type = 'ball'
             row_nodes.append(node)
         grid.append(row_nodes)
 
@@ -39,7 +37,16 @@ grid = convert_to_grid(raw_grid_data)
 # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
 start_node = grid[70][125]
-end_node = grid[ball_node.x][ball_node.y]
+
+def find_first_ball(grid):
+    for row in grid:
+        for node in row:
+            if node.type == 'ball':
+                return node
+    return None
+
+
+end_node = find_first_ball(grid)
 
 print(end_node.x, end_node.y)
 
@@ -60,7 +67,7 @@ path = PathfindingAlgorithm.a_star(grid, start_node, end_node)
 path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
 path_as_json = json.dumps(path_as_dictionaries)
 
-print(path_as_dictionaries)
+#print(path_as_dictionaries)
 
 
 json_length = len(path_as_json)
