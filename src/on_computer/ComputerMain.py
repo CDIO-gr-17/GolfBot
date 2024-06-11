@@ -3,8 +3,9 @@ import PathfindingAlgorithm
 from PathfindingAlgorithm import grid, Node
 import json
 from ArrayGenerator import create_border_array
-from computer_vision.ComputerVision import get_grid, get_masks_from_camera, get_robot_head
+from computer_vision.ComputerVision import get_grid, get_masks_from_camera, get_robot_pos_with_mask
 from computer_vision.Displacement import move_point
+from computer_vision.Robot_direction import calculate_heading
 
 masks = get_masks_from_camera()
 
@@ -15,9 +16,6 @@ def convert_to_grid(data):
     rows = len(data)
     cols = len(data[0])
     grid = []
-
-    print(rows)
-    print(cols)
 
     for i in range(rows):
         row_nodes = []
@@ -39,10 +37,15 @@ grid = convert_to_grid(raw_grid_data)
 
 # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
-robot_position = move_point(get_robot_head(masks['blue']), grid)
+robot_head = get_robot_pos_with_mask(masks['blue'])
+robot_real_position = move_point(robot_head, grid)
+robot_tail = get_robot_pos_with_mask(masks['green'])
+robot_real_tail = move_point(robot_tail,grid)
+robot_angle = calculate_heading(robot_real_tail,robot_real_position)
+print(robot_angle)
 
 
-start_node = grid[robot_position[0]][robot_position[1]]
+start_node = grid[int(robot_real_position[0])][int(robot_real_position[1])]
 
 def find_first_ball(grid):
     for row in grid:

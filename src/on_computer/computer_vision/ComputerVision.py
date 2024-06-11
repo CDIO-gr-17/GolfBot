@@ -2,14 +2,8 @@ import cv2 as cv
 import numpy as np
 
 
-def get_robot_head(mask_green):
-    coordinates = np.argwhere(mask_green != 0)
-    if len(coordinates) == 0:
-        return None
-    return coordinates[0] # Returns the first green pixel found, but should maybe be the middle pixel //TODO
-
-def get_robot_tail(mask_blue):
-    coordinates = np.argwhere(mask_blue != 0)
+def get_robot_pos_with_mask(mask):
+    coordinates = np.argwhere(mask != 0)
     if len(coordinates) == 0:
         return None
     return coordinates[0] # Returns the first green pixel found, but should maybe be the middle pixel //TODO

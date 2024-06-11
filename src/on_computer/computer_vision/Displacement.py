@@ -10,9 +10,10 @@ grid_size = 5 #cm
 camera_height = 200 / grid_size
 robot_height = 10 / grid_size
 
-#Find the middle of the grid
+#Find the middle of the grid$
 def find_middle(grid):
-    rows, cols = grid.shape
+    rows = len(grid)
+    cols = len(grid[0])
     middle = (int(cols/2), int(rows/2))
     return middle
 
