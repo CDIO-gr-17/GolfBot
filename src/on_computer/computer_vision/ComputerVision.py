@@ -86,7 +86,7 @@ def display_grid(mask):
 
 def get_grid():
     video_capture = cv.VideoCapture(0)
-    
+
     while True:
         ret, frame = video_capture.read()
         if not ret:
@@ -108,17 +108,17 @@ def get_grid():
         mask_white = cv.inRange(resized_frame, white_lower, white_upper)
 
         ret, mask = cv.threshold(resized_frame, 200, 255, cv.THRESH_BINARY) #Hvad gør den her linje?
-        if ret: 
-            #kernel = np.ones((5, 5), np.uint8) #den binære repræsentation af et billede 
+        if ret:
+            #kernel = np.ones((5, 5), np.uint8) #den binære repræsentation af et billede
             #mask_cleaned = cv.morphologyEx(mask_to_use, cv.MORPH_OPEN, kernel) #mask isolere arealer i et billede
-            #mask_cleaned = cv.morphologyEx(mask_cleaned, cv.MORPH_CLOSE, kernel) #siger nej tak til farver og siger ja tak til HVID 
+            #mask_cleaned = cv.morphologyEx(mask_cleaned, cv.MORPH_CLOSE, kernel) #siger nej tak til farver og siger ja tak til HVID
             #contours, hierarchy = cv.findContours(mask_to_use, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE) #hierarchy er moralsk support her
             obstacle_kernel = np.ones((15, 15), np.uint8)
             ball_kernel = np.ones((3, 3), np.uint8)
             mask_white = cv.dilate(mask_white, ball_kernel)
             mask_orange = cv.dilate(mask_orange, ball_kernel)
             mask_red = cv.dilate(mask_red,obstacle_kernel)
-            
+
             upscaled_resized_frame = cv.resize(mask_red, (x, y), interpolation=cv.INTER_NEAREST)
             #grid = write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, mask_grid)
         #display_grid(frame)
@@ -132,21 +132,3 @@ def get_grid():
 
 get_grid()
 #if cv.waitKey(1) & 0xFF == ord('q'): break
-
-
-def get_robot_position_and_heading():
-    heading = 'NORTH'
-    grid  = write_pixel_grid(mask_red, mask_orange, mask_white, mask_green, mask_grid)
-    blue_square = grid[1][1]
-    green_square = grid[1][2]
-    if (blue_square[0] > green_square[0]):
-        heading = 'NORTH'
-    if (blue_square[1]< green_square[1]):
-        heading = 'EAST'
-    if (blue_square[0] < green_square[0]):
-        heading = 'SOUTH' 
-    if (blue_square[1] > green_square[1]):  
-        heading = 'WEST'
-    
-    pos = (green_square , heading)
-    return pos

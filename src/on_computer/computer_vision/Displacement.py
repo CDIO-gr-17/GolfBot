@@ -1,13 +1,14 @@
 import math
 import numpy as np
-grid_length = 300 #cm
-grid_width = 300 #cm
+# grid_length = 300 #cm
+# grid_width = 300 #cm
+
+# resolution = (300,170)
+# grid = np.zeros(resolution)
+
 grid_size = 5 #cm
 camera_height = 200 / grid_size
 robot_height = 10 / grid_size
-
-resolution = (300,170)
-grid = np.zeros(resolution)
 
 #Find the middle of the grid
 def find_middle(grid):
@@ -63,8 +64,8 @@ def move_point(robot_position, grid):
     return new_point.tolist()
 
 
-# Example usage
-point_a = [170, 150]
+# # Example usage
+# point_a = [170, 150]
 
-new_point = move_point(point_a, grid)
-print(new_point)
+# new_point = move_point(point_a, grid)
+# print(new_point)
