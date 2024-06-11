@@ -32,7 +32,7 @@ def get_masks_from_camera():
     y = 140
     resolution = (x, y)
 
-    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera
+    video_capture = cv.VideoCapture(0) #Open camera
 
     #Define color ranges
     red_lower_1 = np.array([0, 100, 20], dtype="uint8")
@@ -95,8 +95,8 @@ def get_masks_from_camera():
 
             cv.imshow('ImageWindow', mask_white)
             if cv.waitKey(1) & 0xFF == ord('q'): break
-    video_capture.release()
-    cv.destroyAllWindows()
-    return masks
+        video_capture.release()
+        cv.destroyAllWindows()
+        return masks
 
 get_masks_from_camera()

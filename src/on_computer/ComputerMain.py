@@ -3,9 +3,12 @@ import PathfindingAlgorithm
 from PathfindingAlgorithm import grid, Node
 import json
 from ArrayGenerator import create_border_array
-from computer_vision.ComputerVision import get_grid
+from computer_vision.ComputerVision import get_grid, get_masks_from_camera, get_robot_head
+from computer_vision.Displacement import move_point
 
-raw_grid_data = get_grid()
+masks = get_masks_from_camera()
+
+raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
 ball_node = PathfindingAlgorithm.node
 
 def convert_to_grid(data):
@@ -36,7 +39,10 @@ grid = convert_to_grid(raw_grid_data)
 
 # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
-start_node = grid[70][125]
+robot_position = move_point(get_robot_head(masks['blue']), grid)
+
+
+start_node = grid[robot_position[0]][robot_position[1]]
 
 def find_first_ball(grid):
     for row in grid:
@@ -48,6 +54,7 @@ def find_first_ball(grid):
 
 end_node = find_first_ball(grid)
 
+print(start_node.x, start_node.y)
 print(end_node.x, end_node.y)
 
 #Creates a socket object, and established a connection to the robot
