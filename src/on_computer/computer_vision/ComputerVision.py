@@ -10,15 +10,15 @@ def get_robot_head(mask_green):
     coordinates = np.argwhere(mask_green != 0)
     if len(coordinates) == 0:
         return None
-    return coordinates[0] # Return the first green pixel found, but should be the middle //TODO
+    return coordinates[0] # Returns the first green pixel found, but should maybe be the middle pixel //TODO
 
 def get_robot_tail(mask_blue):
     coordinates = np.argwhere(mask_blue != 0)
     if len(coordinates) == 0:
         return None
-    return coordinates[0] # Return the first green pixel found, but should be the middle //TODO
+    return coordinates[0] # Returns the first green pixel found, but should maybe be the middle pixel //TODO
 
-def create_combined_grid(mask_red, mask_orange, mask_white, matrix):
+def get_grid(mask_red, mask_orange, mask_white):
     obstacle_coordinates = set(map(tuple, np.argwhere(mask_red != 0)))
     ball_coordinates = set(map(tuple, np.argwhere(np.logical_or(mask_orange != 0, mask_white != 0))))
     combined_grid = mask_red.copy()
@@ -36,8 +36,8 @@ def create_combined_grid(mask_red, mask_orange, mask_white, matrix):
 
     return combined_grid
 
-def get_grid():
-    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW)
+def get_masks_from_camera():
+    video_capture = cv.VideoCapture(0, cv.CAP_DSHOW)
 
     #Define color ranges
     red_lower_1 = np.array([0, 100, 20], dtype="uint8")
@@ -88,12 +88,16 @@ def get_grid():
             mask_orange = cv.dilate(mask_orange, ball_kernel)
             mask_red = cv.dilate(mask_red,obstacle_kernel)
 
-            grid = create_combined_grid(mask_red, mask_orange, mask_white, mask_grid)
+            masks = {
+                'red': mask_red,
+                'orange': mask_orange,
+                'white': mask_white,
+                'green': mask_green,
+                'blue': mask_blue
+            }
 
             cv.imshow('ImageWindow', mask_white)
             if cv.waitKey(1) & 0xFF == ord('q'): break
     video_capture.release()
     cv.destroyAllWindows()
-    return grid
-
-get_grid()
+    return masks
