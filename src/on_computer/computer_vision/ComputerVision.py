@@ -19,25 +19,20 @@ def get_robot_tail(mask_blue):
     return coordinates[0] # Returns the first green pixel found, but should maybe be the middle pixel //TODO
 
 def get_grid(mask_red, mask_orange, mask_white):
-    obstacle_coordinates = set(map(tuple, np.argwhere(mask_red != 0)))
-    ball_coordinates = set(map(tuple, np.argwhere(np.logical_or(mask_orange != 0, mask_white != 0))))
-    combined_grid = mask_red.copy()
+    obstacle_coordinates = np.argwhere(mask_red != 0)
+    ball_coordinates = np.argwhere(np.logical_or(mask_orange != 0, mask_white != 0))
 
-    for i in range(combined_grid.shape[0]):
-        for j in range(combined_grid.shape[1]):
-            if (i, j) in obstacle_coordinates:
-                combined_grid[i, j] = 1
-            elif (i, j) in ball_coordinates:
-                combined_grid[i, j] = 2
-            else:
-                combined_grid[i, j] = 0
-        
+    combined_grid = np.zeros_like(mask_red)
+
+    combined_grid[obstacle_coordinates[:, 0], obstacle_coordinates[:, 1]] = 1
+    combined_grid[ball_coordinates[:, 0], ball_coordinates[:, 1]] = 2
+
     np.savetxt('combined_grid.txt', combined_grid, fmt='%d')
 
     return combined_grid
 
 def get_masks_from_camera():
-    video_capture = cv.VideoCapture(0, cv.CAP_DSHOW)
+    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW)
 
     #Define color ranges
     red_lower_1 = np.array([0, 100, 20], dtype="uint8")
@@ -96,8 +91,12 @@ def get_masks_from_camera():
                 'blue': mask_blue
             }
 
+            get_grid(mask_red, mask_orange, mask_white)
+
             cv.imshow('ImageWindow', mask_white)
             if cv.waitKey(1) & 0xFF == ord('q'): break
     video_capture.release()
     cv.destroyAllWindows()
     return masks
+
+get_masks_from_camera()
