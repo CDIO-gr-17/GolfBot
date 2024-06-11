@@ -3,9 +3,10 @@ import PathfindingAlgorithm
 from PathfindingAlgorithm import grid, Node
 import json
 from ArrayGenerator import create_border_array
-#from computer_vision.ComputerVision import get_grid
+from computer_vision.ComputerVision import get_grid
 
-raw_grid_data = create_border_array(260, 140, 12)
+raw_grid_data = get_grid()
+ball_node = PathfindingAlgorithm.node
 
 def convert_to_grid(data):
     rows = len(data)
@@ -24,6 +25,10 @@ def convert_to_grid(data):
                 node.type = 'wall'
             elif element == 0:
                 node.type = 'road'
+            elif element == 2:
+                node.type = 'road'
+                ball_node.x = j
+                ball_node.y = i
             row_nodes.append(node)
         grid.append(row_nodes)
 
@@ -33,8 +38,10 @@ grid = convert_to_grid(raw_grid_data)
 
 # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
-start_node = grid[70][130]
-end_node = grid[70][238]
+start_node = grid[70][125]
+end_node = grid[ball_node.x][ball_node.y]
+
+print(end_node.x, end_node.y)
 
 #Creates a socket object, and established a connection to the robot
 

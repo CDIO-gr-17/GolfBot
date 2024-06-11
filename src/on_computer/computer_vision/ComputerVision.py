@@ -65,7 +65,7 @@ def display_grid(mask):
     cv.imshow('ImageWindow', upscaled_resized_frame)
 
 def get_grid():
-    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW)
+    video_capture = cv.VideoCapture(0)
 
     while True:
         ret, frame = video_capture.read()
@@ -97,9 +97,9 @@ def get_grid():
             #display_grid(frame)
             cv.imshow('ImageWindow', mask_robot)
             if cv.waitKey(1) & 0xFF == ord('q'): break
-    video_capture.release()
-    cv.destroyAllWindows()
-    return grid
+        video_capture.release()
+        cv.destroyAllWindows()
+        return grid
 
 get_grid()
 
