@@ -1,10 +1,6 @@
 import cv2 as cv
 import numpy as np
 
-x = 250
-y = 140
-resolution = (x, y)
-mask_grid = np.zeros((resolution))
 
 def get_robot_head(mask_green):
     coordinates = np.argwhere(mask_green != 0)
@@ -32,7 +28,11 @@ def get_grid(mask_red, mask_orange, mask_white):
     return combined_grid
 
 def get_masks_from_camera():
-    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW)
+    x = 250
+    y = 140
+    resolution = (x, y)
+
+    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera
 
     #Define color ranges
     red_lower_1 = np.array([0, 100, 20], dtype="uint8")
