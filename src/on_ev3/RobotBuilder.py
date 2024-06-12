@@ -26,7 +26,6 @@ class Robot:
         self.current_heading_degrees = 0 
         self.step = 0
         self.factor = 1
-        self.heading = 0
 
     def get_next_point(self,path):
         nextpoint = path[self.step+1]
@@ -56,12 +55,12 @@ class Robot:
         next_point = self.get_next_point(path)
         # prev_heading = calculate_heading(prev_point, current_point)
         next_heading = calculate_heading(current_point, next_point)
-        if(self.heading == next_heading):
+        if(self.current_heading_degrees == next_heading):
             self.step+=1
             self.factor+=1
             self.calculate_drive_factor(path)
         else: self.step+=1
-        self.heading = next_heading
+        self.current_heading_degrees = next_heading
         return self.factor
         print('-------------------------')
 
