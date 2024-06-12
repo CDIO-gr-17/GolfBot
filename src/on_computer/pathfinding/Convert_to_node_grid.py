@@ -1,4 +1,4 @@
-from PathfindingAlgorithm import Node
+from pathfinding.PathfindingAlgorithm import Node
 
 def convert_to_grid(data):
     rows = len(data)

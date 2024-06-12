@@ -1,19 +1,14 @@
 import socket
-
-from cv2 import filterHomographyDecompByVisibleRefpoints
-import PathfindingAlgorithm
-from PathfindingAlgorithm import grid, Node
+from pathfinding.PathfindingAlgorithm import grid, a_star
 import json
-from ArrayGenerator import create_border_array
 from computer_vision.ComputerVision import get_grid, get_masks_from_camera, get_robot_pos_with_mask
 from computer_vision.Displacement import move_point
 from computer_vision.Robot_direction import calculate_heading
-from Convert_to_node_grid import convert_to_grid
+from pathfinding.Convert_to_node_grid import convert_to_grid
 
 masks = get_masks_from_camera()
 
 raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
-ball_node = PathfindingAlgorithm.node
 grid = convert_to_grid(raw_grid_data)
 
 # below, y is first and x is second as the grid is a matrix not a cartesian plane
@@ -63,7 +58,7 @@ command = 'PATH'
 client_socket.sendall(command.encode('utf-8'))
 
 # Send the path to the robot
-path = PathfindingAlgorithm.a_star(grid, start_node, end_node)
+path = a_star(grid, start_node, end_node)
 path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
 path_as_json = json.dumps(path_as_dictionaries)
 
