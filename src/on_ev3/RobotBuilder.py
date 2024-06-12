@@ -1,3 +1,11 @@
+from pybricks.hubs import EV3Brick
+from pybricks.ev3devices import Motor
+from pybricks.parameters import Port
+from pybricks.robotics import DriveBase
+import math
+from Heading import Heading
+import time
+
 class Robot:
 
     # Initialize the EV3 Brick.
@@ -22,7 +30,7 @@ class Robot:
         self.current_heading_degrees = (self.current_heading_degrees + degrees) % 360
 
     def turn_to_heading(self, target_heading):
-        target_degrees = Heading.heading_to_degrees[target_heading]
+        target_degrees = target_heading
         turn_degrees = self.shortest_turn(self.current_heading_degrees, target_degrees)
         self.turn(turn_degrees)
 
@@ -82,29 +90,3 @@ class Robot:
                     self.moveToNeighbor(Heading.NORTH)
                     currentY -= 1
         return self.current_heading_degrees
-
-    def test_turns(self):
-        print(f"Initial Heading (degrees): {self.current_heading_degrees}")
-        
-        self.turn(90)
-        print(f"Heading after turning 90 degrees: {self.current_heading_degrees}")
-        
-        self.turn(-45)
-        print(f"Heading after turning -45 degrees: {self.current_heading_degrees}")
-        
-        self.turn(180)
-        print(f"Heading after turning 180 degrees: {self.current_heading_degrees}")
-        
-        self.turn(-90)
-        print(f"Heading after turning -90 degrees: {self.current_heading_degrees}")
-        
-        self.turn(26)
-        print(f"Heading after turning 26 degrees: {self.current_heading_degrees}")
-        
-        self.turn_to_heading(Heading.NORTHWEST)
-        print(f"Heading after turning to NORTHWEST: {self.current_heading_degrees}")
-
-# Example usage to test the turns
-if __name__ == "__main__":
-    robot = Robot()
-    robot.test_turns()
