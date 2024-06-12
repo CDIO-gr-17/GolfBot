@@ -1,46 +1,16 @@
-import socket
+import socket, json
+from sys import orig_argv
 from pathfinding.PathfindingAlgorithm import grid, a_star
-import json
-from computer_vision.ComputerVision import get_grid, get_masks_from_camera, get_robot_pos_with_mask
-from computer_vision.Displacement import move_point
-from computer_vision.Robot_direction import calculate_heading
-from pathfinding.Convert_to_node_grid import convert_to_grid
-
-masks = get_masks_from_camera()
-
-raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
-grid = convert_to_grid(raw_grid_data)
+from positions.Positions import find_start_node, find_first_ball
 
 # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
-
-def find_start_node():
-    robot_camera_position = get_robot_pos_with_mask(masks['blue'])
-    robot_real_position = move_point(robot_camera_position, grid) #Accounting for displacement
-    if (robot_real_position is None):
-        print("Robot position is not found")
-        return
-    return grid[int(robot_real_position[0])][int(robot_real_position[1])]
-
-def get_robot_angle():
-    robot_camera_tail = get_robot_pos_with_mask(masks['green'])
-    robot_real_tail = move_point(robot_camera_tail,grid)
-    robot_angle = calculate_heading(robot_real_tail , find_start_node() )
-    if robot_angle is None:
-        print("Robot angle is not found")
-        return
-    return robot_angle
-
-def find_first_ball(grid):
-    for row in grid:
-        for node in row:
-            if node.type == 'ball':
-                return node
-    return None
-
-
 start_node = find_start_node()
 end_node = find_first_ball(grid)
+
+# Here handling the case where robot or ball is not found
+if start_node is None or end_node is None:
+    exit()
 
 print(start_node.x, start_node.y)
 print(end_node.x, end_node.y)
