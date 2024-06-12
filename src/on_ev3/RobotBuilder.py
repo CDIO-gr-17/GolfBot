@@ -3,7 +3,6 @@ from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 from Heading import Heading
-import time
 
 class Robot:
 
@@ -48,44 +47,52 @@ class Robot:
     def moveBackward(self):
         self.robot.straight(-100)
 
-    def moveToNeighbor(self, target_heading):
-        self.turn_to_heading(target_heading)
-        if target_heading % 2 == 0:
+    def moveToNeighbor(self, target: Heading, currentHeading: Heading):
+        while currentHeading != target:
+            if currentHeading < target:
+                self.turnRight()
+                currentHeading = currentHeading + 1
+            else:
+                self.turnLeft()
+                currentHeading = currentHeading - 1
+        if target % 2 == 0:
             self.moveForwardCross()
         else:
             self.moveForward()
+        return currentHeading
 
-    def moveToPoint(self, x, y, currentX, currentY):
+    def moveToPoint(self, x: int, y: int, currentX: int, currentY: int, currentHeading: Heading):
         while currentX != x or currentY != y:
             if x > currentX:
                 if y > currentY:
-                    self.moveToNeighbor(Heading.SOUTHEAST)
+                    currentHeading = self.moveToNeighbor(Heading.SOUTHEAST, currentHeading)
                     currentX += 1
                     currentY += 1
                 elif y < currentY:
-                    self.moveToNeighbor(Heading.NORTHEAST)
+                    currentHeading = self.moveToNeighbor(Heading.NORTHEAST, currentHeading)
                     currentX += 1
                     currentY -= 1
                 else:
-                    self.moveToNeighbor(Heading.EAST)
+                    currentHeading = self.moveToNeighbor(Heading.EAST, currentHeading)
                     currentX += 1
             elif x < currentX:
                 if y > currentY:
-                    self.moveToNeighbor(Heading.SOUTHWEST)
+                    currentHeading = self.moveToNeighbor(Heading.SOUTHWEST, currentHeading)
                     currentX -= 1
                     currentY += 1
                 elif y < currentY:
-                    self.moveToNeighbor(Heading.NORTHWEST)
+                    currentHeading = self.moveToNeighbor(Heading.NORTHWEST, currentHeading)
                     currentX -= 1
                     currentY -= 1
                 else:
-                    self.moveToNeighbor(Heading.WEST)
+                    currentHeading = self.moveToNeighbor(Heading.WEST, currentHeading)
                     currentX -= 1
             else:
                 if y > currentY:
-                    self.moveToNeighbor(Heading.SOUTH)
+                    currentHeading = self.moveToNeighbor(Heading.SOUTH, currentHeading)
                     currentY += 1
                 elif y < currentY:
-                    self.moveToNeighbor(Heading.NORTH)
+                    currentHeading = self.moveToNeighbor(Heading.NORTH, currentHeading)
                     currentY -= 1
-        return self.current_heading_degrees
+            print("ran")
+        return currentHeading
