@@ -72,45 +72,42 @@ def get_masks_from_camera():
     blue_lower = np.array([100, 150, 20], dtype="uint8")
     blue_upper = np.array([110, 255, 255], dtype="uint8")
 
-    while True:
-        ret, frame = video_capture.read()
-        if not ret:
-            print("Camera not detected")
+    ret, frame = video_capture.read()
+    if not ret:
+        print("Camera not detected")
 
-        elif ret:
-            blur_frame = cv.GaussianBlur(frame, (17, 17), 0) #Add blur
-            hsv_frame = cv.cvtColor(blur_frame, cv.COLOR_BGR2HSV) #Convert from RGB to HSV
-            resized_frame = cv.resize(hsv_frame, resolution, interpolation=cv.INTER_NEAREST) #Apply the resolution specified
+    elif ret:
+        blur_frame = cv.GaussianBlur(frame, (17, 17), 0) #Add blur
+        hsv_frame = cv.cvtColor(blur_frame, cv.COLOR_BGR2HSV) #Convert from RGB to HSV
+        resized_frame = cv.resize(hsv_frame, resolution, interpolation=cv.INTER_NEAREST) #Apply the resolution specified
 
-            # Create masks for red, green, blue, orange and white
-            mask_red_1 = cv.inRange(resized_frame, red_lower_1, red_upper_1)
-            mask_red_2 = cv.inRange(resized_frame, red_lower_2, red_upper_2)
-            mask_red = cv.bitwise_or(mask_red_1, mask_red_2)
-            mask_green = cv.inRange(resized_frame, green_lower, green_upper)
-            mask_blue = cv.inRange(resized_frame, blue_lower, blue_upper)
-            mask_robot = cv.bitwise_or(mask_green, mask_blue) #Combine blue and green to see the robot
-            mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
-            mask_white = cv.inRange(resized_frame, white_lower, white_upper)
+        # Create masks for red, green, blue, orange and white
+        mask_red_1 = cv.inRange(resized_frame, red_lower_1, red_upper_1)
+        mask_red_2 = cv.inRange(resized_frame, red_lower_2, red_upper_2)
+        mask_red = cv.bitwise_or(mask_red_1, mask_red_2)
+        mask_green = cv.inRange(resized_frame, green_lower, green_upper)
+        mask_blue = cv.inRange(resized_frame, blue_lower, blue_upper)
+        mask_robot = cv.bitwise_or(mask_green, mask_blue) #Combine blue and green to see the robot
+        mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
+        mask_white = cv.inRange(resized_frame, white_lower, white_upper)
 
-            #Apply dilation
-            obstacle_kernel = np.ones((15, 15), np.uint8)
-            ball_kernel = np.ones((3, 3), np.uint8)
-            mask_white = cv.dilate(mask_white, ball_kernel)
-            mask_orange = cv.dilate(mask_orange, ball_kernel)
-            mask_red = cv.dilate(mask_red,obstacle_kernel)
+        #Apply dilation
+        obstacle_kernel = np.ones((15, 15), np.uint8)
+        ball_kernel = np.ones((3, 3), np.uint8)
+        mask_white = cv.dilate(mask_white, ball_kernel)
+        mask_orange = cv.dilate(mask_orange, ball_kernel)
+        mask_red = cv.dilate(mask_red,obstacle_kernel)
 
-            masks = {
-                'red': mask_red,
-                'orange': mask_orange,
-                'white': mask_white,
-                'green': mask_green,
-                'blue': mask_blue
-            }
+        masks = {
+            'red': mask_red,
+            'orange': mask_orange,
+            'white': mask_white,
+            'green': mask_green,
+            'blue': mask_blue
+        }
+        #get_grid(mask_red, mask_orange, mask_white)
+        cv.imshow('ImageWindow', mask_white)
 
-            get_grid(mask_red, mask_orange, mask_white)
-
-            cv.imshow('ImageWindow', mask_white)
-            if cv.waitKey(1) & 0xFF == ord('q'): break
     video_capture.release()
     cv.destroyAllWindows()
     return masks
