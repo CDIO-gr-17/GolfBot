@@ -1,6 +1,9 @@
 import math
 
 def calculate_heading(tail, head):
+    if tail == None or head == None:
+        print("Tail or head is not found")
+        return None
     # Calculate differences
     dx = head[0] - tail[0]
     dy = head[1] - tail[1]

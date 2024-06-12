@@ -41,6 +41,10 @@ def find_displacement_of_robot(grid, robot_field_position):
     return displacement
 
 def move_point(robot_position, grid):
+    if robot_position == None or grid == None:
+        print("Robot position or grid is not found")
+        return None
+
     # Convert points to numpy arrays
     distance = find_displacement_of_robot(grid, robot_position)
     point_b = find_middle(grid)
