@@ -4,6 +4,18 @@ from on_computer.computer_vision.ComputerVision import get_masks_from_camera
 from pathfinding.PathfindingAlgorithm import grid, a_star
 from positions.Positions import find_start_node, find_first_ball
 
+#Creates a socket object, and established a connection to the robot
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+host = "192.168.8.111"
+port = 9999
+
+client_socket.connect((host, port))
+
+command = 'PATH'
+client_socket.sendall(command.encode('utf-8'))
+
 # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
 start_node = find_start_node()# Function for diffing the calculated robot position with the camera robot position
@@ -16,18 +28,6 @@ if start_node is None or end_node is None:
 
 print(start_node.x, start_node.y)
 print(end_node.x, end_node.y)
-
-#Creates a socket object, and established a connection to the robot
-
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-host = "192.168.8.111"
-port = 9999
-
-client_socket.connect((host, port))
-
-command = 'PATH'
-client_socket.sendall(command.encode('utf-8'))
 
 # Send the path to the robot
 path = a_star(grid, start_node, end_node)
