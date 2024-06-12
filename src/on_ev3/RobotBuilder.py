@@ -6,8 +6,6 @@ from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 from Heading import Heading
 from on_computer.positions.Robot_direction import calculate_heading
-from on_computer.positions.Positions import get_robot_angle
-
 class Robot:
 
     # Initialize the EV3 Brick.
@@ -56,7 +54,6 @@ class Robot:
         next_point = self.get_next_point(path)
         # prev_heading = calculate_heading(prev_point, current_point)
         next_heading = calculate_heading(current_point, next_point)
-        self.heading = get_robot_angle()
         if(self.heading == next_heading):
             self.step+=1
             self.factor+=1
