@@ -2,7 +2,6 @@ from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
-import math
 from Heading import Heading
 
 class Robot:
@@ -18,16 +17,18 @@ class Robot:
 
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
-        self.AXLE_TRACK = 140
+        self.AXLE_TRACK = 120
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
-        self.GRID_DISTANCE = 13
+        self.GRID_DISTANCE = 13.8*40
 
-    def turnRight(self):
-        self.robot.turn(45)
+        self.robot.settings(1000, 200, 50, 1000)
 
-    def turnLeft(self):
-        self.robot.turn(-45)
+    def turnRight(self, faktor=45):
+        self.robot.turn(faktor)
+
+    def turnLeft(self, faktor=45):
+        self.robot.turn(faktor)
 
     def moveForward(self):
         self.robot.straight(self.GRID_DISTANCE)
@@ -36,7 +37,7 @@ class Robot:
         self.robot.straight(self.GRID_DISTANCE * 1.414)
 
     def moveBackward(self):
-        self.robot.straight(-100)
+        self.robot.straight(-(self.GRID_DISTANCE))
 
     def moveToNeighbor(self, target: Heading, currentHeading: Heading):
         while currentHeading != target:
