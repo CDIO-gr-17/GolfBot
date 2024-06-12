@@ -6,6 +6,7 @@ from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 from Heading import Heading
 from on_computer.positions.Robot_direction import calculate_heading
+from on_computer.positions.Positions import get_robot_angle
 
 class Robot:
 
@@ -24,7 +25,7 @@ class Robot:
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
         self.GRID_DISTANCE = 13
-        self.step = 1
+        self.step = 0
         self.factor = 1
 
     def get_next_point(self,path):
@@ -45,22 +46,24 @@ class Robot:
 
 
     def calculate_drive_factor(self, path):
-        print('Calculating drive factor')
-        print (self.step)
-        
-        
-        print (self.factor)
-        prev_point = self.get_prev_point(path)
+        print ('-------------------------' + 'step (run number): ' + str(self.step) + '-------------------------')
+        print ('factor: ' + str(self.factor))
+        print('current point: ' + str(self.get_current_point(path)))
+        print('next point: ' + str(self.get_next_point(path)))
+        print('prev point: ' + str(self.get_prev_point(path)))
+        # prev_point = self.get_prev_point(path)
         current_point = self.get_current_point(path)
         next_point = self.get_next_point(path)
-        prev_heading = calculate_heading(prev_point, current_point)
+        # prev_heading = calculate_heading(prev_point, current_point)
         next_heading = calculate_heading(current_point, next_point)
-        if(prev_heading == next_heading):
+        self.heading = get_robot_angle()
+        if(self.heading == next_heading):
             self.step+=1
             self.factor+=1
             self.calculate_drive_factor(path)
         else: self.step+=1
         return self.factor
+        print('-------------------------')
 
 
     def turnRight(self):
@@ -72,6 +75,7 @@ class Robot:
     def moveForward(self, path):
         factor = self.calculate_drive_factor(path)
         self.robot.straight(self.GRID_DISTANCE*factor)
+        print('distance driven: ' + str(self.GRID_DISTANCE*factor))
 
     def moveForwardCross(self):
         self.robot.straight(self.GRID_DISTANCE * 1.414)

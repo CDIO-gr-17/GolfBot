@@ -1,5 +1,7 @@
-from positions.Displacement import move_point
-from positions.Robot_direction import calculate_heading
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from on_computer.positions.Displacement import move_point
+from on_computer.positions.Robot_direction import calculate_heading
 from computer_vision.ComputerVision import get_grid, get_masks_from_camera, get_robot_pos_with_mask
 from pathfinding.Convert_to_node_grid import convert_to_grid
 
