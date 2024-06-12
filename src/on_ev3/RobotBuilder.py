@@ -23,6 +23,7 @@ class Robot:
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
         self.GRID_DISTANCE = 13
+        self.current_heading_degrees = 0 
         self.step = 0
         self.factor = 1
         self.heading = 0
@@ -65,11 +66,20 @@ class Robot:
         print('-------------------------')
 
 
-    def turnRight(self):
-        self.robot.turn(45)
+    def turn(self, degrees):
+        self.robot.turn(degrees)
+        self.current_heading_degrees = (self.current_heading_degrees + degrees) % 360
 
-    def turnLeft(self):
-        self.robot.turn(-45)
+    def turn_to_heading(self, target_heading):
+        target_degrees = target_heading
+        turn_degrees = self.shortest_turn(self.current_heading_degrees, target_degrees)
+        self.turn(turn_degrees)
+
+    def shortest_turn(self, current_degrees, target_degrees):
+        delta = (target_degrees - current_degrees) % 360
+        if delta > 180:
+            delta -= 360
+        return delta
 
     def moveForward(self, path):
         factor = self.calculate_drive_factor(path)
