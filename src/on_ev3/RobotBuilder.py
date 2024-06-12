@@ -1,9 +1,11 @@
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 from Heading import Heading
-from Robot_direction import calculate_heading
+from on_computer.positions.Robot_direction import calculate_heading
 
 class Robot:
 
@@ -27,7 +29,7 @@ class Robot:
     def get_next_point(self,path):
         nextpoint = path[self.step+1]
         return nextpoint
-    
+
     def get_prev_point(self,path):
         if (self.step == 0): #fix later?
             prevpoint = [0]
@@ -35,7 +37,7 @@ class Robot:
         if (self.step >=1):
             prevpoint = path[self.step-1]
         return prevpoint
-    
+
     def get_current_point(self, path):
         currentpoint = path[self.step]
         return currentpoint
@@ -53,7 +55,7 @@ class Robot:
             factor+=1
             self.calculate_drive_factor()
         else: self.step+=1
- 
+
         return factor
 
 
@@ -64,7 +66,7 @@ class Robot:
         self.robot.turn(-45)
 
     def moveForward(self, path):
-        factor = self.calculate_drive_factor(path)  
+        factor = self.calculate_drive_factor(path)
         self.robot.straight(self.GRID_DISTANCE*factor)
 
     def moveForwardCross(self):
@@ -120,9 +122,8 @@ class Robot:
                 elif y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTH, currentHeading)
                     currentY -= 1
-            
+
         return currentHeading
 
-     
-    
-        
+
+
