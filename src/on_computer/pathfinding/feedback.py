@@ -1,6 +1,5 @@
 def is_robot_position_correct(robot_path, camera_robot_position):
         if(camera_robot_position in robot_path):
-            remove_position_from_path(robot_path, camera_robot_position)
             return True
         else:
             return False
