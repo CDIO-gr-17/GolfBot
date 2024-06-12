@@ -2,7 +2,6 @@ from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
-import math
 from Heading import Heading
 from Robot_direction import calculate_heading
 

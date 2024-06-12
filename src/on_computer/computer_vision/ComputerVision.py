@@ -8,6 +8,27 @@ def get_robot_pos_with_mask(mask):
         return None
     return coordinates[0] # Returns the first green pixel found, but should maybe be the middle pixel //TODO
 
+
+#Returns a dictionary of clusters with the amount of clusters and the stats of each cluster
+def find_clusters(mask):
+    amount, labels, stats, _ = cv.connectedComponentsWithStats(mask, connectivity=8)
+    clusters = {
+        'amount': amount - 1, # Subtract 1 to exclude the background
+        #'labels': labels[1:], # Returns an array of the labels of the clusters, but we don't need it for now
+        'stats': stats[1:] # Information about each cluster. Used to find the center of each cluster
+    }
+    return clusters
+
+#Returns a list of centers for each cluster
+def find_clusters_center(stats):
+    centers = []
+    for stat in stats:
+        # Calculate the center of the blob
+        x = stat[cv.CC_STAT_LEFT] + stat[cv.CC_STAT_WIDTH] // 2
+        y = stat[cv.CC_STAT_TOP] + stat[cv.CC_STAT_HEIGHT] // 2
+        centers.append((x, y))
+    return centers
+
 def get_grid(mask_red, mask_orange, mask_white):
     obstacle_coordinates = np.argwhere(mask_red != 0)
     ball_coordinates = np.argwhere(np.logical_or(mask_orange != 0, mask_white != 0))
@@ -26,7 +47,8 @@ def get_masks_from_camera():
     y = 140
     resolution = (x, y)
 
-    video_capture = cv.VideoCapture(0) #Open camera
+    #video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
+    video_capture = cv.VideoCapture(0) #Open camera MAC OS
 
     #Define color ranges
     red_lower_1 = np.array([0, 100, 20], dtype="uint8")
@@ -89,8 +111,13 @@ def get_masks_from_camera():
 
             cv.imshow('ImageWindow', mask_white)
             if cv.waitKey(1) & 0xFF == ord('q'): break
-        video_capture.release()
-        cv.destroyAllWindows()
-        return masks
+    video_capture.release()
+    cv.destroyAllWindows()
+    return masks
 
-get_masks_from_camera()
+masks = get_masks_from_camera()
+mask_white = masks['white']
+white_clusters = find_clusters(mask_white)
+white_centers = find_blob_centers(white_clusters['stats'])
+print("Amount of white clusters: ", white_clusters['amount'])
+print("Middle of white clusters position: ", white_centers)
