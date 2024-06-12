@@ -22,7 +22,7 @@ class Robot:
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
         self.GRID_DISTANCE = 13
-        self.current_heading_degrees = 0  # Initialize current heading in degrees
+        self.current_heading_degrees = 0 
 
     def turn(self, degrees):
         self.robot.turn(degrees)
