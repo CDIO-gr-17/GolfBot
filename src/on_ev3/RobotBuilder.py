@@ -24,7 +24,8 @@ class Robot:
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
         self.GRID_DISTANCE = 13
-        self.step = 0
+        self.step = 1
+        self.factor = 1
 
     def get_next_point(self,path):
         nextpoint = path[self.step+1]
@@ -43,8 +44,12 @@ class Robot:
         return currentpoint
 
 
-    def calculate_drive_factor(self,path):
-        factor = 1
+    def calculate_drive_factor(self, path):
+        print('Calculating drive factor')
+        print (self.step)
+        
+        
+        print (self.factor)
         prev_point = self.get_prev_point(path)
         current_point = self.get_current_point(path)
         next_point = self.get_next_point(path)
@@ -52,11 +57,10 @@ class Robot:
         next_heading = calculate_heading(current_point, next_point)
         if(prev_heading == next_heading):
             self.step+=1
-            factor+=1
-            self.calculate_drive_factor()
+            self.factor+=1
+            self.calculate_drive_factor(path)
         else: self.step+=1
-
-        return factor
+        return self.factor
 
 
     def turnRight(self):

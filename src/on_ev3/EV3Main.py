@@ -54,3 +54,4 @@ while True:
                 currentX, currentY = node['x'], node['y']  # Update current position
 
     clientsocket.close()
+
