@@ -1,13 +1,13 @@
 import socket, json
 from sys import orig_argv
-from on_computer.computer_vision.ComputerVision import get_masks_from_camera
+from computer_vision.ComputerVision import get_masks_from_camera
 from pathfinding.PathfindingAlgorithm import grid, a_star
 from positions.Positions import find_start_node, find_first_ball
 
 # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
 start_node = find_start_node()# Function for diffing the calculated robot position with the camera robot position
-    
+
 end_node = find_first_ball(grid)
 
 # Here handling the case where robot or ball is not found
