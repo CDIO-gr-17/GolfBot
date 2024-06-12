@@ -4,6 +4,7 @@ from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 import math
 from Heading import Heading
+from Robot_direction import calculate_heading
 
 class Robot:
 
@@ -22,6 +23,40 @@ class Robot:
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
         self.GRID_DISTANCE = 13
+        self.step = 0
+
+    def get_next_point(self,path):
+        nextpoint = path[self.step+1]
+        return nextpoint
+    
+    def get_prev_point(self,path):
+        if (self.step == 0): #fix later?
+            prevpoint = [0]
+
+        if (self.step >=1):
+            prevpoint = path[self.step-1]
+        return prevpoint
+    
+    def get_current_point(self, path):
+        currentpoint = path[self.step]
+        return currentpoint
+
+
+    def calculate_drive_factor(self,path):
+        factor = 1
+        prev_point = self.get_prev_point(path)
+        current_point = self.get_current_point(path)
+        next_point = self.get_next_point(path)
+        prev_heading = calculate_heading(prev_point, current_point)
+        next_heading = calculate_heading(current_point, next_point)
+        if(prev_heading == next_heading):
+            self.step+=1
+            factor+=1
+            self.calculate_drive_factor()
+        else: self.step+=1
+ 
+        return factor
+
 
     def turnRight(self):
         self.robot.turn(45)
@@ -29,8 +64,9 @@ class Robot:
     def turnLeft(self):
         self.robot.turn(-45)
 
-    def moveForward(self):
-        self.robot.straight(self.GRID_DISTANCE)
+    def moveForward(self, path):
+        factor = self.calculate_drive_factor(path)  
+        self.robot.straight(self.GRID_DISTANCE*factor)
 
     def moveForwardCross(self):
         self.robot.straight(self.GRID_DISTANCE * 1.414)
@@ -38,7 +74,7 @@ class Robot:
     def moveBackward(self):
         self.robot.straight(-100)
 
-    def moveToNeighbor(self, target: Heading, currentHeading: Heading):
+    def moveToNeighbor(self, target: Heading, currentHeading: Heading, path):
         while currentHeading != target:
             if currentHeading < target:
                 self.turnRight()
@@ -49,14 +85,14 @@ class Robot:
         if target % 2 == 0:
             self.moveForwardCross()
         else:
-            self.moveForward()
+            self.moveForward(path)
         return currentHeading
 
-    def moveToPoint(self, x: int, y: int, currentX: int, currentY: int, currentHeading: Heading):
+    def moveToPoint(self, x: int, y: int, currentX: int, currentY: int, currentHeading: Heading, path):
         while currentX != x or currentY != y:
             if x > currentX:
                 if y > currentY:
-                    currentHeading = self.moveToNeighbor(Heading.SOUTHEAST, currentHeading)
+                    currentHeading = self.moveToNeighbor(Heading.SOUTHEAST, currentHeading, path)
                     currentX += 1
                     currentY += 1
                 elif y < currentY:
@@ -85,5 +121,9 @@ class Robot:
                 elif y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTH, currentHeading)
                     currentY -= 1
-            print("ran")
+            
         return currentHeading
+
+     
+    
+        
