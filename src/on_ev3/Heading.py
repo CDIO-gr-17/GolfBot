@@ -1,9 +1,9 @@
 class Heading():
     NORTH = 0
-    NORTHEAST = 45
-    EAST = 90
-    SOUTHEAST = 135
-    SOUTH = 180
-    SOUTHWEST = 225
-    WEST = 270
-    NORTHWEST = 315
+    NORTHEAST = 2
+    EAST = 3
+    SOUTHEAST = 4
+    SOUTH = 5
+    SOUTHWEST = 6
+    WEST = 7
+    NORTHWEST = 8
