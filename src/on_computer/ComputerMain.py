@@ -54,7 +54,10 @@ def find_first_ball(grid):
                 return node
     return None
 
-
+# Function for diffing the calculated robot position with the camera robot position
+def is_robot_position_correct(robot_path, camera_robot_position, robot_step):
+    return robot_path[robot_step].x == camera_robot_position[0] and robot_path[robot_step].y == camera_robot_position[1]
+    
 end_node = find_first_ball(grid)
 
 print(start_node.x, start_node.y)
