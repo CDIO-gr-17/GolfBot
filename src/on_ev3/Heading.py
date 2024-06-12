@@ -1,5 +1,5 @@
 class Heading():
-    NORTH = 1
+    NORTH = 0
     NORTHEAST = 2
     EAST = 3
     SOUTHEAST = 4
