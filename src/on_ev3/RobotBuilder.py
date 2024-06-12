@@ -25,6 +25,7 @@ class Robot:
         self.GRID_DISTANCE = 13
         self.step = 0
         self.factor = 1
+        self.heading = 0
 
     def get_next_point(self,path):
         nextpoint = path[self.step+1]
@@ -44,11 +45,11 @@ class Robot:
 
 
     def calculate_drive_factor(self, path):
-        print ('-------------------------' + 'step (run number): ' + str(self.step) + '-------------------------')
+        print ('-------------------------' + ' run of calculate_drive_factor ' + '-------------------------')
+        print ('step in path: ' + str(self.step))
         print ('factor: ' + str(self.factor))
         print('current point: ' + str(self.get_current_point(path)))
         print('next point: ' + str(self.get_next_point(path)))
-        print('prev point: ' + str(self.get_prev_point(path)))
         # prev_point = self.get_prev_point(path)
         current_point = self.get_current_point(path)
         next_point = self.get_next_point(path)
@@ -59,6 +60,7 @@ class Robot:
             self.factor+=1
             self.calculate_drive_factor(path)
         else: self.step+=1
+        self.heading = next_heading
         return self.factor
         print('-------------------------')
 
