@@ -118,6 +118,6 @@ def get_masks_from_camera():
 masks = get_masks_from_camera()
 mask_white = masks['white']
 white_clusters = find_clusters(mask_white)
-white_centers = find_blob_centers(white_clusters['stats'])
+white_centers = find_clusters_center(white_clusters['stats'])
 print("Amount of white clusters: ", white_clusters['amount'])
 print("Middle of white clusters position: ", white_centers)
