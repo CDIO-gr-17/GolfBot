@@ -63,22 +63,41 @@ class Robot:
     #    return tempfactor
        
     def calculate_drive_factor(self, heading, path):
+        print("")
+        print('-------------------------' + ' run of calculate_drive_factor: ' + str(path[self.step]) + '-------------------------')
+        print("")
         acc_steps = 1
         new_heading = self.current_heading_degrees
-        curr_pos = path[0]
+        print('current heading in calculate_drive_factor: ' + str(heading))
+        curr_pos = path[self.step]
+        print('current position in calculate_drive_factor: ' + str(curr_pos))
+        print('for loop starts')
+        
         for nex_pos in path:
+            nex_pos = path[self.step+1]
             heading = calculate_heading(nex_pos, curr_pos)
-            if(heading != new_heading):
+            print('     next position in calculate_drive_factor: ' + str(nex_pos))
+            print('     heading in calculate_drive_factor: ' + str(heading))
+            print('     if statement starts')
+            if(heading == new_heading):
+                print(          'heading: ' + str(heading) + ' == new_heading: ' + str(new_heading))
                 acc_steps += 1
                 new_heading = heading
                 curr_pos = nex_pos
+                print(          'curr_pos: ' + str(curr_pos) + ' == nex_pos: ' + str(nex_pos))
             else: 
                 break
+        print("")
+        print('-------------------------' + ' end of calculate_drive_factor ' + '-------------------------')
+        print("")
+        
         return acc_steps
+        
 
     def turn(self, degrees):
         self.robot.turn(degrees)
         self.current_heading_degrees = (self.current_heading_degrees + degrees) % 360
+        print('turned ' + str(degrees) + ' degrees')
 
     def shortest_turn(self, current_degrees, target_degrees):
         delta = (target_degrees - current_degrees) % 360
@@ -90,24 +109,37 @@ class Robot:
         target_degrees = target_heading
         turn_degrees = self.shortest_turn(self.current_heading_degrees, target_degrees)
         self.turn(turn_degrees)
+        return target_heading
 
     
 
     def moveForward(self, path):
         factor = self.calculate_drive_factor(self.current_heading_degrees, path)
+        print('heading right before moveForward: ' + str(self.current_heading_degrees))
         self.robot.straight(self.GRID_DISTANCE*factor)
+        print('moved forward ' + str(self.GRID_DISTANCE*factor) + ' cm')
 
     def moveForwardCross(self, path):
         factor = self.calculate_drive_factor(path)
+        print('heading right before moveForward cross: ' + str(self.current_heading_degrees))
         self.robot.straight(self.GRID_DISTANCE * 1.414*factor)
+        print('moved forward cross ' + str(self.GRID_DISTANCE * 1.414*factor) + ' cm')
 
 
     def moveBackward(self):
         self.robot.straight(-100)
 
     def moveToNeighbor(self, target: Heading, currentHeading: Heading, path):
+        print("")
+        print('----------------------------- Start of moveToNeighbor for path step ' + str(path[self.step]) + '-----------------------------')
+        print("")
         if (currentHeading != target):
+            print('current heading in moveToNeighbor before turn_to_heading: ' + str(currentHeading))
+            print('target heading in moveToNeighbor before turn_to_heading: ' + str(target))
             currentHeading = self.turn_to_heading(target)
+            print('current heading in moveToNeighbor after turn_to_heading: ' + str(currentHeading))
+            print('target heading in moveToNeighbor after turn_to_heading: ' + str(target))
+        
        # while currentHeading != target:
         #    if currentHeading < target:
         #        self.turnRight()
@@ -121,6 +153,10 @@ class Robot:
             self.moveForwardCross(path)
         else:
             self.moveForward(path)
+        self.step += 1
+        print("")
+        print('----------------------------- End of moveToNeighbor -----------------------------')
+        print("")
         return currentHeading
 
     def moveToPoint(self, x: int, y: int, currentX: int, currentY: int, currentHeading: Heading, path):
