@@ -20,6 +20,8 @@ def test_navigation():
     (5, 5),   # Move right
     (4, 5),  # Move right
     (3, 5),  # Move right
+    (2, 4),
+    (1, 3)
     ]
 
     path_length = len(mock_path)
@@ -34,8 +36,9 @@ def test_navigation():
     #    forCounter +=1
     #    node+= robot.
     #    print("/////////////////////////////// For Counter: " + str(forCounter))
+    path_length = len(mock_path)
 
-    robot.move_through_path(currentX, currentY, currentHeading, mock_path)     
+    robot.move_through_path(mock_path[0],mock_path[path_length-1],currentHeading, mock_path)
         
     #if(currentX != mock_path[path_length-1][0] and currentY != mock_path[path_length-1][1]):
      #   currentHeading = robot.moveToPoint(mock_path[0][0], mock_path[1], currentX, currentY, currentHeading, mock_path)

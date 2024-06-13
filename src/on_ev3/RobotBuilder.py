@@ -133,7 +133,7 @@ class Robot:
         print('moved forward ' + str(self.GRID_DISTANCE*factor) + ' cm')
 
     def moveForwardCross(self, path):
-        factor = self.calculate_drive_factor(path)
+        factor = self.calculate_drive_factor(self.current_heading_degrees, path)
         print('heading right before moveForward cross: ' + str(self.current_heading_degrees))
         self.robot.straight(self.GRID_DISTANCE * 1.414*factor)
         print('moved forward cross ' + str(self.GRID_DISTANCE * 1.414*factor) + ' cm')
@@ -232,16 +232,23 @@ class Robot:
         print("")
         return currentHeading
 
-    def move_through_path(self, start_x, start_y, current_heading, path):
+    def move_through_path(self, start_node, end_node, current_heading, path):
         path_length = len(path)
-        
-        while(
-            start_x != path[path_length-1][0] and start_y != path[path_length-1][1]):
-            print('before' + str(start_x) + ' ' + str(start_y))
-            print('before' + str(path[path_length-1][0]) + ' ' + str(path[path_length-1][1]))
+        start_x = start_node[0]
+        start_y = start_node[1]
+        end_node_x = end_node[0]
+        end_node_y = end_node[1]
+
+        while(start_node != end_node):
+            print('step before while loop: ' + str(self.step))
+            print('before ' + str(start_x) + ' ' + str(start_y))
+            print('before ' + str(path[path_length-1][0]) + ' ' + str(path[path_length-1][1]))
             self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)
-            start_x = path[self.step][0]
-            start_y = path[self.step][1]
+            start_x = path[self.step-1][0]
+            start_y = path[self.step-1][1]
+            start_node = path[self.step-1]
+            current_heading = self.current_heading_degrees
+            
         print(start_x, start_y)
         print(path[path_length-1][0], path[path_length-1][1])
         print('finished moving through path')
