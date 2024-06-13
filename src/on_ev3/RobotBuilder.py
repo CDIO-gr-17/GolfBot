@@ -3,6 +3,7 @@ from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 from Heading import Heading
+from pybricks.tools import wait
 
 class Robot:
 
@@ -13,7 +14,7 @@ class Robot:
         # Initialize the motors.
         self.left_motor = Motor(Port.D)
         self.right_motor = Motor(Port.A)
-        #self.front_motor = Motor(Port.C)
+        self.front_motor = Motor(Port.C)
 
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
@@ -47,6 +48,17 @@ class Robot:
     def moveBackward(self):
         self.robot.straight(-100)
 
+    def pickUp(self):
+        self.front_motor.run(1200)
+        wait(2000)
+        self.robot.straight(self.GRID_DISTANCE * 5)
+        self.front_motor.stop()
+
+    def shoot(self):
+        self.front_motor.run(-1000)
+        self.robot.straight(-self.GRID_DISTANCE * 5)
+        self.front_motor.stop()
+    
     def moveToNeighbor(self, target: Heading, currentHeading: Heading):
         while currentHeading != target:
             if currentHeading < target:
