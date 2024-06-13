@@ -1,17 +1,16 @@
 import cv2 as cv
 import numpy as np
 
-
 def get_robot_pos_with_mask(mask):
-    coordinates = np.argwhere(mask != 0)
-    if len(coordinates) == 0:
+    robot_mask_cluster = find_clusters(mask)
+    robot_pos_middle = find_clusters_center(robot_mask_cluster['stats'])
+    if(robot_mask_cluster['amount'] == 0):
         return None
-    return coordinates[0] # Returns the first green pixel found, but should maybe be the middle pixel //TODO
-
+    return robot_pos_middle[0]
 
 #Returns a dictionary of clusters with the amount of clusters and the stats of each cluster
 def find_clusters(mask):
-    amount, labels, stats, _ = cv.connectedComponentsWithStats(mask, connectivity=8)
+    amount, labels, stats, _ = cv.connectedComponentsWithStats(mask, connectivity=4)
     clusters = {
         'amount': amount - 1, # Subtract 1 to exclude the background
         #'labels': labels[1:], # Returns an array of the labels of the clusters, but we don't need it for now
@@ -30,16 +29,19 @@ def find_clusters_center(stats):
     return centers
 
 def get_grid(mask_red, mask_orange, mask_white):
-    obstacle_coordinates = np.argwhere(mask_red != 0)
-    ball_coordinates = np.argwhere(np.logical_or(mask_orange != 0, mask_white != 0))
-
     combined_grid = np.zeros_like(mask_red)
 
+    obstacle_coordinates = np.argwhere(mask_red != 0)
+    ball_mask = cv.bitwise_or(mask_orange, mask_white)
+    ball_clusters = find_clusters(ball_mask)
+    ball_centers = find_clusters_center(ball_clusters['stats'])
+
+    if ball_clusters['amount'] > 0:
+        for center in ball_centers:
+            combined_grid[center[1], center[0]] = 2
     combined_grid[obstacle_coordinates[:, 0], obstacle_coordinates[:, 1]] = 1
-    combined_grid[ball_coordinates[:, 0], ball_coordinates[:, 1]] = 2
 
     np.savetxt('combined_grid.txt', combined_grid, fmt='%d')
-
     return combined_grid
 
 def get_masks_from_camera():
@@ -47,8 +49,8 @@ def get_masks_from_camera():
     y = 140
     resolution = (x, y)
 
-    #video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
-    video_capture = cv.VideoCapture(0) #Open camera MAC OS
+    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
+    #video_capture = cv.VideoCapture(0) #Open camera MAC OS
 
     #Define color ranges
     red_lower_1 = np.array([0, 100, 20], dtype="uint8")
