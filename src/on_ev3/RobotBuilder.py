@@ -17,10 +17,10 @@ class Robot:
 
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
-        self.AXLE_TRACK = 140
+        self.AXLE_TRACK = 110
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
-        self.GRID_DISTANCE = 13
+        self.GRID_DISTANCE = 10
 
     def turnRight(self):
         self.robot.turn(45)
