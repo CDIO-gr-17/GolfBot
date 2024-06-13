@@ -37,6 +37,16 @@ class Robot:
         currentpoint = path[self.step]
         return currentpoint
 
+    def get_current_point_x(self, path):
+        currentpoint = path[self.step][0]
+        return currentpoint
+        
+    def get_current_point_y(self, path):
+        currentpoint = path[self.step][1]
+        return currentpoint
+
+
+
 
     #def calculate_drive_factor(self, path):
     #    tempfactor = self.factor
@@ -66,25 +76,30 @@ class Robot:
         print("")
         print('-------------------------' + ' run of calculate_drive_factor: ' + str(path[self.step]) + '-------------------------')
         print("")
-        acc_steps = 1
-        new_heading = self.current_heading_degrees
+        acc_steps = 0
+        loop_counter = self.step
+        
         print('current heading in calculate_drive_factor: ' + str(heading))
-        curr_pos = path[self.step]
+        curr_pos = path[loop_counter]
         print('current position in calculate_drive_factor: ' + str(curr_pos))
         print('for loop starts')
-        
         for nex_pos in path:
-            nex_pos = path[self.step+1]
-            heading = calculate_heading(nex_pos, curr_pos)
-            print('     next position in calculate_drive_factor: ' + str(nex_pos))
+            nex_pos = path[loop_counter+1]
+            print('next position in calculate_drive_factor: ' + str(nex_pos))
+
+            calc_heading = calculate_heading(curr_pos, nex_pos)
+            print('     if statement starts: if heading (' + str(heading) + ') == new_heading (' + str(heading) + ')')
             print('     heading in calculate_drive_factor: ' + str(heading))
-            print('     if statement starts')
-            if(heading == new_heading):
-                print(          'heading: ' + str(heading) + ' == new_heading: ' + str(new_heading))
+            if(calc_heading == heading):
+                print(          'heading: ' + str(heading) + ' == new_heading: ' + str(heading))
                 acc_steps += 1
-                new_heading = heading
+                heading = calc_heading
                 curr_pos = nex_pos
                 print(          'curr_pos: ' + str(curr_pos) + ' == nex_pos: ' + str(nex_pos))
+                if loop_counter == len(path)-2:
+                    break
+                loop_counter += 1
+                self.step += 1
             else: 
                 break
         print("")
@@ -111,8 +126,6 @@ class Robot:
         self.turn(turn_degrees)
         return target_heading
 
-    
-
     def moveForward(self, path):
         factor = self.calculate_drive_factor(self.current_heading_degrees, path)
         print('heading right before moveForward: ' + str(self.current_heading_degrees))
@@ -133,9 +146,10 @@ class Robot:
         print("")
         print('----------------------------- Start of moveToNeighbor for path step ' + str(path[self.step]) + '-----------------------------')
         print("")
+        print('current heading in moveToNeighbor before turn_to_heading: ' + str(currentHeading))
+        print('target heading in moveToNeighbor before turn_to_heading: ' + str(target))
         if (currentHeading != target):
-            print('current heading in moveToNeighbor before turn_to_heading: ' + str(currentHeading))
-            print('target heading in moveToNeighbor before turn_to_heading: ' + str(target))
+            
             currentHeading = self.turn_to_heading(target)
             print('current heading in moveToNeighbor after turn_to_heading: ' + str(currentHeading))
             print('target heading in moveToNeighbor after turn_to_heading: ' + str(target))
@@ -153,47 +167,85 @@ class Robot:
             self.moveForwardCross(path)
         else:
             self.moveForward(path)
-        self.step += 1
+        
         print("")
         print('----------------------------- End of moveToNeighbor -----------------------------')
         print("")
         return currentHeading
 
     def moveToPoint(self, x: int, y: int, currentX: int, currentY: int, currentHeading: Heading, path):
-        while currentX != x or currentY != y:
+        print("")
+        print('--------------- Start of moveToPoint for path step ' + str(path[self.step]) + '---------------')
+        print("")
+        currentX = path[self.step][0]   
+        currentY = path[self.step][1]
+        x = path[self.step+1][0]
+        y = path[self.step+1][1]
+
+        print('current heading in moveToPoint: ' + str(currentHeading))
+        print('current position in moveToPoint: ' + str(currentX) + ', ' + str(currentY))
+        print('target position in moveToPoint: ' + str(x) + ', ' + str(y))
+        
+        if currentX != x or currentY != y:
             if x > currentX:
                 if y > currentY:
                     currentHeading = self.moveToNeighbor(Heading.SOUTHEAST, currentHeading, path)
-                    currentX += 1
-                    currentY += 1
+                    #currentX += 1
+                    #currentY += 1
+                    print('current heading after moveToPoint: ' + str(currentHeading))
                 elif y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTHEAST, currentHeading, path)
-                    currentX += 1
-                    currentY -= 1
+                    #currentX += 1
+                    #currentY -= 1
+                    print('current heading after moveToPoint: ' + str(currentHeading))
                 else:
                     currentHeading = self.moveToNeighbor(Heading.EAST, currentHeading, path)
-                    currentX += 1
+                    #currentX += 1
+                    print('current heading after moveToPoint: ' + str(currentHeading))
             elif x < currentX:
                 if y > currentY:
                     currentHeading = self.moveToNeighbor(Heading.SOUTHWEST, currentHeading, path)
-                    currentX -= 1
-                    currentY += 1
+                    #currentX -= 1
+                    #currentY += 1
+                    print('current heading after moveToPoint: ' + str(currentHeading))
                 elif y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTHWEST, currentHeading, path)
-                    currentX -= 1
-                    currentY -= 1
+                    #currentX -= 1
+                    #currentY -= 1
+                    print('current heading after moveToPoint: ' + str(currentHeading))
                 else:
                     currentHeading = self.moveToNeighbor(Heading.WEST, currentHeading, path)
-                    currentX -= 1
+                    #currentX -= 1
+                    print('current heading after moveToPoint: ' + str(currentHeading))
             else:
                 if y > currentY:
                     currentHeading = self.moveToNeighbor(Heading.SOUTH, currentHeading, path)
-                    currentY += 1
+                    #currentY += 1
+                    print('current heading after moveToPoint: ' + str(currentHeading))
                 elif y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTH, currentHeading, path)
-                    currentY -= 1
-
+                    #currentY -= 1
+                    print('current heading after moveToPoint: ' + str(currentHeading))
+        
+        print("")
+        print('--------------- End of moveToPoint for path step ' + str(path[self.step]) +  '---------------')
+        print("")
         return currentHeading
+
+    def move_through_path(self, start_x, start_y, current_heading, path):
+        path_length = len(path)
+        
+        while(
+            start_x != path[path_length-1][0] and start_y != path[path_length-1][1]):
+            print('before' + str(start_x) + ' ' + str(start_y))
+            print('before' + str(path[path_length-1][0]) + ' ' + str(path[path_length-1][1]))
+            self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)
+            start_x = path[self.step][0]
+            start_y = path[self.step][1]
+        print(start_x, start_y)
+        print(path[path_length-1][0], path[path_length-1][1])
+        print('finished moving through path')
+        
 
 
 
