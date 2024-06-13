@@ -22,7 +22,7 @@ class Robot:
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
         self.GRID_DISTANCE = 13
-        self.current_heading_degrees = 0 
+        self.current_heading_degrees = 0
 
     def turn(self, degrees):
         self.robot.turn(degrees)
@@ -51,14 +51,32 @@ class Robot:
     def pickUp(self):
         self.front_motor.run(1200)
         wait(2000)
-        self.robot.straight(self.GRID_DISTANCE * 5)
+        self.robot.straight(10)
         self.front_motor.stop()
 
-    def shoot(self):
-        self.front_motor.run(-1000)
-        self.robot.straight(-self.GRID_DISTANCE * 5)
+
+    # Either we want to wiggle the robot to make it stay more in one place
+    # Or we want it to move back to goal after each ball
+    # def shoot_one_ball(self):
+    #     self.front_motor.run(-1200)
+    #     self.robot.straight(-40)
+    #     self.robot.brake()
+    #     self.robot.straight(40)
+    #     self.robot.brake()
+
+    def shoot_one_ball(self):
+        self.front_motor.run(-1200)
+        self.robot.straight(-40)
+        self.robot.straight(40)
+
+
+    def shoot_all_balls(self):
+        self.robot.settings(1000, 1000)
+        for i in range(3):
+            self.shoot_one_ball()
         self.front_motor.stop()
-    
+
+
     def moveToNeighbor(self, target: Heading, currentHeading: Heading):
         while currentHeading != target:
             if currentHeading < target:
