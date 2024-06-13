@@ -13,7 +13,9 @@ def find_start_node(mask, grid):
 def get_robot_angle(masks, grid):
     robot_camera_tail = get_robot_pos_with_mask(masks['green'])
     robot_real_tail = move_point(robot_camera_tail,grid)
-    robot_angle = calculate_heading(robot_real_tail , find_start_node(masks['blue'], grid) )
+    start_node = find_start_node(masks['blue'], grid)
+    start_node = [start_node.x, start_node.y]
+    robot_angle = calculate_heading(robot_real_tail , start_node )
     if robot_angle is None:
         print("Robot angle is not found")
         return
