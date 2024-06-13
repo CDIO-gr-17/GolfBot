@@ -28,51 +28,57 @@ class Robot:
         self.factor = 1
 
     def get_next_point(self,path):
-        nextpoint = path[self.step+1]
+        if (self.step == len(path)-1):
+            nextpoint = [self.step] #fix later?
+        else: nextpoint = path[self.step+1]
         return nextpoint
-
-    def get_prev_point(self,path):
-        if (self.step == 0): #fix later?
-            prevpoint = [0]
-
-        if (self.step >=1):
-            prevpoint = path[self.step-1]
-        return prevpoint
 
     def get_current_point(self, path):
         currentpoint = path[self.step]
         return currentpoint
 
 
-    def calculate_drive_factor(self, path):
-        print ('-------------------------' + ' run of calculate_drive_factor ' + '-------------------------')
-        print ('step in path: ' + str(self.step))
-        print ('factor: ' + str(self.factor))
-        print('current point: ' + str(self.get_current_point(path)))
-        print('next point: ' + str(self.get_next_point(path)))
+    #def calculate_drive_factor(self, path):
+    #    tempfactor = self.factor
+    #    print ('-------------------------' + ' run of calculate_drive_factor ' + '-------------------------')
+    #    print ('step in path: ' + str(self.step))
+    #    print ('factor: ' + str(tempfactor))
+    #    print('current point: ' + str(self.get_current_point(path)))
+    #    print('next point: ' + str(self.get_next_point(path)))
         # prev_point = self.get_prev_point(path)
-        current_point = self.get_current_point(path)
-        next_point = self.get_next_point(path)
+    #    current_point = self.get_current_point(path)
+    #    next_point = self.get_next_point(path)
         # prev_heading = calculate_heading(prev_point, current_point)
-        next_heading = calculate_heading(current_point, next_point)
-        if(self.current_heading_degrees == next_heading):
-            self.step+=1
-            self.factor+=1
-            self.calculate_drive_factor(path)
-        else: self.step+=1
-        self.current_heading_degrees = next_heading
-        return self.factor
-        print('-------------------------')
+    #    next_heading = calculate_heading(current_point, next_point)
+    #    print ('self heading' + str(self.current_heading_degrees))
+    #    print ('next heading' + str(next_heading))
 
+    #   if(self.current_heading_degrees == next_heading):
+    #        self.step+=1
+    #        self.factor+=1
+    #        self.calculate_drive_factor(path)
+    #    self.step+=1
+    #    self.current_heading_degrees = next_heading
+        
+    #    return tempfactor
+       
+    def calculate_drive_factor(self, heading, path):
+        acc_steps = 1
+        new_heading = self.current_heading_degrees
+        curr_pos = path[0]
+        for nex_pos in path:
+            heading = calculate_heading(nex_pos, curr_pos)
+            if(heading != new_heading):
+                acc_steps += 1
+                new_heading = heading
+                curr_pos = nex_pos
+            else: 
+                break
+        return acc_steps
 
     def turn(self, degrees):
         self.robot.turn(degrees)
         self.current_heading_degrees = (self.current_heading_degrees + degrees) % 360
-
-    def turn_to_heading(self, target_heading):
-        target_degrees = target_heading
-        turn_degrees = self.shortest_turn(self.current_heading_degrees, target_degrees)
-        self.turn(turn_degrees)
 
     def shortest_turn(self, current_degrees, target_degrees):
         delta = (target_degrees - current_degrees) % 360
@@ -80,27 +86,39 @@ class Robot:
             delta -= 360
         return delta
 
-    def moveForward(self, path):
-        factor = self.calculate_drive_factor(path)
-        self.robot.straight(self.GRID_DISTANCE*factor)
-        print('distance driven: ' + str(self.GRID_DISTANCE*factor))
+    def turn_to_heading(self, target_heading):
+        target_degrees = target_heading
+        turn_degrees = self.shortest_turn(self.current_heading_degrees, target_degrees)
+        self.turn(turn_degrees)
 
-    def moveForwardCross(self):
-        self.robot.straight(self.GRID_DISTANCE * 1.414)
+    
+
+    def moveForward(self, path):
+        factor = self.calculate_drive_factor(self.current_heading_degrees, path)
+        self.robot.straight(self.GRID_DISTANCE*factor)
+
+    def moveForwardCross(self, path):
+        factor = self.calculate_drive_factor(path)
+        self.robot.straight(self.GRID_DISTANCE * 1.414*factor)
+
 
     def moveBackward(self):
         self.robot.straight(-100)
 
     def moveToNeighbor(self, target: Heading, currentHeading: Heading, path):
-        while currentHeading != target:
-            if currentHeading < target:
-                self.turnRight()
-                currentHeading = currentHeading + 1
-            else:
-                self.turnLeft()
-                currentHeading = currentHeading - 1
-        if target % 2 == 0:
-            self.moveForwardCross()
+        if (currentHeading != target):
+            currentHeading = self.turn_to_heading(target)
+       # while currentHeading != target:
+        #    if currentHeading < target:
+        #        self.turnRight()
+         #       currentHeading = currentHeading + 1
+          #  else:
+           #     self.turnLeft()
+            #    currentHeading = currentHeading - 1
+        if target == 45:
+            self.moveForwardCross(path) #not pretty but works.
+        if target % 90 != 0:
+            self.moveForwardCross(path)
         else:
             self.moveForward(path)
         return currentHeading
@@ -113,30 +131,30 @@ class Robot:
                     currentX += 1
                     currentY += 1
                 elif y < currentY:
-                    currentHeading = self.moveToNeighbor(Heading.NORTHEAST, currentHeading)
+                    currentHeading = self.moveToNeighbor(Heading.NORTHEAST, currentHeading, path)
                     currentX += 1
                     currentY -= 1
                 else:
-                    currentHeading = self.moveToNeighbor(Heading.EAST, currentHeading)
+                    currentHeading = self.moveToNeighbor(Heading.EAST, currentHeading, path)
                     currentX += 1
             elif x < currentX:
                 if y > currentY:
-                    currentHeading = self.moveToNeighbor(Heading.SOUTHWEST, currentHeading)
+                    currentHeading = self.moveToNeighbor(Heading.SOUTHWEST, currentHeading, path)
                     currentX -= 1
                     currentY += 1
                 elif y < currentY:
-                    currentHeading = self.moveToNeighbor(Heading.NORTHWEST, currentHeading)
+                    currentHeading = self.moveToNeighbor(Heading.NORTHWEST, currentHeading, path)
                     currentX -= 1
                     currentY -= 1
                 else:
-                    currentHeading = self.moveToNeighbor(Heading.WEST, currentHeading)
+                    currentHeading = self.moveToNeighbor(Heading.WEST, currentHeading, path)
                     currentX -= 1
             else:
                 if y > currentY:
-                    currentHeading = self.moveToNeighbor(Heading.SOUTH, currentHeading)
+                    currentHeading = self.moveToNeighbor(Heading.SOUTH, currentHeading, path)
                     currentY += 1
                 elif y < currentY:
-                    currentHeading = self.moveToNeighbor(Heading.NORTH, currentHeading)
+                    currentHeading = self.moveToNeighbor(Heading.NORTH, currentHeading, path)
                     currentY -= 1
 
         return currentHeading
