@@ -3,6 +3,7 @@
 # import PathfindingAlgorithm
 # from PathfindingAlgorithm import grid, start, end, Node
 import json
+import re
 import EV3Connector
 from RobotBuilder import Robot
 from Heading import Heading
@@ -49,6 +50,7 @@ while True:
         print('Recieved command')
 
         recieved_heading = clientsocket.recv(9).decode('utf-8').strip()
+        print(recieved_heading)
 
 
         currentHeading = string_to_heading(recieved_heading)

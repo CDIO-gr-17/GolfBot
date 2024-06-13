@@ -49,8 +49,8 @@ def get_masks_from_camera():
     y = 140
     resolution = (x, y)
 
-    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
-    #video_capture = cv.VideoCapture(0) #Open camera MAC OS
+    #video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
+    video_capture = cv.VideoCapture(0) #Open camera MAC OS
 
     #Define color ranges
     red_lower_1 = np.array([0, 100, 20], dtype="uint8")

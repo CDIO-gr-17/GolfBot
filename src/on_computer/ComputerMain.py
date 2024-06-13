@@ -17,8 +17,6 @@ port = 9999
 client_socket.connect((host, port))
 
 def degrees_to_heading(degrees):
-    # Normalize the degrees to be within the range [0, 360)
-    #degrees = degrees % 360
 
     # Define the boundaries for each heading
     if (degrees >= 337.5) or (degrees < 22.5):
@@ -70,6 +68,7 @@ while True:
     client_socket.sendall(json_length.to_bytes(4, 'big'))
 
     client_socket.sendall(path_as_json.encode('utf-8'))
+
 
     while(is_robot_position_correct(path, grid)):
         print("correct")

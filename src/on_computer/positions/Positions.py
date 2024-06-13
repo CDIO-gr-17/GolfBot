@@ -8,7 +8,7 @@ def find_start_node(mask, grid):
     if (robot_real_position is None):
         print("Robot position is not found")
         return
-    return grid[int(robot_real_position[0])][int(robot_real_position[1])]
+    return grid[int(robot_real_position[1])][int(robot_real_position[0])]
 
 def get_robot_angle(masks, grid):
     robot_camera_tail = get_robot_pos_with_mask(masks['blue'])
