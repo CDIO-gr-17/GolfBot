@@ -1,3 +1,4 @@
+import time
 import socket, json
 from sys import orig_argv
 from computer_vision.ComputerVision import get_masks_from_camera, get_grid
@@ -17,7 +18,7 @@ client_socket.connect((host, port))
 
 def degrees_to_heading(degrees):
     # Normalize the degrees to be within the range [0, 360)
-    degrees = degrees % 360
+    #degrees = degrees % 360
 
     # Define the boundaries for each heading
     if (degrees >= 337.5) or (degrees < 22.5):
@@ -40,14 +41,13 @@ def degrees_to_heading(degrees):
 while True:
     command = 'PATH'
     client_socket.sendall(command.encode('utf-8'))
-    print("sending")
 
     masks = get_masks_from_camera()
     raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
     grid = convert_to_grid(raw_grid_data)
-    robot_position = masks['blue']
+    robot_position = masks['green']
     robot_heading = degrees_to_heading(get_robot_angle(masks, grid))
-    print(robot_heading)
+    print('The robots heading: ', robot_heading)
 
     # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
@@ -57,7 +57,10 @@ while True:
 
     # Send the path to the robot
     path = a_star(grid, start_node, end_node)
-    print(path)
+
+    if path != None: print('Path: OK')
+    else: print('The algorithm could not find a path')
+
     path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
     path_as_json = json.dumps(path_as_dictionaries)
 
@@ -68,6 +71,8 @@ while True:
 
     client_socket.sendall(path_as_json.encode('utf-8'))
     
+    time.sleep(20)
+
     while(is_robot_position_correct(path, grid)):
         print("correct")
         pass
@@ -77,4 +82,4 @@ while True:
     i = 0
     while i < 10:
         client_socket.sendall(off_course_notice.encode('utf-8'))
-        i = +1
+        i += 1

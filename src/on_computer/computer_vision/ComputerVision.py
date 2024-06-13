@@ -63,11 +63,11 @@ def get_masks_from_camera():
     white_lower = np.array([0, 0, 220], dtype="uint8")
     white_upper = np.array([180, 100, 255], dtype="uint8")
 
-    green_lower = np.array([50, 100, 20], dtype="uint8")
-    green_upper = np.array([70, 255, 255], dtype="uint8")
+    # green_lower = np.array([50, 100, 20], dtype="uint8")
+    # green_upper = np.array([70, 255, 255], dtype="uint8")
 
-    green_lower = np.array([65, 50, 20], dtype="uint8")
-    green_upper = np.array([85, 255, 255], dtype="uint8")
+    green_lower = np.array([85, 50, 20], dtype="uint8")
+    green_upper = np.array([95, 255, 255], dtype="uint8")
 
     blue_lower = np.array([100, 150, 20], dtype="uint8")
     blue_upper = np.array([110, 255, 255], dtype="uint8")
@@ -116,5 +116,3 @@ masks = get_masks_from_camera()
 mask_white = masks['white']
 white_clusters = find_clusters(mask_white)
 white_centers = find_clusters_center(white_clusters['stats'])
-print("Amount of white clusters: ", white_clusters['amount'])
-print("Middle of white clusters position: ", white_centers)

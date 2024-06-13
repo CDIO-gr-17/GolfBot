@@ -11,9 +11,9 @@ def find_start_node(mask, grid):
     return grid[int(robot_real_position[0])][int(robot_real_position[1])]
 
 def get_robot_angle(masks, grid):
-    robot_camera_tail = get_robot_pos_with_mask(masks['green'])
+    robot_camera_tail = get_robot_pos_with_mask(masks['blue'])
     robot_real_tail = move_point(robot_camera_tail,grid)
-    start_node = find_start_node(masks['blue'], grid)
+    start_node = find_start_node(masks['green'], grid)
     start_node_coordinates = [start_node.x, start_node.y] 
     robot_angle = calculate_heading(robot_real_tail, start_node_coordinates)
     if robot_angle is None:
