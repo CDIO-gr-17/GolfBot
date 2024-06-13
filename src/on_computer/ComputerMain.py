@@ -3,7 +3,7 @@ from sys import orig_argv
 from computer_vision.ComputerVision import get_masks_from_camera, get_grid
 from pathfinding.Convert_to_node_grid import convert_to_grid
 from pathfinding.feedback import is_robot_position_correct
-from pathfinding.PathfindingAlgorithm import grid, a_star
+from pathfinding.PathfindingAlgorithm import a_star
 from positions.Positions import find_start_node, find_first_ball, get_robot_angle
 
 #Creates a socket object, and established a connection to the robot
@@ -13,16 +13,41 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = "192.168.8.111"
 port = 9999
 
-def start_robot(): #Function for starting the robot and making it move to a ball
-    client_socket.connect((host, port))
+client_socket.connect((host, port))
+
+def degrees_to_heading(degrees):
+    # Normalize the degrees to be within the range [0, 360)
+    degrees = degrees % 360
+
+    # Define the boundaries for each heading
+    if (degrees >= 337.5) or (degrees < 22.5):
+        return "NORTH"
+    elif 22.5 <= degrees < 67.5:
+        return "NORTHEAST"
+    elif 67.5 <= degrees < 112.5:
+        return "EAST"
+    elif 112.5 <= degrees < 157.5:
+        return "SOUTHEAST"
+    elif 157.5 <= degrees < 202.5:
+        return "SOUTH"
+    elif 202.5 <= degrees < 247.5:
+        return "SOUTHWEST"
+    elif 247.5 <= degrees < 292.5:
+        return "WEST"
+    elif 292.5 <= degrees < 337.5:
+        return "NORTHWEST"
+
+while True:
     command = 'PATH'
     client_socket.sendall(command.encode('utf-8'))
+    print("sending")
 
     masks = get_masks_from_camera()
     raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
     grid = convert_to_grid(raw_grid_data)
     robot_position = masks['blue']
-    robot_heading = get_robot_angle(masks, grid)
+    robot_heading = degrees_to_heading(get_robot_angle(masks, grid))
+    print(robot_heading)
 
     # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
@@ -32,8 +57,11 @@ def start_robot(): #Function for starting the robot and making it move to a ball
 
     # Send the path to the robot
     path = a_star(grid, start_node, end_node)
+    print(path)
     path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
     path_as_json = json.dumps(path_as_dictionaries)
+
+    client_socket.sendall(robot_heading.encode('utf-8'))
 
     json_length = len(path_as_json)
     client_socket.sendall(json_length.to_bytes(4, 'big'))
@@ -41,18 +69,12 @@ def start_robot(): #Function for starting the robot and making it move to a ball
     client_socket.sendall(path_as_json.encode('utf-8'))
     
     while(is_robot_position_correct(path, grid)):
+        print("correct")
         pass
     
     # Send the stop command to the robot
     off_course_notice = 'STOP'
-    while True:
+    i = 0
+    while i < 10:
         client_socket.sendall(off_course_notice.encode('utf-8'))
-        #response = client_socket.recv(4).decode('utf-8').strip()
-        #if response == 'STOPPED':
-        #    break
-
-while True:
-    start_robot()
-    # Close the connection
-    client_socket.close()
-
+        i = +1
