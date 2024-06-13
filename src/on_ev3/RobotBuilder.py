@@ -84,6 +84,9 @@ class Robot:
         print('current position in calculate_drive_factor: ' + str(curr_pos))
         print('for loop starts')
         for nex_pos in path:
+
+            if loop_counter == len(path)-1:
+                    break
             nex_pos = path[loop_counter+1]
             print('next position in calculate_drive_factor: ' + str(nex_pos))
 
@@ -96,7 +99,7 @@ class Robot:
                 heading = calc_heading
                 curr_pos = nex_pos
                 print(          'curr_pos: ' + str(curr_pos) + ' == nex_pos: ' + str(nex_pos))
-                if loop_counter == len(path)-2:
+                if loop_counter == len(path)-1:
                     break
                 loop_counter += 1
                 self.step += 1
@@ -240,13 +243,16 @@ class Robot:
         end_node_y = end_node[1]
 
         while(start_node != end_node):
-            print('step before while loop: ' + str(self.step))
+            localStep = self.step
+            localPathStep = path[localStep]
+            print('step before while loop: ' + str(self.step) + 'with node ' + str(path[self.step]))
             print('before ' + str(start_x) + ' ' + str(start_y))
             print('before ' + str(path[path_length-1][0]) + ' ' + str(path[path_length-1][1]))
             self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)
-            start_x = path[self.step-1][0]
-            start_y = path[self.step-1][1]
-            start_node = path[self.step-1]
+            start_node = path[self.step]
+            start_x = start_node[0]
+            start_y = start_node[1]
+            
             current_heading = self.current_heading_degrees
             
         print(start_x, start_y)
