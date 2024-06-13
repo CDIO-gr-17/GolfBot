@@ -76,6 +76,6 @@ while True:
     
     # Send the stop command to the robot
     for i in range(3):
-        time.sleep(5)
+        time.sleep(0.5)
         off_course_notice = 'STOP'
         client_socket.sendall(off_course_notice.encode('utf-8'))
