@@ -73,14 +73,9 @@ while True:
             for node in path[1:]:  # Skip the starting node as it's the current position
                 currentHeading = robot.moveToPoint(node['x'], node['y'], currentX, currentY, currentHeading)
                 currentX, currentY = node['x'], node['y']  # Update current position
-                clientsocket.settimeout(2) # now the socket will only wait 10 seconds for a response, this is utilized in the off_course_notice condition
-                try:
-                    off_course_notice = clientsocket.recv(4).decode('utf-8').strip()
-                    if off_course_notice == 'STOP':
-                        print('Stopped due to drift')
-                        break
-                except clientsocket.timeout:
-                    # No message received within the timeout period, continue with the loop
-                    pass
-
+                off_course_notice = clientsocket.recv(4).decode('utf-8').strip()
+                if off_course_notice == 'STOP':
+                    print('Stopped due to drift')
+                    break
+                
     #clientsocket.close()

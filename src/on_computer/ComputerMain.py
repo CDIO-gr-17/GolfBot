@@ -70,16 +70,13 @@ while True:
     client_socket.sendall(json_length.to_bytes(4, 'big'))
 
     client_socket.sendall(path_as_json.encode('utf-8'))
-    
-    time.sleep(20)
 
     while(is_robot_position_correct(path, grid)):
         print("correct")
         pass
     
     # Send the stop command to the robot
-    off_course_notice = 'STOP'
-    i = 0
-    while i < 10:
+    for i in range(3):
+        time.sleep(5)
+        off_course_notice = 'STOP'
         client_socket.sendall(off_course_notice.encode('utf-8'))
-        i += 1
