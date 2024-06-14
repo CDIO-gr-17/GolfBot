@@ -4,24 +4,30 @@ import glob
 import pathlib
 import yaml
 
+def load_calibration_data(filename="calibration_matrix.yaml"):
+    with open(filename, "r") as f:
+        data = yaml.safe_load(f)
+    return np.array(data['camera_matrix']), np.array(data['dist_coeff'])
+
 def capture_calibration_images():
     no_of_calibration_images = 20
 
-    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    video_capture = cv2.VideoCapture(1, cv2.CAP_DSHOW) #Open camera WINDOWS OS
+    #video_capture = cv.VideoCapture(0) #Open camera MAC OS
 
     path = 'images'
-    pathlib.Path(path).mkdir(parents=True, exist_ok=True) 
+    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
     i = 0
     while i < no_of_calibration_images:
-        ret, frame = cap.read()
-        cv2.imshow('frame', frame)
+        ret, frame = video_capture.read()
+        cv2.imshow('capture calibration image - "q" to capture', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             cv2.imwrite(path + '/calib' + str(i) + '.jpg', frame)
             print("Image " + str(i) + " saved")
             i += 1
 
-    cap.release()
+    video_capture.release()
     cv2.destroyAllWindows()
 
 def calibrate_camera():
@@ -47,7 +53,7 @@ def calibrate_camera():
     # pathlib.Path(path).mkdir(parents=True, exist_ok=True) 
 
     found = 0
-    for fname in images:  # Here, 10 can be changed to whatever number you like to choose
+    for fname in images:
         img = cv2.imread(fname) # Capture frame-by-frame
         #print(images[im_i])
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -95,7 +101,7 @@ def calibrate_camera():
         undistorted_frame = cv2.undistort(frame, mtx, dist, None, mtx)
 
         # Display the resulting frame
-        cv2.imshow('Undistorted Video Capture', undistorted_frame)
+        cv2.imshow('Undistorted Video Capture - "q" to close', undistorted_frame)
 
         # Break the loop on 'q' key press
         if cv2.waitKey(1) == ord('q'):

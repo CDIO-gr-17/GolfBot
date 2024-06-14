@@ -44,7 +44,7 @@ def get_grid(mask_red, mask_orange, mask_white):
     np.savetxt('combined_grid.txt', combined_grid, fmt='%d')
     return combined_grid
 
-def get_masks_from_camera():
+def get_masks_from_camera(mtx=None, dist=None):
     x = 250
     y = 140
     resolution = (x, y)
@@ -80,6 +80,8 @@ def get_masks_from_camera():
             print("Camera not detected")
 
         elif ret:
+            if mtx is not None and dist is not None:
+                frame = cv.undistort(frame, mtx, dist, None, mtx)
             blur_frame = cv.GaussianBlur(frame, (17, 17), 0) #Add blur
             hsv_frame = cv.cvtColor(blur_frame, cv.COLOR_BGR2HSV) #Convert from RGB to HSV
             resized_frame = cv.resize(hsv_frame, resolution, interpolation=cv.INTER_NEAREST) #Apply the resolution specified
