@@ -1,7 +1,5 @@
-from Positions import get_robot_angle
-from enum import Enum
-import math
-from on_ev3.RobotBuilder import Robot
+
+from ..positions.Goals import find_goal_coordinates
 
 
 
@@ -23,9 +21,14 @@ def adjust_heading(target_heading, current_heading):
     Robot.turn(diff)
 
 
+def go_to_goal(grid):
+    goal = find_goal_coordinates(grid)
+    print(goal)
+    goal_coordinates = goal[1]
+    print(goal_coordinates)
+    adjusted_goal = (goal_coordinates[0] + 1, goal_coordinates[1])
+    print(adjusted_goal)
 
-    
 
 
 
-print (distance_between((1,1), (2,2)))

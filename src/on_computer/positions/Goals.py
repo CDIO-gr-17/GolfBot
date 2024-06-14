@@ -33,12 +33,10 @@ def find_goal_coordinates(grid):
 grid = [
     [1, 1, 1, 1, 1],
     [1, 0, 0, 0, 1],
-    [0, 1, 0, 0, 1],
-    [0, 0, 1, 0, 1],
-    [0, 0, 1, 1, 1]
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1]
 ]
-resolution = (300,170)
-grid = np.zeros(resolution)
 
 goal_coordinates = find_goal_coordinates(grid)
 print(goal_coordinates)  # Output should be [(2, 0), (2, 2)]
