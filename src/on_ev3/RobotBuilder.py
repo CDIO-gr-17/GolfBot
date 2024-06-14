@@ -3,7 +3,6 @@ from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 from Heading import Heading
-from pybricks.tools import wait
 
 class Robot:
 
@@ -14,30 +13,22 @@ class Robot:
         # Initialize the motors.
         self.left_motor = Motor(Port.D)
         self.right_motor = Motor(Port.A)
-        self.front_motor = Motor(Port.C)
+        #self.front_motor = Motor(Port.C)
 
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
         self.AXLE_TRACK = 120
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
-        self.GRID_DISTANCE = 13
-        self.current_heading_degrees = 0
+        self.GRID_DISTANCE = 13.8*40
 
-    def turn(self, degrees):
-        self.robot.turn(degrees)
-        self.current_heading_degrees = (self.current_heading_degrees + degrees) % 360
+        self.robot.settings(1000, 200, 50, 1000)
 
-    def turn_to_heading(self, target_heading):
-        target_degrees = target_heading
-        turn_degrees = self.shortest_turn(self.current_heading_degrees, target_degrees)
-        self.turn(turn_degrees)
+    def turnRight(self, faktor=45):
+        self.robot.turn(faktor)
 
-    def shortest_turn(self, current_degrees, target_degrees):
-        delta = (target_degrees - current_degrees) % 360
-        if delta > 180:
-            delta -= 360
-        return delta
+    def turnLeft(self, faktor=45):
+        self.robot.turn(faktor)
 
     def moveForward(self):
         self.robot.straight(self.GRID_DISTANCE)
@@ -46,36 +37,7 @@ class Robot:
         self.robot.straight(self.GRID_DISTANCE * 1.414)
 
     def moveBackward(self):
-        self.robot.straight(-100)
-
-    def pickUp(self):
-        self.front_motor.run(1200)
-        wait(2000)
-        self.robot.straight(10)
-        self.front_motor.stop()
-
-
-    # Either we want to wiggle the robot to make it stay more in one place
-    # Or we want it to move back to goal after each ball
-    # def shoot_one_ball(self):
-    #     self.front_motor.run(-1200)
-    #     self.robot.straight(-40)
-    #     self.robot.brake()
-    #     self.robot.straight(40)
-    #     self.robot.brake()
-
-    def shoot_one_ball(self):
-        self.front_motor.run(-1200)
-        self.robot.straight(-40)
-        self.robot.straight(40)
-
-
-    def shoot_all_balls(self):
-        self.robot.settings(1000, 1000)
-        for i in range(3):
-            self.shoot_one_ball()
-        self.front_motor.stop()
-
+        self.robot.straight(-(self.GRID_DISTANCE))
 
     def moveToNeighbor(self, target: Heading, currentHeading: Heading):
         while currentHeading != target:
