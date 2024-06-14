@@ -17,15 +17,18 @@ print('Connection established')
 print('running...')
 
 def string_to_heading(heading_str):
+    if heading_str is 'ER':
+        print('Error in heading')
+        exit()
     switcher = {
-        "NORTH": Heading.NORTH,
-        "NORTHEAST": Heading.NORTHEAST,
-        "EAST": Heading.EAST,
-        "SOUTHEAST": Heading.SOUTHEAST,
-        "SOUTH": Heading.SOUTH,
-        "SOUTHWEST": Heading.SOUTHWEST,
-        "WEST": Heading.WEST,
-        "NORTHWEST": Heading.NORTHWEST
+        "NO": Heading.NORTH,
+        "NE": Heading.NORTHEAST,
+        "EA": Heading.EAST,
+        "SE": Heading.SOUTHEAST,
+        "SO": Heading.SOUTH,
+        "SW": Heading.SOUTHWEST,
+        "WE": Heading.WEST,
+        "NW": Heading.NORTHWEST
     }
     
     return switcher.get(heading_str.upper(), None)
@@ -49,7 +52,7 @@ while True:
     if command == 'PATH':
         print('Recieved command')
 
-        recieved_heading = clientsocket.recv(9).decode('utf-8').strip()
+        recieved_heading = clientsocket.recv(2).decode('utf-8').strip()
         print(recieved_heading)
 
 

@@ -17,24 +17,28 @@ port = 9999
 client_socket.connect((host, port))
 
 def degrees_to_heading(degrees):
-
-    # Define the boundaries for each heading
-    if (degrees >= 337.5) or (degrees < 22.5):
-        return "NORTH"
-    elif 22.5 <= degrees < 67.5:
-        return "NORTHEAST"
-    elif 67.5 <= degrees < 112.5:
-        return "EAST"
-    elif 112.5 <= degrees < 157.5:
-        return "SOUTHEAST"
-    elif 157.5 <= degrees < 202.5:
-        return "SOUTH"
-    elif 202.5 <= degrees < 247.5:
-        return "SOUTHWEST"
-    elif 247.5 <= degrees < 292.5:
-        return "WEST"
-    elif 292.5 <= degrees < 337.5:
-        return "NORTHWEST"
+    if degrees != None:
+        # Define the boundaries for each heading
+        if (degrees >= 337.5) or (degrees < 22.5):
+            return "NO"
+        elif 22.5 <= degrees < 67.5:
+            return "NE"
+        elif 67.5 <= degrees < 112.5:
+            return "EA"
+        elif 112.5 <= degrees < 157.5:
+            return "SE"
+        elif 157.5 <= degrees < 202.5:
+            return "SO"
+        elif 202.5 <= degrees < 247.5:
+            return "SW"
+        elif 247.5 <= degrees < 292.5:
+            return "WE"
+        elif 292.5 <= degrees < 337.5:
+            return "NW"
+        else:
+            return "ER"
+    else:
+        return "ER"
 
 while True:
     command = 'PATH'
