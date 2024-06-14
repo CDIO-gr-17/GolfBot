@@ -1,47 +1,24 @@
 import cv2 as cv
 import numpy as np
 
+
 def get_robot_pos_with_mask(mask):
-    robot_mask_cluster = find_clusters(mask)
-    robot_pos_middle = find_clusters_center(robot_mask_cluster['stats'])
-    if(robot_mask_cluster['amount'] == 0):
+    coordinates = np.argwhere(mask != 0)
+    if len(coordinates) == 0:
         return None
-    return robot_pos_middle[0]
-
-#Returns a dictionary of clusters with the amount of clusters and the stats of each cluster
-def find_clusters(mask):
-    amount, labels, stats, _ = cv.connectedComponentsWithStats(mask, connectivity=4)
-    clusters = {
-        'amount': amount - 1, # Subtract 1 to exclude the background
-        #'labels': labels[1:], # Returns an array of the labels of the clusters, but we don't need it for now
-        'stats': stats[1:] # Information about each cluster. Used to find the center of each cluster
-    }
-    return clusters
-
-#Returns a list of centers for each cluster
-def find_clusters_center(stats):
-    centers = []
-    for stat in stats:
-        # Calculate the center of the blob
-        x = stat[cv.CC_STAT_LEFT] + stat[cv.CC_STAT_WIDTH] // 2
-        y = stat[cv.CC_STAT_TOP] + stat[cv.CC_STAT_HEIGHT] // 2
-        centers.append((x, y))
-    return centers
+    return coordinates[0] # Returns the first green pixel found, but should maybe be the middle pixel //TODO
 
 def get_grid(mask_red, mask_orange, mask_white):
+    obstacle_coordinates = np.argwhere(mask_red != 0)
+    ball_coordinates = np.argwhere(np.logical_or(mask_orange != 0, mask_white != 0))
+
     combined_grid = np.zeros_like(mask_red)
 
-    obstacle_coordinates = np.argwhere(mask_red != 0)
-    ball_mask = cv.bitwise_or(mask_orange, mask_white)
-    ball_clusters = find_clusters(ball_mask)
-    ball_centers = find_clusters_center(ball_clusters['stats'])
-
-    if ball_clusters['amount'] > 0:
-        for center in ball_centers:
-            combined_grid[center[1], center[0]] = 2
     combined_grid[obstacle_coordinates[:, 0], obstacle_coordinates[:, 1]] = 1
+    combined_grid[ball_coordinates[:, 0], ball_coordinates[:, 1]] = 2
 
     np.savetxt('combined_grid.txt', combined_grid, fmt='%d')
+
     return combined_grid
 
 def get_masks_from_camera():
@@ -49,8 +26,7 @@ def get_masks_from_camera():
     y = 140
     resolution = (x, y)
 
-    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
-    #video_capture = cv.VideoCapture(0) #Open camera MAC OS
+    video_capture = cv.VideoCapture(0) #Open camera
 
     #Define color ranges
     red_lower_1 = np.array([0, 100, 20], dtype="uint8")
@@ -90,6 +66,7 @@ def get_masks_from_camera():
             mask_red = cv.bitwise_or(mask_red_1, mask_red_2)
             mask_green = cv.inRange(resized_frame, green_lower, green_upper)
             mask_blue = cv.inRange(resized_frame, blue_lower, blue_upper)
+            mask_robot = cv.bitwise_or(mask_green, mask_blue) #Combine blue and green to see the robot
             mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
             mask_white = cv.inRange(resized_frame, white_lower, white_upper)
 
@@ -108,17 +85,12 @@ def get_masks_from_camera():
                 'blue': mask_blue
             }
 
-            get_grid(mask_red, mask_orange, mask_white) #Used for debugging, saves the grid to a file. Comment out if not needed
+            get_grid(mask_red, mask_orange, mask_white)
 
             cv.imshow('ImageWindow', mask_white)
             if cv.waitKey(1) & 0xFF == ord('q'): break
-    video_capture.release()
-    cv.destroyAllWindows()
-    return masks
+        video_capture.release()
+        cv.destroyAllWindows()
+        return masks
 
-masks = get_masks_from_camera()
-mask_white = masks['white']
-white_clusters = find_clusters(mask_white)
-white_centers = find_clusters_center(white_clusters['stats'])
-print("Amount of white clusters: ", white_clusters['amount'])
-print("Middle of white clusters position: ", white_centers)
+get_masks_from_camera()
