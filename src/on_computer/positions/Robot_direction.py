@@ -5,8 +5,15 @@ def calculate_heading(tail, head):
         print("Tail or head is not found")
         return None
     # Calculate differences
+
+    print(tail[0], tail[1])
+    print(head[0], head[1])
+
     dx = head[0] - tail[0]
     dy = head[1] - tail[1]
+
+    print(dx)
+    print(dy)
 
     # Calculate the angle in radians from the positive x-axis
     angle_radians = math.atan2(dy, dx)

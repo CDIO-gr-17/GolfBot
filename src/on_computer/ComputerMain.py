@@ -1,21 +1,11 @@
+import time
 import socket, json
 from sys import orig_argv
-from computer_vision.ComputerVision import get_masks_from_camera
-from pathfinding.PathfindingAlgorithm import grid, a_star
-from positions.Positions import find_start_node, find_first_ball
-
-# below, y is first and x is second as the grid is a matrix not a cartesian plane
-
-start_node = find_start_node()# Function for diffing the calculated robot position with the camera robot position
-
-end_node = find_first_ball(grid)
-
-# Here handling the case where robot or ball is not found
-if start_node is None or end_node is None:
-    exit()
-
-print(start_node.x, start_node.y)
-print(end_node.x, end_node.y)
+from computer_vision.ComputerVision import get_masks_from_camera, get_grid
+from pathfinding.Convert_to_node_grid import convert_to_grid
+from pathfinding.feedback import is_robot_position_correct
+from pathfinding.PathfindingAlgorithm import a_star
+from positions.Positions import find_start_node, find_first_ball, get_robot_angle
 
 #Creates a socket object, and established a connection to the robot
 
@@ -26,21 +16,70 @@ port = 9999
 
 client_socket.connect((host, port))
 
-command = 'PATH'
-client_socket.sendall(command.encode('utf-8'))
+def degrees_to_heading(degrees):
+    if degrees != None:
+        # Define the boundaries for each heading
+        if (degrees >= 337.5) or (degrees < 22.5):
+            return "NO"
+        elif 22.5 <= degrees < 67.5:
+            return "NE"
+        elif 67.5 <= degrees < 112.5:
+            return "EA"
+        elif 112.5 <= degrees < 157.5:
+            return "SE"
+        elif 157.5 <= degrees < 202.5:
+            return "SO"
+        elif 202.5 <= degrees < 247.5:
+            return "SW"
+        elif 247.5 <= degrees < 292.5:
+            return "WE"
+        elif 292.5 <= degrees < 337.5:
+            return "NW"
+        else:
+            return "ER"
+    else:
+        return "ER"
 
-# Send the path to the robot
-path = a_star(grid, start_node, end_node)
-path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
-path_as_json = json.dumps(path_as_dictionaries)
+while True:
+    command = 'PATH'
+    client_socket.sendall(command.encode('utf-8'))
 
-#print(path_as_dictionaries)
+    masks = get_masks_from_camera()
+    raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
+    grid = convert_to_grid(raw_grid_data)
+    robot_position = masks['green']
+    robot_heading = degrees_to_heading(get_robot_angle(masks, grid))
+    print('The robots heading: ', robot_heading)
+
+    # below, y is first and x is second as the grid is a matrix not a cartesian plane
+
+    start_node = find_start_node(robot_position, grid)# Function for diffing the calculated robot position with the camera robot position
+        
+    end_node = find_first_ball(grid)
+
+    # Send the path to the robot
+    path = a_star(grid, start_node, end_node)
+
+    if path != None: print('Path: OK')
+    else: print('The algorithm could not find a path')
+
+    path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
+    path_as_json = json.dumps(path_as_dictionaries)
+
+    client_socket.sendall(robot_heading.encode('utf-8'))
+
+    json_length = len(path_as_json)
+    client_socket.sendall(json_length.to_bytes(4, 'big'))
+
+    client_socket.sendall(path_as_json.encode('utf-8'))
 
 
-json_length = len(path_as_json)
-client_socket.sendall(json_length.to_bytes(4, 'big'))
-
-client_socket.sendall(path_as_json.encode('utf-8'))
-
-# Close the connection
-client_socket.close()
+    while(is_robot_position_correct(path, grid)):
+        print("correct")
+        pass
+    
+    # Send the stop command to the robot
+    for i in range(3):
+        time.sleep(0.5)
+        off_course_notice = 'STOP'
+        client_socket.sendall(off_course_notice.encode('utf-8'))
