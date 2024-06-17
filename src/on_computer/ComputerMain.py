@@ -30,24 +30,28 @@ print(result)
 # client_socket.connect((host, port))
 
 def degrees_to_heading(degrees):
-
-    # Define the boundaries for each heading
-    if (degrees >= 337.5) or (degrees < 22.5):
-        return "NORTH"
-    elif 22.5 <= degrees < 67.5:
-        return "NORTHEAST"
-    elif 67.5 <= degrees < 112.5:
-        return "EAST"
-    elif 112.5 <= degrees < 157.5:
-        return "SOUTHEAST"
-    elif 157.5 <= degrees < 202.5:
-        return "SOUTH"
-    elif 202.5 <= degrees < 247.5:
-        return "SOUTHWEST"
-    elif 247.5 <= degrees < 292.5:
-        return "WEST"
-    elif 292.5 <= degrees < 337.5:
-        return "NORTHWEST"
+    if degrees != None:
+        # Define the boundaries for each heading
+        if (degrees >= 337.5) or (degrees < 22.5):
+            return "NRTH"
+        elif 22.5 <= degrees < 67.5:
+            return "NREA"
+        elif 67.5 <= degrees < 112.5:
+            return "EAST"
+        elif 112.5 <= degrees < 157.5:
+            return "SOWE"
+        elif 157.5 <= degrees < 202.5:
+            return "SOUT"
+        elif 202.5 <= degrees < 247.5:
+            return "SOWE"
+        elif 247.5 <= degrees < 292.5:
+            return "WEST"
+        elif 292.5 <= degrees < 337.5:
+            return "NOWE"
+        else:
+            return "ERRO"
+    else:
+        return "ERRO<ç"
 
 while True:
     command = 'PATH'
@@ -82,13 +86,15 @@ while True:
 
     client_socket.sendall(path_as_json.encode('utf-8'))
 
-
     while(is_robot_position_correct(path, grid)):
         print("correct")
         pass
 
     # Send the stop command to the robot
-    for i in range(3):
-        time.sleep(5)
+    while True:
         off_course_notice = 'STOP'
         client_socket.sendall(off_course_notice.encode('utf-8'))
+        response = client_socket.recv(7).decode('utf-8').strip()
+        print(response)
+        if response == 'STOPPED':
+            break
