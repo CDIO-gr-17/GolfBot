@@ -49,8 +49,8 @@ def get_masks_from_camera():
     y = 140
     resolution = (x, y)
 
-    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
-    #video_capture = cv.VideoCapture(0) #Open camera MAC OS
+    #video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
+    video_capture = cv.VideoCapture(0) #Open camera MAC OS
 
     #Define color ranges
     red_lower_1 = np.array([0, 100, 20], dtype="uint8")
@@ -65,53 +65,51 @@ def get_masks_from_camera():
     white_lower = np.array([0, 0, 220], dtype="uint8")
     white_upper = np.array([180, 100, 255], dtype="uint8")
 
-    green_lower = np.array([50, 100, 20], dtype="uint8")
-    green_upper = np.array([70, 255, 255], dtype="uint8")
+    # green_lower = np.array([50, 100, 20], dtype="uint8")
+    # green_upper = np.array([70, 255, 255], dtype="uint8")
 
-    green_lower = np.array([65, 50, 20], dtype="uint8")
-    green_upper = np.array([85, 255, 255], dtype="uint8")
+    green_lower = np.array([85, 50, 20], dtype="uint8")
+    green_upper = np.array([95, 255, 255], dtype="uint8")
 
     blue_lower = np.array([100, 150, 20], dtype="uint8")
     blue_upper = np.array([110, 255, 255], dtype="uint8")
 
-    while True:
-        ret, frame = video_capture.read()
-        if not ret:
-            print("Camera not detected")
+    ret, frame = video_capture.read()
+    if not ret:
+        print("Camera not detected")
 
-        elif ret:
-            blur_frame = cv.GaussianBlur(frame, (17, 17), 0) #Add blur
-            hsv_frame = cv.cvtColor(blur_frame, cv.COLOR_BGR2HSV) #Convert from RGB to HSV
-            resized_frame = cv.resize(hsv_frame, resolution, interpolation=cv.INTER_NEAREST) #Apply the resolution specified
+    elif ret:
+        blur_frame = cv.GaussianBlur(frame, (17, 17), 0) #Add blur
+        hsv_frame = cv.cvtColor(blur_frame, cv.COLOR_BGR2HSV) #Convert from RGB to HSV
+        resized_frame = cv.resize(hsv_frame, resolution, interpolation=cv.INTER_NEAREST) #Apply the resolution specified
 
-            # Create masks for red, green, blue, orange and white
-            mask_red_1 = cv.inRange(resized_frame, red_lower_1, red_upper_1)
-            mask_red_2 = cv.inRange(resized_frame, red_lower_2, red_upper_2)
-            mask_red = cv.bitwise_or(mask_red_1, mask_red_2)
-            mask_green = cv.inRange(resized_frame, green_lower, green_upper)
-            mask_blue = cv.inRange(resized_frame, blue_lower, blue_upper)
-            mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
-            mask_white = cv.inRange(resized_frame, white_lower, white_upper)
+        # Create masks for red, green, blue, orange and white
+        mask_red_1 = cv.inRange(resized_frame, red_lower_1, red_upper_1)
+        mask_red_2 = cv.inRange(resized_frame, red_lower_2, red_upper_2)
+        mask_red = cv.bitwise_or(mask_red_1, mask_red_2)
+        mask_green = cv.inRange(resized_frame, green_lower, green_upper)
+        mask_blue = cv.inRange(resized_frame, blue_lower, blue_upper)
+        mask_robot = cv.bitwise_or(mask_green, mask_blue) #Combine blue and green to see the robot
+        mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
+        mask_white = cv.inRange(resized_frame, white_lower, white_upper)
 
-            #Apply dilation
-            obstacle_kernel = np.ones((15, 15), np.uint8)
-            ball_kernel = np.ones((3, 3), np.uint8)
-            mask_white = cv.dilate(mask_white, ball_kernel)
-            mask_orange = cv.dilate(mask_orange, ball_kernel)
-            mask_red = cv.dilate(mask_red,obstacle_kernel)
+        #Apply dilation
+        obstacle_kernel = np.ones((15, 15), np.uint8)
+        ball_kernel = np.ones((3, 3), np.uint8)
+        mask_white = cv.dilate(mask_white, ball_kernel)
+        mask_orange = cv.dilate(mask_orange, ball_kernel)
+        mask_red = cv.dilate(mask_red,obstacle_kernel)
 
-            masks = {
-                'red': mask_red,
-                'orange': mask_orange,
-                'white': mask_white,
-                'green': mask_green,
-                'blue': mask_blue
-            }
+        masks = {
+            'red': mask_red,
+            'orange': mask_orange,
+            'white': mask_white,
+            'green': mask_green,
+            'blue': mask_blue
+        }
+        #get_grid(mask_red, mask_orange, mask_white)
+        cv.imshow('ImageWindow', mask_white)
 
-            get_grid(mask_red, mask_orange, mask_white) #Used for debugging, saves the grid to a file. Comment out if not needed
-
-            cv.imshow('ImageWindow', mask_white)
-            if cv.waitKey(1) & 0xFF == ord('q'): break
     video_capture.release()
     cv.destroyAllWindows()
     return masks
@@ -120,5 +118,3 @@ masks = get_masks_from_camera()
 mask_white = masks['white']
 white_clusters = find_clusters(mask_white)
 white_centers = find_clusters_center(white_clusters['stats'])
-print("Amount of white clusters: ", white_clusters['amount'])
-print("Middle of white clusters position: ", white_centers)

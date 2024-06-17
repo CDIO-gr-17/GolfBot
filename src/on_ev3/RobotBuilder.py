@@ -17,11 +17,11 @@ class Robot:
 
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
-        self.AXLE_TRACK = 140
+        self.AXLE_TRACK = 110
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
         self.GRID_DISTANCE = 13
-        self.current_heading_degrees = 0 
+        self.current_heading_degrees = 0
 
     def turn(self, degrees):
         self.robot.turn(degrees)
@@ -50,12 +50,12 @@ class Robot:
     def moveToNeighbor(self, target: Heading, currentHeading: Heading):
         while currentHeading != target:
             if currentHeading < target:
-                self.turnRight()
-                currentHeading = currentHeading + 1
+                self.turn(45)
+                currentHeading = currentHeading + 45
             else:
-                self.turnLeft()
-                currentHeading = currentHeading - 1
-        if target % 2 == 0:
+                self.turn(-45)
+                currentHeading = currentHeading - 45
+        if target % 45 == 0:
             self.moveForwardCross()
         else:
             self.moveForward()
