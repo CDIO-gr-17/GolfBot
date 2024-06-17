@@ -65,16 +65,16 @@ def get_masks_from_camera():
     orange_upper = np.array([25, 255, 255], dtype="uint8")
 
     white_lower = np.array([0, 0, 220], dtype="uint8")
-    white_upper = np.array([180, 100, 255], dtype="uint8")
+    white_upper = np.array([255, 30, 255], dtype="uint8")
 
     # green_lower = np.array([50, 100, 20], dtype="uint8")
     # green_upper = np.array([70, 255, 255], dtype="uint8")
 
-    green_lower = np.array([50, 85, 20], dtype="uint8")
-    green_upper = np.array([80, 255, 255], dtype="uint8")
+    green_lower = np.array([50, 36, 131], dtype="uint8")
+    green_upper = np.array([88, 145, 177], dtype="uint8")
 
-    blue_lower = np.array([90, 100, 20], dtype="uint8")
-    blue_upper = np.array([125, 255, 255], dtype="uint8")
+    blue_lower = np.array([97, 64, 173], dtype="uint8")
+    blue_upper = np.array([110, 255, 222], dtype="uint8")
 
     ret, frame = video_capture.read()
     if not ret:
@@ -111,10 +111,6 @@ def get_masks_from_camera():
         }
         #get_grid(mask_red, mask_orange, mask_white)
         cv.imshow('ImageWindow', mask_white)
-        path = 'images'
-        global i 
-        cv.imwrite(path + '/what_see' + str(i) + '.jpg', mask_robot)
-        i += 1
 
     video_capture.release()
     cv.destroyAllWindows()
