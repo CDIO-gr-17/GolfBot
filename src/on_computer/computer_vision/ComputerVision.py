@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+from CameraCalibration import get_calibration_data
 
 def get_robot_pos_with_mask(mask):
     robot_mask_cluster = find_clusters(mask)
@@ -44,7 +45,7 @@ def get_grid(mask_red, mask_orange, mask_white):
     np.savetxt('combined_grid.txt', combined_grid, fmt='%d')
     return combined_grid
 
-def get_masks_from_camera(mtx=None, dist=None):
+def get_masks_from_camera():
     x = 250
     y = 140
     resolution = (x, y)
@@ -80,6 +81,7 @@ def get_masks_from_camera(mtx=None, dist=None):
             print("Camera not detected")
 
         elif ret:
+            mtx, dist = get_calibration_data()
             if mtx is not None and dist is not None:
                 frame = cv.undistort(frame, mtx, dist, None, mtx)
             blur_frame = cv.GaussianBlur(frame, (17, 17), 0) #Add blur

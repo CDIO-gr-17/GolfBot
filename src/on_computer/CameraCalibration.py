@@ -1,10 +1,15 @@
+from cv2.gapi import video
 import numpy as np
 import cv2
 import glob
 import pathlib
 import yaml
 
-def load_calibration_data(filename="calibration_matrix.yaml"):
+x = 1280
+y = 720
+resolution = (x, y)
+
+def get_calibration_data(filename="calibration_matrix.yaml"):
     with open(filename, "r") as f:
         data = yaml.safe_load(f)
     return np.array(data['camera_matrix']), np.array(data['dist_coeff'])
@@ -21,6 +26,7 @@ def capture_calibration_images():
     i = 0
     while i < no_of_calibration_images:
         ret, frame = video_capture.read()
+        frame = cv2.resize(frame, resolution, interpolation=cv2.INTER_NEAREST)
         cv2.imshow('capture calibration image - "q" to capture', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             cv2.imwrite(path + '/calib' + str(i) + '.jpg', frame)
@@ -57,6 +63,7 @@ def calibrate_camera():
         img = cv2.imread(fname) # Capture frame-by-frame
         #print(images[im_i])
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        img = cv2.resize(img, resolution, interpolation=cv2.INTER_NEAREST)
         # Find the chess board corners
         ret, corners = cv2.findChessboardCorners(gray, chessboardCorners, None)
         # If found, add object points, image points (after refining them)
@@ -91,6 +98,8 @@ def calibrate_camera():
     while True:
         # Capture frame-by-frame
         ret, frame = cap.read()
+
+        frame = cv2.resize(frame, resolution, interpolation=cv2.INTER_NEAREST)
 
         # If frame is read correctly, ret is True
         if not ret:
