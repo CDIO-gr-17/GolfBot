@@ -20,25 +20,25 @@ def degrees_to_heading(degrees):
     if degrees != None:
         # Define the boundaries for each heading
         if (degrees >= 337.5) or (degrees < 22.5):
-            return "NO"
+            return "NRTH"
         elif 22.5 <= degrees < 67.5:
-            return "NE"
+            return "NREA"
         elif 67.5 <= degrees < 112.5:
-            return "EA"
+            return "EAST"
         elif 112.5 <= degrees < 157.5:
-            return "SE"
+            return "SOWE"
         elif 157.5 <= degrees < 202.5:
-            return "SO"
+            return "SOUT"
         elif 202.5 <= degrees < 247.5:
-            return "SW"
+            return "SOWE"
         elif 247.5 <= degrees < 292.5:
-            return "WE"
+            return "WEST"
         elif 292.5 <= degrees < 337.5:
-            return "NW"
+            return "NOWE"
         else:
-            return "ER"
+            return "ERRO"
     else:
-        return "ER"
+        return "ERRO<ç"
 
 while True:
     command = 'PATH'
@@ -73,13 +73,15 @@ while True:
 
     client_socket.sendall(path_as_json.encode('utf-8'))
 
-
     while(is_robot_position_correct(path, grid)):
         print("correct")
         pass
     
     # Send the stop command to the robot
-    for i in range(3):
-        time.sleep(0.5)
+    while True:
         off_course_notice = 'STOP'
         client_socket.sendall(off_course_notice.encode('utf-8'))
+        response = client_socket.recv(7).decode('utf-8').strip()
+        print(response)
+        if response == 'STOPPED':
+            break
