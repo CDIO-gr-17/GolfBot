@@ -6,15 +6,28 @@ from pathfinding.Convert_to_node_grid import convert_to_grid
 from pathfinding.feedback import is_robot_position_correct
 from pathfinding.PathfindingAlgorithm import a_star
 from positions.Positions import find_start_node, find_first_ball, get_robot_angle
+from helpers.end_of_path_pickup import go_to_goal
+
+grid = [
+    [1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1]
+]
+
+result = go_to_goal(grid)
+
+print(result)
 
 #Creates a socket object, and established a connection to the robot
 
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-host = "192.168.8.111"
-port = 9999
+# host = "192.168.8.111"
+# port = 9999
 
-client_socket.connect((host, port))
+# client_socket.connect((host, port))
 
 def degrees_to_heading(degrees):
 
@@ -38,7 +51,7 @@ def degrees_to_heading(degrees):
 
 while True:
     command = 'PATH'
-    client_socket.sendall(command.encode('utf-8'))
+    #client_socket.sendall(command.encode('utf-8'))
 
     masks = get_masks_from_camera()
     raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
@@ -50,7 +63,7 @@ while True:
     # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
     start_node = find_start_node(robot_position, grid)# Function for diffing the calculated robot position with the camera robot position
-        
+
     end_node = find_first_ball(grid)
 
     # Send the path to the robot
@@ -73,7 +86,7 @@ while True:
     while(is_robot_position_correct(path, grid)):
         print("correct")
         pass
-    
+
     # Send the stop command to the robot
     for i in range(3):
         time.sleep(5)

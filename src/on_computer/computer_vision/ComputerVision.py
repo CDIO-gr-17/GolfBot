@@ -1,6 +1,11 @@
 import cv2 as cv
 import numpy as np
 
+
+masks
+def update_masks():
+    masks = get_masks_from_camera()
+
 def get_robot_pos_with_mask(mask):
     robot_mask_cluster = find_clusters(mask)
     robot_pos_middle = find_clusters_center(robot_mask_cluster['stats'])

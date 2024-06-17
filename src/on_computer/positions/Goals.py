@@ -30,13 +30,13 @@ def find_goal_coordinates(grid):
         return None
 
 # Example usage
-grid = [
-    [1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1]
-]
+# grid = [
+#     [1, 1, 1, 1, 1],
+#     [1, 0, 0, 0, 1],
+#     [1, 0, 0, 0, 1],
+#     [1, 0, 0, 0, 1],
+#     [1, 1, 1, 1, 1]
+# ]
 
-goal_coordinates = find_goal_coordinates(grid)
-print(goal_coordinates)  # Output should be [(2, 0), (2, 2)]
+# goal_coordinates = find_goal_coordinates(grid)
+# print(goal_coordinates)  # Output should be [(2, 0), (2, 2)]
