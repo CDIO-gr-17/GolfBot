@@ -16,30 +16,6 @@ port = 9999
 
 client_socket.connect((host, port))
 
-def degrees_to_heading(degrees):
-    if degrees != None:
-        # Define the boundaries for each heading
-        if (degrees >= 337.5) or (degrees < 22.5):
-            return "NRTH"
-        elif 22.5 <= degrees < 67.5:
-            return "NREA"
-        elif 67.5 <= degrees < 112.5:
-            return "EAST"
-        elif 112.5 <= degrees < 157.5:
-            return "SOWE"
-        elif 157.5 <= degrees < 202.5:
-            return "SOUT"
-        elif 202.5 <= degrees < 247.5:
-            return "SOWE"
-        elif 247.5 <= degrees < 292.5:
-            return "WEST"
-        elif 292.5 <= degrees < 337.5:
-            return "NOWE"
-        else:
-            return "ERRO"
-    else:
-        return "ERRO<ç"
-
 while True:
     command = 'PATH'
     client_socket.sendall(command.encode('utf-8'))
@@ -48,7 +24,7 @@ while True:
     raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
     grid = convert_to_grid(raw_grid_data)
     robot_position = masks['green']
-    robot_heading = degrees_to_heading(get_robot_angle(masks, grid))
+    robot_heading = get_robot_angle(masks, grid)
     print('The robots heading: ', robot_heading)
 
     # below, y is first and x is second as the grid is a matrix not a cartesian plane
@@ -66,7 +42,12 @@ while True:
     path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
     path_as_json = json.dumps(path_as_dictionaries)
 
-    client_socket.sendall(robot_heading.encode('utf-8'))
+    if robot_heading == None:
+        print('ERROR: No heading calcultated')
+        exit()
+    else:
+        heading_as_string = str(robot_heading)
+        client_socket.sendall(heading_as_string.encode('utf-8'))
 
     json_length = len(path_as_json)
     client_socket.sendall(json_length.to_bytes(4, 'big'))

@@ -51,8 +51,8 @@ def get_masks_from_camera():
     y = 140
     resolution = (x, y)
 
-    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
-    #video_capture = cv.VideoCapture(0) #Open camera MAC OS
+    #video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
+    video_capture = cv.VideoCapture(0) #Open camera MAC OS
 
     #Define color ranges
     red_lower_1 = np.array([0, 168, 180], dtype="uint8")
@@ -113,7 +113,7 @@ def get_masks_from_camera():
         cv.imwrite('mask_white.jpg', mask_robot)	        
         path = 'images'
         global i 
-        cv.imwrite(path + '/robot' + str(i) + '.jpg',mask_robot)
+        cv.imwrite(path + '/robot' + str(i) + '.jpg',mask_red)
         i += 1
 
     video_capture.release()

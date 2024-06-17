@@ -19,6 +19,7 @@ def get_robot_angle(masks, grid):
     if robot_angle is None:
         print("Robot angle is not found")
         return
+    robot_angle = int(robot_angle)
     print("Robot angle: ", robot_angle)    
     return robot_angle
 
