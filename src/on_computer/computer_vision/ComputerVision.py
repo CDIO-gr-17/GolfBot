@@ -110,7 +110,13 @@ def get_masks_from_camera():
             'blue': mask_blue
         }
         #get_grid(mask_red, mask_orange, mask_white)
+
         cv.imshow('ImageWindow', mask_white)
+        cv.imwrite('mask_white.jpg', mask_robot)	        
+        path = 'images'
+        global i 
+        cv.imwrite(path + '/robot' + str(i) + '.jpg',mask_robot)
+        i += 1
 
     video_capture.release()
     cv.destroyAllWindows()
