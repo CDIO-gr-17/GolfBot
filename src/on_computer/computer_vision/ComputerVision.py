@@ -47,10 +47,10 @@ def get_grid(mask_red, mask_orange, mask_white):
     return combined_grid
 
 def get_masks_from_camera():
-    x = 250
-    y = 140
+    x = 320
+    y = 180
 
-    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
+    video_capture = cv.VideoCapture(0, cv.CAP_DSHOW) #Open camera WINDOWS OS
     #video_capture = cv.VideoCapture(0) #Open camera MAC OS
 
     video_capture.set(cv.CAP_PROP_FRAME_WIDTH, x)
