@@ -49,30 +49,27 @@ def get_masks_from_camera():
     y = 140
     resolution = (x, y)
 
-    #video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
-    video_capture = cv.VideoCapture(0) #Open camera MAC OS
+    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
+    #video_capture = cv.VideoCapture(0) #Open camera MAC OS
 
     #Define color ranges
-    red_lower_1 = np.array([0, 100, 20], dtype="uint8")
-    red_upper_1 = np.array([5, 255, 255], dtype="uint8")
+    red_lower_1 = np.array([0, 168, 180], dtype="uint8")
+    red_upper_1 = np.array([8, 255, 255], dtype="uint8")
 
-    red_lower_2 = np.array([170, 100, 20], dtype="uint8")
-    red_upper_2 = np.array([180, 255, 255], dtype="uint8")
+    red_lower_2 = np.array([169, 168, 187], dtype="uint8")
+    red_upper_2 = np.array([179, 255, 255], dtype="uint8")
 
-    orange_lower = np.array([15, 100, 20], dtype="uint8")
-    orange_upper = np.array([25, 255, 255], dtype="uint8")
+    orange_lower = np.array([10, 102, 203], dtype="uint8")
+    orange_upper = np.array([36, 255, 255], dtype="uint8")
 
-    white_lower = np.array([0, 0, 220], dtype="uint8")
-    white_upper = np.array([255, 30, 255], dtype="uint8")
+    white_lower = np.array([0, 0, 200], dtype="uint8")
+    white_upper = np.array([179, 35, 255], dtype="uint8")
 
-    # green_lower = np.array([50, 100, 20], dtype="uint8")
-    # green_upper = np.array([70, 255, 255], dtype="uint8")
+    green_lower = np.array([26, 33, 0], dtype="uint8")
+    green_upper = np.array([78, 255, 255], dtype="uint8")
 
-    green_lower = np.array([50, 36, 131], dtype="uint8")
-    green_upper = np.array([88, 145, 177], dtype="uint8")
-
-    blue_lower = np.array([97, 64, 173], dtype="uint8")
-    blue_upper = np.array([110, 255, 222], dtype="uint8")
+    blue_lower = np.array([98, 121, 64], dtype="uint8")
+    blue_upper = np.array([133, 244, 152], dtype="uint8")
 
     ret, frame = video_capture.read()
     if not ret:
@@ -92,6 +89,7 @@ def get_masks_from_camera():
         mask_robot = cv.bitwise_or(mask_green, mask_blue) #Combine blue and green to see the robot
         mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
         mask_white = cv.inRange(resized_frame, white_lower, white_upper)
+        mask_ball = cv.bitwise_or(mask_orange, mask_white) #Combine orange and white to see the ball
 
         #Apply dilation
         obstacle_kernel = np.ones((15, 15), np.uint8)
@@ -108,7 +106,7 @@ def get_masks_from_camera():
             'blue': mask_blue
         }
         #get_grid(mask_red, mask_orange, mask_white)
-        cv.imshow('ImageWindow', mask_white)
+        cv.imshow('ImageWindow', frame)
 
     video_capture.release()
     cv.destroyAllWindows()
