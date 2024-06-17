@@ -2,7 +2,6 @@ import cv2 as cv
 import numpy as np
 
 i = 1
-from CameraCalibration import get_calibration_data
 
 def get_robot_pos_with_mask(mask):
     robot_mask_cluster = find_clusters(mask)
@@ -50,14 +49,16 @@ def get_grid(mask_red, mask_orange, mask_white):
 def get_masks_from_camera():
     x = 250
     y = 140
-    resolution = (x, y)
 
-    #video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
-    video_capture = cv.VideoCapture(0) #Open camera MAC OS
+    video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
+    #video_capture = cv.VideoCapture(0) #Open camera MAC OS
+
+    video_capture.set(cv.CAP_PROP_FRAME_WIDTH, x)
+    video_capture.set(cv.CAP_PROP_FRAME_HEIGHT, y)
 
     #Define color ranges
-    red_lower_1 = np.array([0, 168, 180], dtype="uint8")
-    red_upper_1 = np.array([8, 255, 255], dtype="uint8")
+    red_lower_1 = np.array([0, 126, 133], dtype="uint8")
+    red_upper_1 = np.array([6, 255, 255], dtype="uint8")
 
     red_lower_2 = np.array([169, 168, 187], dtype="uint8")
     red_upper_2 = np.array([179, 255, 255], dtype="uint8")
@@ -79,22 +80,18 @@ def get_masks_from_camera():
         print("Camera not detected")
 
     elif ret:
-        mtx, dist = get_calibration_data()
-        if mtx is not None and dist is not None:
-            frame = cv.undistort(frame, mtx, dist, None, mtx)
-        blur_frame = cv.GaussianBlur(frame, (17, 17), 0) #Add blur
+        blur_frame = cv.GaussianBlur(frame, (3, 3), 0) #Add blur
         hsv_frame = cv.cvtColor(blur_frame, cv.COLOR_BGR2HSV) #Convert from RGB to HSV
-        resized_frame = cv.resize(hsv_frame, resolution, interpolation=cv.INTER_NEAREST) #Apply the resolution specified
 
         # Create masks for red, green, blue, orange and white
-        mask_red_1 = cv.inRange(resized_frame, red_lower_1, red_upper_1)
-        mask_red_2 = cv.inRange(resized_frame, red_lower_2, red_upper_2)
+        mask_red_1 = cv.inRange(hsv_frame, red_lower_1, red_upper_1)
+        mask_red_2 = cv.inRange(hsv_frame, red_lower_2, red_upper_2)
         mask_red = cv.bitwise_or(mask_red_1, mask_red_2)
-        mask_green = cv.inRange(resized_frame, green_lower, green_upper)
-        mask_blue = cv.inRange(resized_frame, blue_lower, blue_upper)
+        mask_green = cv.inRange(hsv_frame, green_lower, green_upper)
+        mask_blue = cv.inRange(hsv_frame, blue_lower, blue_upper)
         mask_robot = cv.bitwise_or(mask_green, mask_blue) #Combine blue and green to see the robot
-        mask_orange = cv.inRange(resized_frame, orange_lower, orange_upper)
-        mask_white = cv.inRange(resized_frame, white_lower, white_upper)
+        mask_orange = cv.inRange(hsv_frame, orange_lower, orange_upper)
+        mask_white = cv.inRange(hsv_frame, white_lower, white_upper)
         mask_ball = cv.bitwise_or(mask_orange, mask_white) #Combine orange and white to see the ball
 
         #Apply dilation
@@ -111,10 +108,14 @@ def get_masks_from_camera():
             'green': mask_green,
             'blue': mask_blue
         }
-        #get_grid(mask_red, mask_orange, mask_white)
 
         cv.imshow('ImageWindow', mask_white)
-        cv.imwrite('mask_white.jpg', mask_robot)	        
+        cv.imwrite('frame.jpg', frame)
+        cv.imwrite('mask_white.jpg', mask_white)
+        cv.imwrite('mask_orange.jpg', mask_orange)
+        cv.imwrite('mask_red.jpg', mask_red)
+        cv.imwrite('mask_green.jpg', mask_green)
+        cv.imwrite('mask_blue.jpg', mask_blue)	        
         path = 'images'
         global i 
         cv.imwrite(path + '/robot' + str(i) + '.jpg',mask_red)
