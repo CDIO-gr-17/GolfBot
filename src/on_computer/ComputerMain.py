@@ -1,21 +1,11 @@
+import time
 import socket, json
 from sys import orig_argv
-from on_computer.computer_vision.ComputerVision import get_masks_from_camera
-from pathfinding.PathfindingAlgorithm import grid, a_star
-from positions.Positions import find_start_node, find_first_ball
-
-# below, y is first and x is second as the grid is a matrix not a cartesian plane
-
-start_node = find_start_node()# Function for diffing the calculated robot position with the camera robot position
-    
-end_node = find_first_ball(grid)
-
-# Here handling the case where robot or ball is not found
-if start_node is None or end_node is None:
-    exit()
-
-print(start_node.x, start_node.y)
-print(end_node.x, end_node.y)
+from computer_vision.ComputerVision import get_masks_from_camera, get_grid
+from pathfinding.Convert_to_node_grid import convert_to_grid
+from pathfinding.feedback import is_robot_position_correct
+from pathfinding.PathfindingAlgorithm import a_star
+from positions.Positions import find_start_node, find_first_ball, get_robot_angle
 
 #Creates a socket object, and established a connection to the robot
 
@@ -26,21 +16,53 @@ port = 9999
 
 client_socket.connect((host, port))
 
-command = 'PATH'
-client_socket.sendall(command.encode('utf-8'))
+while True:
+    command = 'PATH'
+    client_socket.sendall(command.encode('utf-8'))
 
-# Send the path to the robot
-path = a_star(grid, start_node, end_node)
-path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
-path_as_json = json.dumps(path_as_dictionaries)
+    masks = get_masks_from_camera()
+    raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
+    grid = convert_to_grid(raw_grid_data)
+    robot_position = masks['green']
+    robot_heading = get_robot_angle(masks, grid)
+    print('The robots heading: ', robot_heading)
 
-#print(path_as_dictionaries)
+    # below, y is first and x is second as the grid is a matrix not a cartesian plane
 
+    start_node = find_start_node(robot_position, grid)# Function for diffing the calculated robot position with the camera robot position
+        
+    end_node = find_first_ball(grid)
 
-json_length = len(path_as_json)
-client_socket.sendall(json_length.to_bytes(4, 'big'))
+    # Send the path to the robot
+    path = a_star(grid, start_node, end_node)
 
-client_socket.sendall(path_as_json.encode('utf-8'))
+    if path != None: print('Path: OK')
+    else: print('The algorithm could not find a path')
 
-# Close the connection
-client_socket.close()
+    path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
+    path_as_json = json.dumps(path_as_dictionaries)
+
+    if robot_heading == None:
+        print('ERROR: No heading calcultated')
+        exit()
+    else:
+        heading_as_string = str(robot_heading)
+        client_socket.sendall(heading_as_string.encode('utf-8'))
+
+    json_length = len(path_as_json)
+    client_socket.sendall(json_length.to_bytes(4, 'big'))
+
+    client_socket.sendall(path_as_json.encode('utf-8'))
+
+    while(is_robot_position_correct(path, grid)):
+        print("correct")
+        pass
+    
+    # Send the stop command to the robot
+    while True:
+        off_course_notice = 'STOP'
+        client_socket.sendall(off_course_notice.encode('utf-8'))
+        response = client_socket.recv(7).decode('utf-8').strip()
+        print(response)
+        if response == 'STOPPED':
+            break

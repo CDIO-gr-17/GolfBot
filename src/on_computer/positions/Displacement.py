@@ -6,9 +6,9 @@ import numpy as np
 # resolution = (300,170)
 # grid = np.zeros(resolution)
 
-grid_size = 5 #cm
-camera_height = 200 / grid_size
-robot_height = 10 / grid_size
+grid_size = 1.3 #cm
+camera_height = 185 / grid_size
+robot_height = 16 / grid_size
 
 #Find the middle of the grid$
 def find_middle(grid):
@@ -41,9 +41,9 @@ def find_displacement_of_robot(grid, robot_field_position):
     return displacement
 
 def move_point(robot_position, grid):
-    # if  robot_position is None or grid is None:
-    #     print("Robot position or grid is not found")
-    #     return
+    if  robot_position is None or grid is None:
+        print("Robot position or grid is not found")
+        return
 
     # Convert points to numpy arrays
     distance = find_displacement_of_robot(grid, robot_position)
