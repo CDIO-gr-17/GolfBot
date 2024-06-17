@@ -17,18 +17,18 @@ print('Connection established')
 print('running...')
 
 def string_to_heading(heading_str):
-    if heading_str is 'ER':
+    if heading_str is 'ERRO':
         print('Error in heading')
         exit()
     switcher = {
-        "NO": Heading.NORTH,
-        "NE": Heading.NORTHEAST,
-        "EA": Heading.EAST,
-        "SE": Heading.SOUTHEAST,
-        "SO": Heading.SOUTH,
-        "SW": Heading.SOUTHWEST,
-        "WE": Heading.WEST,
-        "NW": Heading.NORTHWEST
+        "NRTH": Heading.NORTH,
+        "NREA": Heading.NORTHEAST,
+        "EAST": Heading.EAST,
+        "SOWE": Heading.SOUTHEAST,
+        "SOUT": Heading.SOUTH,
+        "SOWE": Heading.SOUTHWEST,
+        "WEST": Heading.WEST,
+        "NOWE": Heading.NORTHWEST
     }
     
     return switcher.get(heading_str.upper(), None)
@@ -43,7 +43,6 @@ def recv_all(sock, length): #Helper function to receive exactly 'length' bytes f
     return data
 
 while True:
-    print("going")
     # Establish a connection
 
     # Receive the command
@@ -52,7 +51,7 @@ while True:
     if command == 'PATH':
         print('Recieved command')
 
-        recieved_heading = clientsocket.recv(2).decode('utf-8').strip()
+        recieved_heading = clientsocket.recv(4).decode('utf-8').strip()
         print(recieved_heading)
 
 
@@ -67,20 +66,20 @@ while True:
             # Receive the path
             path_data = recv_all(clientsocket, length).decode('utf-8')
 
-            path = json.loads(path_data)
+            path_as_dictionaries = json.loads(path_data)
 
+            path = [(d['x'], d['y']) for d in path_as_dictionaries]
 
-            currentX = path[0]['x']
-            currentY = path[0]['y']
+            print(path)
+
+            currentX = path[0][0]
+            currentY = path[0][1]
 
             print(currentX, currentY, currentHeading)
 
-            for node in path[1:]:  # Skip the starting node as it's the current position
-                currentHeading = robot.moveToPoint(node['x'], node['y'], currentX, currentY, currentHeading)
-                currentX, currentY = node['x'], node['y']  # Update current position
-                off_course_notice = clientsocket.recv(4).decode('utf-8').strip()
-                if off_course_notice == 'STOP':
-                    print('Stopped due to drift')
-                    break
-                
+            path_length = len(path)
+            robot.move_through_path(path[0],path[path_length-1],currentHeading, path, clientsocket)
+
+            print("Awaiting new command...")
+
     #clientsocket.close()

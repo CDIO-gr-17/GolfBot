@@ -5,7 +5,7 @@ from Heading import Heading
 
 def test_navigation():
     robot = Robot() #setup
-    currentHeading = robot.current_heading_degrees
+    currentHeading = robot.current_heading
     currentX, currentY = 1, 0  # Start position
     mock_path = [
     (1, 0),  # Start

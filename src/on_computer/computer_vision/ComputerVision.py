@@ -1,6 +1,8 @@
 import cv2 as cv
 import numpy as np
 
+i = 1
+
 def get_robot_pos_with_mask(mask):
     robot_mask_cluster = find_clusters(mask)
     robot_pos_middle = find_clusters_center(robot_mask_cluster['stats'])
@@ -68,11 +70,11 @@ def get_masks_from_camera():
     # green_lower = np.array([50, 100, 20], dtype="uint8")
     # green_upper = np.array([70, 255, 255], dtype="uint8")
 
-    green_lower = np.array([85, 50, 20], dtype="uint8")
-    green_upper = np.array([95, 255, 255], dtype="uint8")
+    green_lower = np.array([50, 85, 20], dtype="uint8")
+    green_upper = np.array([80, 255, 255], dtype="uint8")
 
-    blue_lower = np.array([110, 50, 20], dtype="uint8")
-    blue_upper = np.array([130, 255, 255], dtype="uint8")
+    blue_lower = np.array([90, 100, 20], dtype="uint8")
+    blue_upper = np.array([125, 255, 255], dtype="uint8")
 
     ret, frame = video_capture.read()
     if not ret:
@@ -109,7 +111,10 @@ def get_masks_from_camera():
         }
         #get_grid(mask_red, mask_orange, mask_white)
         cv.imshow('ImageWindow', mask_white)
-        cv.imwrite('mask_white.jpg', mask_robot)
+        path = 'images'
+        global i 
+        cv.imwrite(path + '/what_see' + str(i) + '.jpg', mask_robot)
+        i += 1
 
     video_capture.release()
     cv.destroyAllWindows()
