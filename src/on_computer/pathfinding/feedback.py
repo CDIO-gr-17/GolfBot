@@ -1,5 +1,18 @@
 def is_robot_position_correct(robot_path, camera_robot_position):
-        if(camera_robot_position in robot_path):
+
+    slacked_path = []
+    for node in robot_path:
+        slacked_path.append((node.x, node.y))
+        slacked_path.append((node.x+1, node.y+1))
+        slacked_path.append((node.x+1, node.y-1))
+        slacked_path.append((node.x-1, node.y+1))
+        slacked_path.append((node.x-1, node.y-1))
+        slacked_path.append((node.x, node.y+1))
+        slacked_path.append((node.x, node.y-1))
+        slacked_path.append((node.x+1, node.y))
+        slacked_path.append((node.x-1, node.y))
+
+        if(camera_robot_position in slacked_path):
             return True
         else:
             return False
