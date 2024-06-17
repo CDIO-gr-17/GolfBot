@@ -50,7 +50,7 @@ class Robot:
         self.AXLE_TRACK = 110
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
-        self.GRID_DISTANCE = 13
+        self.GRID_DISTANCE = 7.5
         self.current_heading = None 
         self.step = 0
 

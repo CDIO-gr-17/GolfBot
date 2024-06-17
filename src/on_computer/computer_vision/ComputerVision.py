@@ -49,6 +49,8 @@ def get_grid(mask_red, mask_orange, mask_white):
 def get_masks_from_camera():
     x = 320
     y = 180
+    x = 320
+    y = 180
 
     #video_capture = cv.VideoCapture(1, cv.CAP_DSHOW) #Open camera WINDOWS OS
     video_capture = cv.VideoCapture(0) #Open camera MAC OS
@@ -118,7 +120,7 @@ def get_masks_from_camera():
         cv.imwrite('mask_blue.jpg', mask_blue)	        
         path = 'images'
         global i 
-        cv.imwrite(path + '/robot' + str(i) + '.jpg',frame)
+        cv.imwrite(path + '/robot' + str(i) + '.jpg', mask_robot)
         i += 1
 
     video_capture.release()

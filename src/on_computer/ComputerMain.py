@@ -54,7 +54,7 @@ while True:
 
     client_socket.sendall(path_as_json.encode('utf-8'))
 
-    while(is_robot_position_correct(path, grid)):
+    while(is_robot_position_correct(path, start_node)):
         print("correct")
         pass
     
