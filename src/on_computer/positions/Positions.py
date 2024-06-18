@@ -1,4 +1,3 @@
-from ComputerMain import GRID, ROBOT_POSITION
 
 def find_start_node():
     if GRID is None or ROBOT_POSITION is None:

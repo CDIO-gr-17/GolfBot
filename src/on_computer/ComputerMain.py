@@ -5,26 +5,22 @@ from positions.Positions import find_start_node, find_first_ball
 import threading
 from computer_vision.Camera import capture_frames
 from computer_vision.ComputerVision import update_positions
+import Globals as G
 
 
-BIG_FRAME = None
-SMALL_FRAME = None
 
 #Assigne thread to capture continous frames
 camera_thread = threading.Thread(target=capture_frames).start()
 
-ROBOT_POSITION = None
-ROBOT_HEADING = None
-GRID = None
-BALLS = None
 
-while BIG_FRAME is None or SMALL_FRAME is None:
+
+while G.BIG_FRAME is None or G.SMALL_FRAME is None:
     time.sleep(0.2)
 
 position_thread = threading.Thread(target=update_positions).start()
 
 # We are in danger of going on old data cause we dont check if a new position is found in pictures
-while ROBOT_POSITION is None or ROBOT_HEADING is None or GRID is None or BALLS is None:
+while G.ROBOT_POSITION is None or G.ROBOT_HEADING is None or G.GRID is None or G.BALLS is None:
     time.sleep(0.2)
 
 time.sleep(20)
@@ -44,10 +40,10 @@ while True:
     client_socket.sendall(command.encode('utf-8'))
 
     start_node = find_start_node()# Function for diffing the calculated robot position with the camera robot position
-    end_node = find_first_ball(GRID)
+    end_node = find_first_ball(G.GRID)
 
     # Send the path to the robot
-    path = a_star(GRID, start_node, end_node)
+    path = a_star(G.GRID, start_node, end_node)
 
     if path != None:
         print('Path: OK')
@@ -55,11 +51,11 @@ while True:
         path_as_json = json.dumps(path_as_dictionaries)
     else: print('The algorithm could not find a path')
 
-    if ROBOT_HEADING == None:
+    if G.ROBOT_HEADING == None:
         print('ERROR: No heading calcultated')
         exit()
     else:
-        heading_as_string = str(ROBOT_HEADING)
+        heading_as_string = str(G.ROBOT_HEADING)
         client_socket.sendall(heading_as_string.encode('utf-8'))
 
     json_length = len(path_as_json)
@@ -67,7 +63,7 @@ while True:
 
     client_socket.sendall(path_as_json.encode('utf-8'))
 
-    while(is_robot_position_correct(ROBOT_HEADING, path, start_node)):
+    while(is_robot_position_correct(G.ROBOT_HEADING, path, start_node)):
         print("correct")
         course_notice = 'KEEP'
         client_socket.sendall(course_notice.encode('utf-8'))
@@ -78,7 +74,7 @@ while True:
             start_node = find_start_node()
 
         if response == 'HEADING':
-            client_socket.sendall(str(ROBOT_HEADING).encode('utf-8'))
+            client_socket.sendall(str(G.ROBOT_HEADING).encode('utf-8'))
 
 
 
