@@ -6,7 +6,7 @@ from pathfinding.Convert_to_node_grid import convert_to_grid
 from pathfinding.feedback import is_robot_position_correct
 from pathfinding.PathfindingAlgorithm import a_star
 from positions.Positions import find_start_node, find_first_ball, get_robot_angle
-from helpers.end_of_path_pickup import distance_between, deegrees_to_heading
+from helpers.end_of_path_pickup import distance_between, get_path_to_goal
 from positions.Robot_direction import calculate_heading
 
 
@@ -17,7 +17,7 @@ host = "192.168.8.111"
 port = 9999
 client_socket.connect((host, port))
 
-def run_pickup(robot_pos, end_node):
+def run_pickup(robot_pos, end_node): #Function for picking up the ball, when it has reached the end of the path
  print('ball is close')
  command = 'PICK'
  client_socket.sendall(command.encode('utf-8'))
@@ -27,7 +27,19 @@ def run_pickup(robot_pos, end_node):
  distance = str(distance_between(robot_pos, end_node))
  client_socket.sendall(distance.encode('utf-8'))
 
-
+def score_balls():
+     command = 'DEPO'
+     client_socket.sendall(command.encode('utf-8')) #sends DEPO command to robot
+     masks = get_masks_from_camera()
+     raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
+     grid = convert_to_grid(raw_grid_data)
+     path = get_path_to_goal(grid,masks['green']) #gets path to goal, from a new grid.
+     path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
+     path_as_json = json.dumps(path_as_dictionaries)
+     json_length = len(path_as_json)
+     client_socket.sendall(json_length.to_bytes(4, 'big'))
+     client_socket.sendall(path_as_json.encode('utf-8'))
+     counter = 0
 
 
 counter = 0
@@ -41,9 +53,6 @@ while True:
 
         start_node = find_start_node(robot_position, grid)# Function for diffing the calculated robot position with the camera robot position
         end_node = find_first_ball(grid)
-
-        
-        
     
         command = 'PATH'
         client_socket.sendall(command.encode('utf-8'))
@@ -60,6 +69,8 @@ while True:
         if robot_heading == None:
             print('ERROR: No heading calcultated')
             exit()
+        if (counter >= 3): #Dont know if this is the right place to put this condition
+            score_balls()
         else:
             heading_as_string = str(robot_heading)
             client_socket.sendall(heading_as_string.encode('utf-8'))
@@ -68,6 +79,7 @@ while True:
             client_socket.sendall(json_length.to_bytes(4, 'big'))
 
             client_socket.sendall(path_as_json.encode('utf-8'))
+
 
         while(is_robot_position_correct(robot_heading, path, start_node)):
             print("correct")
@@ -100,11 +112,8 @@ while True:
                 robot_pos = masks['green']
                 
                 run_pickup(robot_pos, end_node)
-                #counter += 1
-                break
-
-
-
+                counter += 1
+            
         
         # Send the stop command to the robot
         while True:

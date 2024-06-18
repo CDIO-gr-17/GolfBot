@@ -75,6 +75,28 @@ while True:
 
         robot.pickup_ball(recieved_distance)
 
+    elif command == 'DEPO':
+        print ('Recieved command: DEPO')
+
+        path_length_in_bytes =  clientsocket.recv(4)
+
+        path_length = int.from_bytes(path_length_in_bytes, 'big')
+        path_data = recv_all(clientsocket, path_length).decode('utf-8')
+        path_as_dictionaries = json.loads(path_data)
+
+        path = [(d['x'], d['y']) for d in path_as_dictionaries]
+    
+        currentX = path[0][0]
+        currentY = path[0][1]
+
+        print(currentX, currentY, currentHeading)
+        path_length = len(path)
+        robot.move_through_path(path[0],path[path_length-1],currentHeading, path, clientsocket)
+        robot.deposit()
+
+
+
+
 
 
 
