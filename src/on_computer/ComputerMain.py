@@ -69,7 +69,7 @@ while True:
     end_node = find_first_ball(grid)
 
     #distance_to_ball = distance_between(robot_position, end_node)
-    # if distance_to_ball < 5 or 1==1:
+    # if distance_to_ball < 5 and counter == ball_array[counter]
 
     if True:
         run_pickup(robot_position, end_node)
