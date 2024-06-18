@@ -1,9 +1,9 @@
 
 import math
 from positions.Goals import find_goal_coordinates
-
-from src.on_computer.computer_vision.ComputerVision import get_robot_pos_with_mask
-from src.on_computer.positions.Robot_direction import calculate_heading
+from pathfinding.PathfindingAlgorithm import a_star
+from computer_vision.ComputerVision import get_robot_pos_with_mask
+from positions.Robot_direction import calculate_heading
 
 
 def distance_between(point1, point2):
@@ -23,25 +23,20 @@ def adjust_heading(target_heading, current_heading):
     #Robot.turn(diff)
 
 
-def go_to_goal(grid):
+def get_path_to_goal(grid, mask_blue):
     goal = find_goal_coordinates(grid)
     if goal is None:
         return None
     goal_coordinates = goal[1]
     adjusted_goal = (goal_coordinates[0], goal_coordinates[1] - 2) # Adjust the goal coordinates later to fit grid
-    #move_to_point(adjusted_goal)
-    goal_heading = get_target_heading_for_point(adjusted_goal)
-    adjust_heading(goal_heading, 180)   # Should use get_robot_angle() instead of 180
-    deposit()
-    return "Goal reached!"
+    robot_pos = get_robot_pos_with_mask(mask_blue)
+    path = a_star(grid, robot_pos, adjusted_goal)       #Maybe need conversion to Nodes
+    return path
 
-def deposit():
-    Robot.straight(5) #adjust lenght here
-    Robot.shoot_all_balls
-
-def robot_is_close_to_ball():
-
-
-
-
-
+def deposit(mask_blue):
+    robot_pos = get_robot_pos_with_mask(mask_blue)
+    goal_heading = calculate_heading(robot_pos,)
+    #Send command containing the following:
+        #Robot.turntoheading(goal_heading)
+        #Robot.straight(5) #adjust lenght here
+        #Robot.shootallballs()
