@@ -2,6 +2,9 @@ import cv2 as cv
 import numpy as np
 import threading
 
+from src.on_computer.ComputerMain import GRID
+from src.on_computer.positions.Displacement import move_point
+
 def get_robot_pos_and_heading(frame):
     # Convert the image to grayscale
     grayscale = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
@@ -66,8 +69,10 @@ def get_robot_pos_and_heading(frame):
             farthest_vertex_low_res = farthest_vertex * [width_ratio, height_ratio]
             # Round the coordinates and convert to integers
             farthest_vertex_low_res = np.round(farthest_vertex_low_res).astype(int)
+            global GRID
+            farthest_vertex_low_res_adjusted = (move_point(farthest_vertex_low_res,GRID))
 
             # Check if the angles are within the range expected for a triangle
             if np.all(np.logical_and(angles > min_angle, angles < max_angle)):
                 cv.drawContours(frame, [contour], -1, (0, 255, 0), 2)
-                return adjusted_heading_degrees, farthest_vertex_low_res
+                return adjusted_heading_degrees, farthest_vertex_low_res_adjusted

@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-from on_computer.ComputerMain import BALLS
+from ComputerMain import BALLS
 
 def get_masks_from_frame(frame):
 

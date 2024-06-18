@@ -3,8 +3,7 @@ import time
 
 # Function to capture frames
 def capture_frames():
-    global BIG_FRAME
-    global SMALL_FRAME
+    global BIG_FRAME, SMALL_FRAME
     # Open the camera
     cap = cv.VideoCapture(0)
     org_width = cap.get(cv.CAP_PROP_FRAME_WIDTH)
