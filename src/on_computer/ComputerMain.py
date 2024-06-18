@@ -8,7 +8,6 @@ from pathfinding.PathfindingAlgorithm import a_star
 from positions.Positions import find_start_node, find_first_ball, get_robot_angle
 
 #Creates a socket object, and established a connection to the robot
-
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 host = "192.168.8.111"
@@ -27,20 +26,17 @@ while True:
     robot_heading = get_robot_angle(masks, grid)
     print('The robots heading: ', robot_heading)
 
-    # below, y is first and x is second as the grid is a matrix not a cartesian plane
-
     start_node = find_start_node(robot_position, grid)# Function for diffing the calculated robot position with the camera robot position
-        
     end_node = find_first_ball(grid)
 
     # Send the path to the robot
     path = a_star(grid, start_node, end_node)
 
-    if path != None: print('Path: OK')
+    if path != None:
+        print('Path: OK')
+        path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
+        path_as_json = json.dumps(path_as_dictionaries)
     else: print('The algorithm could not find a path')
-
-    path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
-    path_as_json = json.dumps(path_as_dictionaries)
 
     if robot_heading == None:
         print('ERROR: No heading calcultated')
@@ -54,14 +50,34 @@ while True:
 
     client_socket.sendall(path_as_json.encode('utf-8'))
 
-    while(is_robot_position_correct(path, start_node)):
+    while(is_robot_position_correct(robot_heading, path, start_node)):
         print("correct")
-        pass
+        course_notice = 'KEEP'
+        client_socket.sendall(course_notice.encode('utf-8'))
+        response = client_socket.recv(7).decode('utf-8').strip()
+        print(response)
+
+        if response == 'ONGOING':
+            masks = get_masks_from_camera()
+            raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
+            grid = convert_to_grid(raw_grid_data)
+            robot_position = masks['green']
+            start_node = find_start_node(robot_position, grid)
+
+        if response == 'HEADING':
+            masks = get_masks_from_camera()
+            raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
+            grid = convert_to_grid(raw_grid_data)
+            robot_position = masks['green']
+            robot_heading = get_robot_angle(masks, grid)
+            client_socket.sendall(str(robot_heading).encode('utf-8'))
+
+
     
     # Send the stop command to the robot
     while True:
-        off_course_notice = 'STOP'
-        client_socket.sendall(off_course_notice.encode('utf-8'))
+        course_notice = 'STOP'
+        client_socket.sendall(course_notice.encode('utf-8'))
         response = client_socket.recv(7).decode('utf-8').strip()
         print(response)
         if response == 'STOPPED':

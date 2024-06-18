@@ -222,6 +222,8 @@ class Robot:
         start_y = start_node[1]
         clientsocket = socket
 
+        recieved_heading = current_heading
+
         self.current_heading = current_heading
 
         while(start_node != end_node):
@@ -233,13 +235,23 @@ class Robot:
             start_x = start_node[0]
             start_y = start_node[1]
 
-            off_course_notice = clientsocket.recv(4).decode('utf-8').strip()
-            if off_course_notice == 'STOP':
+            course_notice = clientsocket.recv(4).decode('utf-8').strip()
+            if course_notice == 'STOP':
                 checkin = 'STOPPED'
                 clientsocket.send(checkin.encode('utf-8'))
                 print('Stopped due to drift')
                 self.step = 0
                 return
+
+            if self.current_heading != recieved_heading:
+                checkin = 'HEADING'
+                clientsocket.send(checkin.encode('utf-8'))
+                self.current_heading = int(clientsocket.recv(3).decode('utf-8').strip()) #Recieve the new heading from the computer, and updates the current heading
+                print('The heading has been updated to: ', self.current_heading)
+
+            else:
+                checkin = 'ONGOING'
+                clientsocket.send(checkin.encode('utf-8'))
         
         
 

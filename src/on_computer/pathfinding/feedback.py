@@ -1,41 +1,26 @@
-def is_robot_position_correct(robot_path, camera_robot_position):
+def is_robot_position_correct(heading, robot_path, camera_robot_position):
 
     slacked_path = []
     for node in robot_path:
-        slacked_path.append((node.x, node.y))
-        slacked_path.append((node.x+1, node.y+1))
-        slacked_path.append((node.x+1, node.y-1))
-        slacked_path.append((node.x-1, node.y+1))
-        slacked_path.append((node.x-1, node.y-1))
-        slacked_path.append((node.x, node.y+1))
-        slacked_path.append((node.x, node.y-1))
-        slacked_path.append((node.x+1, node.y))
-        slacked_path.append((node.x-1, node.y))
-        slacked_path.append((node.x+2, node.y+2))
-        slacked_path.append((node.x+2, node.y-2))
-        slacked_path.append((node.x-2, node.y+2))
-        slacked_path.append((node.x-2, node.y-2))
-        slacked_path.append((node.x-1, node.y+2))
-        slacked_path.append((node.x+1, node.y-2))
-        slacked_path.append((node.x+2, node.y))
-        slacked_path.append((node.x-2, node.y))
+        slacked_path.append((node.x, node.y)) # The node the robot should be on
+        slacked_path.append((node.x, node.y-1)) # Directly aboe
+        slacked_path.append((node.x, node.y+1)) # Directly below
+
+        slacked_path.append((node.x+1, node.y)) # Directly to the right
+        slacked_path.append((node.x+1, node.y-1)) # To the right and above
+        slacked_path.append((node.x+1, node.y+1)) # To the right and below
+
+        slacked_path.append((node.x-1, node.y)) # Directly to the left
+        slacked_path.append((node.x-1, node.y-1)) # To the left and above
+        slacked_path.append((node.x-1, node.y+1)) # To the left and below
     
-    print ('The position is: ', camera_robot_position)
-    print(slacked_path)
+    robot_position_coordinates = (camera_robot_position.x, camera_robot_position.y)
 
-    if(camera_robot_position.x in slacked_path and camera_robot_position.y in slacked_path):
-        print('Robot position is within margin of error')
+    #print ('The position is: ', robot_position_coordinates)
+    #print(slacked_path)
+
+    if(robot_position_coordinates in slacked_path):
+        print('Robot position is within margin of error @', robot_position_coordinates)
         return True
     else:
-        return False
-
-def remove_position_from_path(robot_path, camera_robot_position):
-    temp_path = robot_path
-    result = is_robot_position_correct(temp_path, camera_robot_position)
-    if result:
-        robot_path.remove(camera_robot_position)
-        print("Robot position removed from path")
-        return True
-    else:
-        print("Robot position not found in path")
         return False
