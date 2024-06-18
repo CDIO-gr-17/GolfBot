@@ -13,7 +13,7 @@ from Heading import Heading
 def calculate_heading(current_position, next_position):
     if next_position == None or current_position == None:
         print("Tail or head is not found")
-        return None
+        return
     # Calculate differences
 
     print(current_position[0], current_position[1])
@@ -48,7 +48,7 @@ class Robot:
         # Initialize the motors.
         self.left_motor = Motor(Port.D)
         self.right_motor = Motor(Port.A)
-        #self.front_motor = Motor(Port.C)
+        self.front_motor = Motor(Port.C)
 
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
@@ -56,7 +56,7 @@ class Robot:
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
         self.GRID_DISTANCE = 13
-        self.current_heading = None 
+        self.current_heading = 0
         self.step = 0
         self.factor = 1
 
@@ -73,18 +73,18 @@ class Robot:
     def get_current_point_x(self, path):
         currentpoint = path[self.step][0]
         return currentpoint
-        
+
     def get_current_point_y(self, path):
         currentpoint = path[self.step][1]
         return currentpoint
-       
+
     def calculate_drive_factor(self, heading, path):
         print("")
         print('-------------------------' + ' run of calculate_drive_factor: ' + str(path[self.step]) + '-------------------------')
         print("")
         acc_steps = 0
         loop_counter = self.step
-        
+
         print('current heading in calculate_drive_factor: ' + str(heading))
         curr_pos = path[loop_counter]
         print('current position in calculate_drive_factor: ' + str(curr_pos))
@@ -109,14 +109,14 @@ class Robot:
                     break
                 loop_counter += 1
                 self.step += 1
-            else: 
+            else:
                 break
         print("")
         print('-------------------------' + ' end of calculate_drive_factor ' + '-------------------------')
         print("")
-        
+
         return acc_steps
-        
+
 
     def turn(self, degrees):
         self.robot.turn(degrees)
@@ -124,7 +124,7 @@ class Robot:
         print('turned ' + str(degrees) + ' degrees')
 
     def shortest_turn(self, current_degrees, target_degrees):
-        delta = (target_degrees - current_degrees) % 360
+        delta = (target_degrees - int(current_degrees)) % 360
         if delta > 180:
             delta -= 360
         return delta
@@ -157,18 +157,18 @@ class Robot:
         print('current heading in moveToNeighbor before turn_to_heading: ' + str(currentHeading))
         print('target heading in moveToNeighbor before turn_to_heading: ' + str(target))
         if (currentHeading != target):
-            
+
             currentHeading = self.turn_to_heading(target)
             print('current heading in moveToNeighbor after turn_to_heading: ' + str(currentHeading))
             print('target heading in moveToNeighbor after turn_to_heading: ' + str(target))
-        
+
         if target == 45:
             self.moveForwardCross(path) #not pretty but works.
         if target % 90 != 0:
             self.moveForwardCross(path)
         else:
             self.moveForward(path)
-        
+
         print("")
         print('----------------------------- End of moveToNeighbor -----------------------------')
         print("")
@@ -182,7 +182,7 @@ class Robot:
         print('current heading in moveToPoint: ' + str(currentHeading))
         print('current position in moveToPoint: ' + str(currentX) + ', ' + str(currentY))
         print('target position in moveToPoint: ' + str(target_x) + ', ' + str(target_y))
-        
+
         if currentX != target_x or currentY != target_y:
             if target_x > currentX:
                 if target_y > currentY:
@@ -190,20 +190,20 @@ class Robot:
                     print('current heading after moveToPoint: ' + str(currentHeading))
                 elif target_y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTHEAST, currentHeading, path)
-             
+
                     print('current heading after moveToPoint: ' + str(currentHeading))
                 else:
                     currentHeading = self.moveToNeighbor(Heading.EAST, currentHeading, path)
-                    
+
                     print('current heading after moveToPoint: ' + str(currentHeading))
             elif target_x < currentX:
                 if target_y > currentY:
                     currentHeading = self.moveToNeighbor(Heading.SOUTHWEST, currentHeading, path)
-                   
+
                     print('current heading after moveToPoint: ' + str(currentHeading))
                 elif target_y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTHWEST, currentHeading, path)
-                   
+
                     print('current heading after moveToPoint: ' + str(currentHeading))
                 else:
                     currentHeading = self.moveToNeighbor(Heading.WEST, currentHeading, path)
@@ -215,7 +215,7 @@ class Robot:
                 elif target_y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTH, currentHeading, path)
                     print('current heading after moveToPoint: ' + str(currentHeading))
-        
+
         print("")
         print('--------------- End of moveToPoint for path step ' + str(path[self.step]) +  '---------------')
         print("")
@@ -244,8 +244,17 @@ class Robot:
                 clientsocket.send(checkin.encode('utf-8'))
                 print('Stopped due to drift')
                 return
-        
-        
+
+    def pickup_ball(self):
+        self.front_motor.run(1000)
+        self.robot.straight(500)
+        self.front_motor.stop()
+
+
+
+
+
+
 
 
 

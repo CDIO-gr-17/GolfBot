@@ -30,7 +30,7 @@ def string_to_heading(heading_str):
         "WEST": Heading.WEST,
         "NOWE": Heading.NORTHWEST
     }
-    
+
     return switcher.get(heading_str.upper(), None)
 
 def recv_all(sock, length): #Helper function to receive exactly 'length' bytes from 'sock'
@@ -49,7 +49,7 @@ while True:
     command = clientsocket.recv(4).decode('utf-8').strip()
 
     if command == 'PATH':
-        print('Recieved command')
+        print('Recieved command: PATH')
 
         recieved_heading = clientsocket.recv(4).decode('utf-8').strip()
         print(recieved_heading)
@@ -81,5 +81,20 @@ while True:
             robot.move_through_path(path[0],path[path_length-1],currentHeading, path, clientsocket)
 
             print("Awaiting new command...")
+    elif command == "PICK":
+        print('Recieved command: PICK')
+
+        recieved_heading = clientsocket.recv(4).decode('utf-8').strip()
+        print(recieved_heading)
+        clientsocket.close()
+
+        currentHeading = string_to_heading(recieved_heading)
+        print(currentHeading)
+        robot.turn_to_heading(currentHeading)
+
+        robot.pickup_ball()
+
+
+
 
     #clientsocket.close()
