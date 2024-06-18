@@ -32,7 +32,7 @@ if robot_data is not None:
 
 masks = get_masks_from_frame(SMALL_FRAME)
 GRID_DATA = get_grid(masks['red'])
-
+GRID = convert_to_grid(GRID_DATA)
 BALLS = find_clusters_center(find_clusters(masks['ball'])['stats'])
 
 

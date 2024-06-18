@@ -46,7 +46,7 @@ def get_masks_from_frame(frame):
 
     masks = {
         'red': mask_red,
-        'ball': mask_ball,
+        'balls': mask_ball,
     }
 
     # cv.imshow('ImageWindow', mask_white)
@@ -77,10 +77,11 @@ def find_clusters_center(stats):
         centers.append((x, y))
     return centers
 
-def get_grid(mask):
-    coordinates = np.argwhere(mask != 0)
-    grid = np.zeros_like(mask)
+def get_grid(masks):
+    balls = find_clusters_center(find_clusters(masks['balls'])['stats'])
+    coordinates = np.argwhere(masks['red'] != 0)
+    grid = np.zeros_like(masks['red'])
+    for center in balls:
+            grid[center[1], center[0]] = 2
     grid[coordinates[:, 0], coordinates[:, 1]] = 1
     return grid
-
-
