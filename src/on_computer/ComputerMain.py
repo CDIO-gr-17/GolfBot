@@ -19,10 +19,9 @@ position_thread = threading.Thread(target=update_positions).start()
 
 while True:
     if G.SMALL_FRAME is not None:
-        cv.imshow('frame', G.SMALL_FRAME)
+        cv.imshow('frame', G.BIG_FRAME)
         if cv.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to exit the loop
             break
-
 
 # We are in danger of going on old data cause we dont check if a new position is found in pictures
 # Dont really know if it is a problem, shouldnt be if recognition is good enough
