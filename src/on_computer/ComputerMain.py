@@ -1,13 +1,11 @@
 import socket, json, time
-from sys import orig_argv
 from pathfinding.Convert_to_node_grid import convert_to_grid
 from pathfinding.feedback import is_robot_position_correct
 from pathfinding.PathfindingAlgorithm import a_star
 from positions.Positions import find_start_node, find_first_ball, get_robot_angle
 import threading
-from computer_vision.RobotDetection import get_robot_pos_and_heading
-from src.on_computer.computer_vision.Camera import SMALL_FRAME, capture_frames
-from src.on_computer.computer_vision.ComputerVision import update_positions
+from computer_vision.Camera import SMALL_FRAME, capture_frames
+from computer_vision.ComputerVision import update_positions
 
 
 BIG_FRAME = None
@@ -27,6 +25,7 @@ while BIG_FRAME is None or SMALL_FRAME is None:
 position_thread = threading.Thread(target=update_positions).start()
 
 
+time.sleep(20)
 
 
 #Get robot pos and heading
