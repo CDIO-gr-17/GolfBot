@@ -16,6 +16,8 @@ port = 9999
 client_socket.connect((host, port))
 
 while True:
+    
+
     command = 'PATH'
     client_socket.sendall(command.encode('utf-8'))
 
@@ -71,6 +73,10 @@ while True:
             robot_position = masks['green']
             robot_heading = get_robot_angle(masks, grid)
             client_socket.sendall(str(robot_heading).encode('utf-8'))
+
+        if response == 'PICKUP!':
+            #insert the method for picking up the ball
+            break
 
 
     

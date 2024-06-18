@@ -249,6 +249,12 @@ class Robot:
                 self.current_heading = int(clientsocket.recv(3).decode('utf-8').strip()) #Recieve the new heading from the computer, and updates the current heading
                 print('The heading has been updated to: ', self.current_heading)
 
+            if self.step + 5 - len(path) >= 0:
+                checkin = 'PICKUP!'
+                clientsocket.send(checkin.encode('utf-8'))
+                self.step = 0
+                return
+
             else:
                 checkin = 'ONGOING'
                 clientsocket.send(checkin.encode('utf-8'))
