@@ -7,19 +7,17 @@ from computer_vision.Camera import capture_frames
 from computer_vision.ComputerVision import update_positions
 import Globals as G
 
-
-
-#Assigne thread to capture continous frames
+#Assign thread to capture continous frames
 camera_thread = threading.Thread(target=capture_frames).start()
-
-
 
 while G.BIG_FRAME is None or G.SMALL_FRAME is None:
     time.sleep(0.2)
 
+#Assign thread to update positions using CV
 position_thread = threading.Thread(target=update_positions).start()
 
 # We are in danger of going on old data cause we dont check if a new position is found in pictures
+# Dont really know if it is a problem, shouldnt be if recognition is good enough
 while G.ROBOT_POSITION is None or G.ROBOT_HEADING is None or G.GRID is None or G.BALLS is None:
     time.sleep(0.2)
 

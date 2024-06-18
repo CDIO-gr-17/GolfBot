@@ -1,4 +1,4 @@
-from computer_vision.CourseDetection import get_masks_from_frame, get_grid, find_clusters, find_clusters_center
+from computer_vision.CourseDetection import get_masks_from_frame, get_grid
 from computer_vision.RobotDetection import get_robot_pos_and_heading
 from pathfinding.Convert_to_node_grid import convert_to_grid
 import cv2 as cv
@@ -14,4 +14,5 @@ def update_positions():
         if robot_data is not None:
             G.ROBOT_HEADING, G.ROBOT_POSITION = robot_data
         print(G.ROBOT_HEADING)
+        print(G.ROBOT_POSITION)
 
