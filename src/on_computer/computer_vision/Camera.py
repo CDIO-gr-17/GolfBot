@@ -9,18 +9,24 @@ def capture_frames():
     org_width = cap.get(cv.CAP_PROP_FRAME_WIDTH)
     org_height = cap.get(cv.CAP_PROP_FRAME_HEIGHT)
 
+    if not cap.isOpened():
+        print("Error: Could not open the camera.")
+        return
+
     while True:
         # Capture a frame
         cap.set(cv.CAP_PROP_FRAME_WIDTH, org_width)
         cap.set(cv.CAP_PROP_FRAME_HEIGHT, org_height)
         ret, G.BIG_FRAME = cap.read()
-        cap.set(cv.CAP_PROP_FRAME_WIDTH, 320)
-        cap.set(cv.CAP_PROP_FRAME_HEIGHT, 180)
+        if not cap.set(cv.CAP_PROP_FRAME_WIDTH, 320):
+            print("Error: Could not set the width of the frame.")
+        if not cap.set(cv.CAP_PROP_FRAME_HEIGHT, 180):
+            print("Error: Could not set the height of the frame.")
         ret, G.SMALL_FRAME = cap.read()
 
 
         # Wait for 200 ms
-        time.sleep(0.2)
+        time.sleep(0.5)
 
     # Release the camera when done
     cap.release()
