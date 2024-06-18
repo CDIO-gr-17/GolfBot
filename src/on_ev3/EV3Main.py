@@ -16,23 +16,6 @@ print('Connection established')
 
 print('running...')
 
-def string_to_heading(heading_str):
-    if heading_str is 'ERRO':
-        print('Error in heading')
-        exit()
-    switcher = {
-        "NRTH": Heading.NORTH,
-        "NREA": Heading.NORTHEAST,
-        "EAST": Heading.EAST,
-        "SOWE": Heading.SOUTHEAST,
-        "SOUT": Heading.SOUTH,
-        "SOWE": Heading.SOUTHWEST,
-        "WEST": Heading.WEST,
-        "NOWE": Heading.NORTHWEST
-    }
-
-    return switcher.get(heading_str.upper(), None)
-
 def recv_all(sock, length): #Helper function to receive exactly 'length' bytes from 'sock'
     data = bytearray()
     while len(data) < length:
@@ -51,11 +34,8 @@ while True:
     if command == 'PATH':
         print('Recieved command: PATH')
 
-        recieved_heading = clientsocket.recv(4).decode('utf-8').strip()
-        print(recieved_heading)
-
-
-        currentHeading = string_to_heading(recieved_heading)
+        currentHeading_as_string = clientsocket.recv(3).decode('utf-8').strip()
+        currentHeading = int(currentHeading_as_string)
         print(currentHeading)
 
         length_data = clientsocket.recv(4)

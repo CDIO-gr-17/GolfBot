@@ -16,14 +16,9 @@ def calculate_heading(current_position, next_position):
         return
     # Calculate differences
 
-    print(current_position[0], current_position[1])
-    print(next_position[0], next_position[1])
-
     dx = next_position[0] - current_position[0]
     dy = next_position[1] - current_position[1]
 
-    print(dx)
-    print(dy)
 
     # Calculate the angle in radians from the positive x-axis
     angle_radians = math.atan2(dy, dx)
@@ -34,7 +29,7 @@ def calculate_heading(current_position, next_position):
     # Adjust the angle so that 0 degrees is north (up), 90 is east, 180 is south, and 270 is west
     heading = (90 + angle_degrees) % 360
 
-    print("the calculated heading ´", heading)
+    print("the calculated heading: ", heading)
 
     return heading
 
@@ -55,10 +50,9 @@ class Robot:
         self.AXLE_TRACK = 110
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
-        self.GRID_DISTANCE = 13
-        self.current_heading = 0
+        self.GRID_DISTANCE = 7.5
+        self.current_heading = None 
         self.step = 0
-        self.factor = 1
 
     def get_next_point(self,path):
         if (self.step == len(path)-1):
@@ -88,7 +82,7 @@ class Robot:
         print('current heading in calculate_drive_factor: ' + str(heading))
         curr_pos = path[loop_counter]
         print('current position in calculate_drive_factor: ' + str(curr_pos))
-        print('for loop starts')
+        print('The for loop starts')
         for nex_pos in path:
 
             if loop_counter == len(path)-1:
@@ -124,7 +118,8 @@ class Robot:
         print('turned ' + str(degrees) + ' degrees')
 
     def shortest_turn(self, current_degrees, target_degrees):
-        delta = (target_degrees - int(current_degrees)) % 360
+        delta = (target_degrees - current_degrees) % 360
+        print('The calculated delta is: ', delta)
         if delta > 180:
             delta -= 360
         return delta
@@ -138,13 +133,13 @@ class Robot:
         factor = self.calculate_drive_factor(self.current_heading, path)
         print('heading right before moveForward: ' + str(self.current_heading))
         self.robot.straight(self.GRID_DISTANCE*factor)
-        print('moved forward ' + str(self.GRID_DISTANCE*factor) + ' cm')
+        print('moved forward ' + str(self.GRID_DISTANCE*factor) + ' mm')
 
     def moveForwardCross(self, path):
         factor = self.calculate_drive_factor(self.current_heading, path)
         print('heading right before moveForward cross: ' + str(self.current_heading))
         self.robot.straight(self.GRID_DISTANCE * 1.414*factor)
-        print('moved forward cross ' + str(self.GRID_DISTANCE * 1.414*factor) + ' cm')
+        print('moved forward cross ' + str(self.GRID_DISTANCE * 1.414*factor) + ' mm')
 
 
     def moveBackward(self):
@@ -227,6 +222,8 @@ class Robot:
         start_y = start_node[1]
         clientsocket = socket
 
+        recieved_heading = current_heading
+
         self.current_heading = current_heading
 
         while(start_node != end_node):
@@ -238,12 +235,29 @@ class Robot:
             start_x = start_node[0]
             start_y = start_node[1]
 
-            off_course_notice = clientsocket.recv(4).decode('utf-8').strip()
-            if off_course_notice == 'STOP':
+            course_notice = clientsocket.recv(4).decode('utf-8').strip()
+            if course_notice == 'STOP':
                 checkin = 'STOPPED'
                 clientsocket.send(checkin.encode('utf-8'))
                 print('Stopped due to drift')
+                self.step = 0
                 return
+
+            if self.current_heading != recieved_heading:
+                checkin = 'HEADING'
+                clientsocket.send(checkin.encode('utf-8'))
+                self.current_heading = int(clientsocket.recv(3).decode('utf-8').strip()) #Recieve the new heading from the computer, and updates the current heading
+                print('The heading has been updated to: ', self.current_heading)
+
+            if self.step + 5 - len(path) >= 0:
+                checkin = 'PICKUP!'
+                clientsocket.send(checkin.encode('utf-8'))
+                self.step = 0
+                return
+
+            else:
+                checkin = 'ONGOING'
+                clientsocket.send(checkin.encode('utf-8'))
 
     def pickup_ball(self):
         self.front_motor.run(1000)

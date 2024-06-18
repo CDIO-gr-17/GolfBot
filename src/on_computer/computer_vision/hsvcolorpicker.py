@@ -7,6 +7,13 @@ def nothing(x):
 # Load image
 
 image = cv2.imread('frame.jpg')
+scale_percent = 500 # percent of original size, for example, 150 means 150% of original size
+width = int(image.shape[1] * scale_percent / 100)
+height = int(image.shape[0] * scale_percent / 100)
+dim = (width, height)
+
+# resize image
+image = cv2.resize(image, dim, interpolation = cv2.INTER_LINEAR)
 
 # Create a window
 cv2.namedWindow('image')
