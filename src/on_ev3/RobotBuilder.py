@@ -146,6 +146,54 @@ class Robot:
     def moveBackward(self):
         self.robot.straight(-100)
 
+    #Either we want to wiggle the robot to make it stay more in one place
+    #Or we want it to move back to goal after each ball
+    def shoot_one_ball(self, distance):
+        self.front_motor.run(-1200)
+        self.robot.straight(-distance)
+        wait(2000)
+        self.robot.straight(distance)
+        wait(2000)
+
+    def shoot_all_balls(self):
+        self.robot.settings(100, 200)
+        wiggle = 40
+        for i in range(3):
+            self.shoot_one_ball(wiggle)
+            wiggle += 40
+        self.front_motor.stop()
+
+    # def playWeAreTheChampions(self):
+    # # Define the notes and durations (in ms) for "We Are The Champions"
+    # # 90 BPM = 666.67 ms per beat in 6/8 time (111.11 ms per eighth note)
+    #     tempo = 90
+    #     eighth_note_duration = 60000 / tempo / 3  # duration of an eighth note
+
+    # # Notes and durations based on the sheet music
+    #     melody = [
+    #         ('F4', 1.5 * eighth_note_duration), ('E4', 0.5 * eighth_note_duration), ('F4', eighth_note_duration), 
+    #         ('E4', eighth_note_duration), ('C4', 1.5 * eighth_note_duration), ('A4', 0.5 * eighth_note_duration), 
+    #         ('D4', eighth_note_duration), ('A4', eighth_note_duration), ('C4', eighth_note_duration), 
+    #         ('F4', 2 * eighth_note_duration), ('G4', 0.5 * eighth_note_duration), ('A4', 1.5 * eighth_note_duration),
+    #         ('B4', eighth_note_duration), ('C4', eighth_note_duration), ('D4', eighth_note_duration), 
+    #         ('B4', eighth_note_duration), ('G4', 2 * eighth_note_duration), ('A4', eighth_note_duration),
+    #         ('B4', 2 * eighth_note_duration), ('G4', 2 * eighth_note_duration), ('C4', eighth_note_duration),
+    #         ('B4', eighth_note_duration), ('A4', eighth_note_duration), ('G4', eighth_note_duration),
+    #         ('E4', eighth_note_duration), ('G4', eighth_note_duration), ('D4', eighth_note_duration), 
+    #         ('C5', eighth_note_duration), ('B4', 2 * eighth_note_duration), ('A4', 1.5 * eighth_note_duration),
+    #         ('G4', 0.5 * eighth_note_duration), ('E4', eighth_note_duration), ('D4', eighth_note_duration), 
+    #         ('G4', eighth_note_duration), ('A4', eighth_note_duration), ('B4', eighth_note_duration), 
+    #         ('G4', 2 * eighth_note_duration)
+    #     ]
+
+    #     for note, duration in melody:
+    #         self.ev3.speaker.beep(note, duration)
+    #         wait(duration * 0.1)  # Short pause between notes
+
+    def test_speaker(self):
+        self.ev3.speaker.beep(frequency=440, duration=1000)  # Play a 440 Hz tone for 1000 ms (1 second)
+        wait(1000)  # Wait for 1 second to hear the beep
+
     def moveToNeighbor(self, target: Heading, currentHeading: Heading, path):
         print("")
         print('----------------------------- Start of moveToNeighbor for path step ' + str(path[self.step]) + '-----------------------------')
