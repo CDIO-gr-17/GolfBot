@@ -6,7 +6,7 @@ import cv2 as cv
 import numpy as np
 
 def update_positions():
-    global ROBOT_POSITION,ROBOT_HEADING,BIG_FRAME,SMALL_FRAME, GRID
+    global ROBOT_POSITION,ROBOT_HEADING, GRID
     masks = get_masks_from_frame(SMALL_FRAME)
     grid_data = get_grid(masks)
     GRID = convert_to_grid(grid_data)

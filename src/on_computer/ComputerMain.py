@@ -2,7 +2,7 @@ import socket, json, time
 from pathfinding.Convert_to_node_grid import convert_to_grid
 from pathfinding.feedback import is_robot_position_correct
 from pathfinding.PathfindingAlgorithm import a_star
-from positions.Positions import find_start_node, find_first_ball, get_robot_angle
+from positions.Positions import find_start_node, find_first_ball
 import threading
 from computer_vision.Camera import capture_frames
 from computer_vision.ComputerVision import update_positions
@@ -44,7 +44,7 @@ while True:
     command = 'PATH'
     client_socket.sendall(command.encode('utf-8'))
 
-    start_node = find_start_node(ROBOT_POSITION, GRID)# Function for diffing the calculated robot position with the camera robot position
+    start_node = find_start_node()# Function for diffing the calculated robot position with the camera robot position
     end_node = find_first_ball(GRID)
 
     # Send the path to the robot
@@ -76,7 +76,7 @@ while True:
         print(response)
 
         if response == 'ONGOING':
-            start_node = find_start_node(ROBOT_POSITION, GRID)
+            start_node = find_start_node()
 
         if response == 'HEADING':
             client_socket.sendall(str(ROBOT_HEADING).encode('utf-8'))

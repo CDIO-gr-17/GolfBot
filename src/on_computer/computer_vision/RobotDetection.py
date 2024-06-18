@@ -69,10 +69,12 @@ def get_robot_pos_and_heading(frame):
             farthest_vertex_low_res = farthest_vertex * [width_ratio, height_ratio]
             # Round the coordinates and convert to integers
             farthest_vertex_low_res = np.round(farthest_vertex_low_res).astype(int)
-            global GRID
             farthest_vertex_low_res_adjusted = (move_point(farthest_vertex_low_res,GRID))
+            if farthest_vertex_low_res_adjusted is None:
+                return None
+            rounded_pos = int(round(farthest_vertex_low_res_adjusted))
 
             # Check if the angles are within the range expected for a triangle
             if np.all(np.logical_and(angles > min_angle, angles < max_angle)):
                 cv.drawContours(frame, [contour], -1, (0, 255, 0), 2)
-                return adjusted_heading_degrees, farthest_vertex_low_res_adjusted
+                return adjusted_heading_degrees, rounded_pos
