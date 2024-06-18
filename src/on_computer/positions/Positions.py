@@ -1,5 +1,3 @@
-from positions.Displacement import move_point
-from positions.Robot_direction import calculate_heading
 from ComputerMain import GRID, ROBOT_POSITION
 
 def find_start_node():

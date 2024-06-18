@@ -1,5 +1,4 @@
 import socket, json, time
-from pathfinding.Convert_to_node_grid import convert_to_grid
 from pathfinding.feedback import is_robot_position_correct
 from pathfinding.PathfindingAlgorithm import a_star
 from positions.Positions import find_start_node, find_first_ball
