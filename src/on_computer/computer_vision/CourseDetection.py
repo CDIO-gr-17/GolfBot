@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+from on_computer.ComputerMain import BALLS
 
 def get_masks_from_frame(frame):
 
@@ -78,10 +79,11 @@ def find_clusters_center(stats):
     return centers
 
 def get_grid(masks):
-    balls = find_clusters_center(find_clusters(masks['balls'])['stats'])
+    global BALLS
+    BALLS = find_clusters_center(find_clusters(masks['balls'])['stats'])
     coordinates = np.argwhere(masks['red'] != 0)
     grid = np.zeros_like(masks['red'])
-    for center in balls:
+    for center in BALLS:
             grid[center[1], center[0]] = 2
     grid[coordinates[:, 0], coordinates[:, 1]] = 1
     return grid

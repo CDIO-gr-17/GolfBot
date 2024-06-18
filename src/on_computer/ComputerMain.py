@@ -7,7 +7,8 @@ from positions.Positions import find_start_node, find_first_ball, get_robot_angl
 import threading
 from computer_vision.RobotDetection import get_robot_pos_and_heading
 from src.on_computer.computer_vision.Camera import SMALL_FRAME, capture_frames
-from src.on_computer.computer_vision.CourseDetection import get_masks_from_frame, get_grid, find_clusters_center, find_clusters
+from src.on_computer.computer_vision.ComputerVision import update_positions
+
 
 BIG_FRAME = None
 SMALL_FRAME = None
@@ -17,25 +18,13 @@ camera_thread = threading.Thread(target=capture_frames).start()
 
 ROBOT_POSITION = None
 ROBOT_HEADING = None
-GRID_DATA = None
 GRID = None
 BALLS = None
 
-while BIG_FRAME is not None or SMALL_FRAME is not None:
+while BIG_FRAME is None or SMALL_FRAME is None:
     time.sleep(0.2)
 
-
-robot_data = get_robot_pos_and_heading(BIG_FRAME)
-if robot_data is not None:
-    ROBOT_POSITION, ROBOT_HEADING = robot_data
-
-
-masks = get_masks_from_frame(SMALL_FRAME)
-GRID_DATA = get_grid(masks['red'])
-GRID = convert_to_grid(GRID_DATA)
-BALLS = find_clusters_center(find_clusters(masks['ball'])['stats'])
-
-
+position_thread = threading.Thread(target=update_positions).start()
 
 
 
