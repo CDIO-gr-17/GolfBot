@@ -33,11 +33,4 @@ def get_path_to_goal(grid, mask_blue):
     path = a_star(grid, robot_pos, adjusted_goal)       #Maybe need conversion to Nodes
     return path
 
-def deposit(mask_blue):
-    robot_pos = get_robot_pos_with_mask(mask_blue)
-    #goal_heading = calculate_heading(robot_pos,)
-    goal_heading = 90 #directly east
-    #Send command containing the following:
-        #Robot.turntoheading(goal_heading)
-        #Robot.straight(5) #adjust lenght here
-        #Robot.shootallballs()
+

@@ -162,6 +162,19 @@ class Robot:
             self.shoot_one_ball(wiggle)
             wiggle += 40
         self.front_motor.stop()
+    
+    def pickup_ball(self, distance):
+        self.front_motor.run(1200)
+        wait(2000)
+        self.robot.settings(100, 200)
+        self.robot.straight(distance * 1.5)
+        self.front_motor.stop()
+
+    def deposit(self):
+        goal_heading = 90 #directly east
+    #Send command containing the following:
+        self.turn_to_heading(goal_heading)
+        self.shoot_all_balls()
 
     # def playWeAreTheChampions(self):
     # # Define the notes and durations (in ms) for "We Are The Champions"
@@ -308,14 +321,7 @@ class Robot:
                 checkin = 'ONGOING'
                 clientsocket.send(checkin.encode('utf-8'))
 
-    def pickup_ball(self, distance):
-        self.front_motor.run(1200)
-        wait(2000)
-        self.robot.settings(100, 200)
-        self.robot.straight(distance * 1.5)
-        self.front_motor.stop()
-
-
+   
 
 
 
