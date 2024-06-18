@@ -20,6 +20,7 @@ position_thread = threading.Thread(target=update_positions).start()
 while True:
     if G.SMALL_FRAME is not None:
         cv.imshow('frame', G.BIG_FRAME)
+        print(G.ROBOT_POSITION)
         if cv.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to exit the loop
             break
 

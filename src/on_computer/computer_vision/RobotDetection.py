@@ -69,9 +69,9 @@ def get_robot_pos_and_heading(frame):
             # Round the coordinates and convert to integers
             farthest_vertex_low_res = np.round(farthest_vertex_low_res).astype(int)
             farthest_vertex_low_res_adjusted = (move_point(farthest_vertex_low_res,G.GRID))
-            # if farthest_vertex_low_res_adjusted is None:
-            #     return None
-            # rounded_pos = int(round(farthest_vertex_low_res_adjusted))
+            if farthest_vertex_low_res_adjusted is None:
+                return None
+            farthest_vertex_low_res_adjusted = (int(farthest_vertex_low_res_adjusted[0]), int(farthest_vertex_low_res_adjusted[1]))
 
             # Check if the angles are within the range expected for a triangle
             if np.all(np.logical_and(angles > min_angle, angles < max_angle)):
