@@ -1,11 +1,47 @@
-import time
-import socket, json
+import socket, json, time
 from sys import orig_argv
-from computer_vision.ComputerVision import get_masks_from_camera, get_grid
 from pathfinding.Convert_to_node_grid import convert_to_grid
 from pathfinding.feedback import is_robot_position_correct
 from pathfinding.PathfindingAlgorithm import a_star
 from positions.Positions import find_start_node, find_first_ball, get_robot_angle
+import threading
+from computer_vision.RobotDetection import get_robot_pos_and_heading
+from src.on_computer.computer_vision.Camera import SMALL_FRAME, capture_frames
+from src.on_computer.computer_vision.CourseDetection import get_masks_from_frame, get_grid, find_clusters_center, find_clusters
+
+BIG_FRAME = None
+SMALL_FRAME = None
+
+#Assigne thread to capture continous frames
+camera_thread = threading.Thread(target=capture_frames).start()
+
+ROBOT_POSITION = None
+ROBOT_HEADING = None
+GRID_DATA = None
+GRID = None
+BALLS = None
+
+while BIG_FRAME is not None or SMALL_FRAME is not None:
+    time.sleep(0.2)
+
+
+robot_data = get_robot_pos_and_heading(BIG_FRAME)
+if robot_data is not None:
+    ROBOT_POSITION, ROBOT_HEADING = robot_data
+
+
+masks = get_masks_from_frame(SMALL_FRAME)
+GRID_DATA = get_grid(masks['red'])
+
+BALLS = find_clusters_center(find_clusters(masks['ball'])['stats'])
+
+
+
+
+
+
+#Get robot pos and heading
+#Get grid
 
 #Creates a socket object, and established a connection to the robot
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,6 +50,7 @@ host = "192.168.8.111"
 port = 9999
 
 client_socket.connect((host, port))
+
 
 while True:
     command = 'PATH'
@@ -73,7 +110,7 @@ while True:
             client_socket.sendall(str(robot_heading).encode('utf-8'))
 
 
-    
+
     # Send the stop command to the robot
     while True:
         course_notice = 'STOP'
