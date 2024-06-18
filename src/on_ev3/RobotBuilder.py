@@ -6,6 +6,7 @@ from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
+from pybricks.tools import wait
 
 from Heading import Heading
 
@@ -260,8 +261,10 @@ class Robot:
                 clientsocket.send(checkin.encode('utf-8'))
 
     def pickup_ball(self, distance):
-        self.front_motor.run(1000)
-        self.robot.straight(distance)
+        self.front_motor.run(1200)
+        wait(2000)
+        self.robot.settings(100, 200)
+        self.robot.straight(distance * 1.5)
         self.front_motor.stop()
 
 
