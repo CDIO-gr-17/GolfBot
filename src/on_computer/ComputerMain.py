@@ -42,16 +42,16 @@ def degrees_to_heading(degrees):
             return "ERRO"
     else:
         return "ERRO<ç"
+    
+
 
 def run_pickup(robot_pos, end_node):
     print('ball is close')
     command = 'PICK'
     client_socket.sendall(command.encode('utf-8'))
-    #calculate heading for ball
-    #new_heading = degrees_to_heading(calculate_heading(robot_pos,end_node))
-    client_socket.sendall("WEST".encode('utf-8'))
-
-
+    #calculate heading from robot, to ball, to send
+    new_heading = degrees_to_heading(calculate_heading(robot_pos,end_node))
+    client_socket.sendall(new_heading.encode('utf-8'))
 
 
 counter = 0
@@ -68,10 +68,10 @@ while True:
 
     end_node = find_first_ball(grid)
 
-    #distance_to_ball = distance_between(robot_position, end_node)
-    # if distance_to_ball < 5 and counter == ball_array[counter]
-
-    if True:
+    
+    distance_to_ball = distance_between(robot_position, end_node)
+    
+    if distance_to_ball <= 13 and counter == ball_array[counter] :
         run_pickup(robot_position, end_node)
         counter += 1
 
