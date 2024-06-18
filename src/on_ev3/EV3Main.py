@@ -63,16 +63,17 @@ while True:
             print("Awaiting new command...")
     elif command == "PICK":
         print('Recieved command: PICK')
-
         recieved_heading = clientsocket.recv(4).decode('utf-8').strip()
+        recieved_distance = clientsocket.recv(4).decode('utf-8').strip()
         print(recieved_heading)
         clientsocket.close()
-
-        currentHeading = string_to_heading(recieved_heading)
+        
+        currentHeading = int(recieved_heading)
         print(currentHeading)
+
         robot.turn_to_heading(currentHeading)
 
-        robot.pickup_ball()
+        robot.pickup_ball(recieved_distance)
 
 
 

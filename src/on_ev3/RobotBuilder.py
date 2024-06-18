@@ -250,7 +250,7 @@ class Robot:
                 print('The heading has been updated to: ', self.current_heading)
 
             if self.step + 5 - len(path) >= 0:
-                checkin = 'PICKUP!'
+                checkin = 'PICK'
                 clientsocket.send(checkin.encode('utf-8'))
                 self.step = 0
                 return
@@ -259,9 +259,9 @@ class Robot:
                 checkin = 'ONGOING'
                 clientsocket.send(checkin.encode('utf-8'))
 
-    def pickup_ball(self):
+    def pickup_ball(self, distance):
         self.front_motor.run(1000)
-        self.robot.straight(500)
+        self.robot.straight(distance)
         self.front_motor.stop()
 
 
