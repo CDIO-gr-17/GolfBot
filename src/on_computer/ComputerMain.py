@@ -1,37 +1,59 @@
 import socket
 import json
-from computer_vision.ComputerVision import get_masks_from_camera, get_grid
-from pathfinding.Convert_to_node_grid import convert_to_grid
+import time
+import threading
 from pathfinding.feedback import is_robot_position_correct
 from pathfinding.PathfindingAlgorithm import a_star
-from positions.Positions import find_start_node, find_first_ball, get_robot_angle  # noqa: E501 <--- Is writting so Flake8 does not complain about line length
-from helpers.end_of_path_pickup import distance_between, get_path_to_goal
-from positions.Robot_direction import calculate_heading
+from positions.Positions import find_start_node, find_first_ball
+from computer_vision.Camera import capture_frames
+from computer_vision.ComputerVision import update_positions
+import Globals as G
+import cv2 as cv
+
+#Assign thread to capture continous frames
+threading.Thread(target=capture_frames).start()
+
+while G.BIG_FRAME is None or G.SMALL_FRAME is None:
+    time.sleep(0.2)
+
+#Assign thread to update positions using CV
+threading.Thread(target=update_positions).start()
+
+while True:
+    if G.SMALL_FRAME is not None:
+        cv.imshow('frame', G.BIG_FRAME)
+        print(G.ROBOT_POSITION)
+        if cv.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to exit the loop
+            break
+
+# We are in danger of going on old data cause we dont check if a new position is found in pictures
+# Dont really know if it is a problem, shouldnt be if recognition is good enough
+while G.ROBOT_POSITION is None or G.ROBOT_HEADING is None or G.GRID is None or G.BALLS is None:
+    time.sleep(0.2)
 
 
-# Creates a socket, and established a connection to the robot
-host = "192.168.8.111"
-port = 9999
+
+time.sleep(20)
+cv.destroyAllWindows()
+
+
+#Creates a socket object, and established a connection to the robot
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((host, port))
+HOST = "192.168.8.111"
+PORT = 9999
+client_socket.connect((HOST, PORT))
+
 
 counter = 0
 while True:
+    COMMAND = 'PATH'
+    client_socket.sendall(COMMAND.encode('utf-8'))
 
-    command = 'PATH'
-    client_socket.sendall(command.encode('utf-8'))
+    start_node = find_start_node()# Function for diffing the calculated robot position with the camera robot position
+    end_node = find_first_ball(G.GRID)
 
-    masks = get_masks_from_camera()
-    raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])
-    grid = convert_to_grid(raw_grid_data)
-    robot_position = masks['green']
-    robot_heading = get_robot_angle(masks, grid)
-    print('The robots heading: ', robot_heading)
-
-    # Find the robot, the first ball and a path between them
-    start_node = find_start_node(robot_position, grid)
-    end_node = find_first_ball(grid)
-    path = a_star(grid, start_node, end_node)
+    # Send the path to the robot
+    path = a_star(G.GRID, start_node, end_node)
 
     # The heading of the robot is sent to the robot
     if robot_heading is None:
@@ -48,9 +70,19 @@ while True:
         print('The algorithm found a path!')
         path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
         path_as_json = json.dumps(path_as_dictionaries)
-        json_length = len(path_as_json)
-        client_socket.sendall(json_length.to_bytes(4, 'big'))  # We start by sending the length of the json string, so the robot knows how much data to expect # noqa: E501
-        client_socket.sendall(path_as_json.encode('utf-8'))
+    else: print('The algorithm could not find a path')
+
+    if G.ROBOT_HEADING is None:
+        print('ERROR: No heading calcultated')
+        exit()
+    else:
+        heading_as_string = str(G.ROBOT_HEADING)
+        client_socket.sendall(heading_as_string.encode('utf-8'))
+
+    json_length = len(path_as_json)
+    client_socket.sendall(json_length.to_bytes(4, 'big'))
+
+    client_socket.sendall(path_as_json.encode('utf-8'))
 
     # While loop that runs until the robot is deemed to be of the path
     while (is_robot_position_correct(robot_heading, path, start_node)):
@@ -62,13 +94,7 @@ while True:
 
         # ONGOING means that the robot is still on the path, and we simply update the variables and receive a confirmation # noqa: E501
         if response == 'ONGOING':
-            masks = get_masks_from_camera()
-            raw_grid_data = get_grid(masks['red'], masks['orange'], masks['white'])  # noqa: E501
-            grid = convert_to_grid(raw_grid_data)
-            robot_position = masks['green']
-            start_node = find_start_node(robot_position, grid)
-            confirmation = client_socket.recv(7).decode('utf-8').strip()
-            print(confirmation)
+            start_node = find_start_node()
 
             # HEADING means that the robot has done an adjustment of it's heading,
         # we calculate the new actual heading an send that to the robot and receive a confirmation # noqa: E501
@@ -96,8 +122,8 @@ while True:
 
     # Send the stop command to the robot
     while True:
-        course_notice = 'STOP'
-        client_socket.sendall(course_notice.encode('utf-8'))
+        COURSE_NOTICE = 'STOP'
+        client_socket.sendall(COURSE_NOTICE.encode('utf-8'))
         response = client_socket.recv(7).decode('utf-8').strip()
         print(response)
         if response == 'STOPPED':
