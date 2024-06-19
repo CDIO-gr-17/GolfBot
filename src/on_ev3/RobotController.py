@@ -14,6 +14,7 @@ class RobotController:
     def recieve_command(self, size = 1024):
         return self.client_socket.recv(size).decode('utf-8').strip()
 
+
     def handle_command(self, command):
         parts = command.split()
         if not parts:
