@@ -1,6 +1,5 @@
 import socket
 import json
-
 from computer_vision.ComputerVision import get_masks_from_camera, get_grid
 from pathfinding.Convert_to_node_grid import convert_to_grid
 from pathfinding.feedback import is_robot_position_correct
@@ -43,7 +42,6 @@ def score_balls():
 
 counter = 0
 while True:
-
 
     command = 'PATH'
     client_socket.sendall(command.encode('utf-8'))
