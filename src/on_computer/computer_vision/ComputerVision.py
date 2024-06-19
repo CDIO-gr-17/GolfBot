@@ -12,4 +12,3 @@ def update_positions():
         robot_data = get_robot_pos_and_heading(G.BIG_FRAME)
         if robot_data is not None:
             G.ROBOT_HEADING, G.ROBOT_POSITION = robot_data
-

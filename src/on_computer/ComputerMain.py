@@ -41,7 +41,7 @@ cv.destroyAllWindows()
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 HOST = "192.168.8.111"
 PORT = 9999
-client_socket.connect((host, port))
+client_socket.connect((HOST, PORT))
 
 
 while True:
@@ -72,7 +72,7 @@ while True:
 
     client_socket.sendall(path_as_json.encode('utf-8'))
 
-    while(is_robot_position_correct(G.ROBOT_HEADING, path, start_node)):
+    while is_robot_position_correct(G.ROBOT_HEADING, path, start_node):
         print("correct")
         COURSE_NOTICE = 'KEEP'
         client_socket.sendall(COURSE_NOTICE.encode('utf-8'))
