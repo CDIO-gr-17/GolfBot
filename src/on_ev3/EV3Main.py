@@ -1,6 +1,7 @@
 #!/usr/bin/env pybricks-micropython
 
 # The above line is how the EV# determines that this is it's main python script
+import time
 from RobotController import RobotController
 from EV3Connector import establish_socket
 
@@ -16,4 +17,5 @@ while True:
         while "\n" in buffer:
             command, buffer = buffer.split("\n", 1)
             controller.handle_command(command)
-
+    else:
+        time.sleep(0.05)

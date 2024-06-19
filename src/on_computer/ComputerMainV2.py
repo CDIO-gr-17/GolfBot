@@ -1,4 +1,3 @@
-from enum import CONTINUOUS
 import socket
 import json
 import time
@@ -9,7 +8,6 @@ from positions.Positions import find_first_ball, find_start_node
 from computer_vision.Camera import capture_frames
 from computer_vision.ComputerVision import update_positions
 import Globals as G
-import cv2 as cv
 from ComputerController import ComputerController
 from helpers.end_of_path_pickup import distance_between, get_path_to_goal
 
@@ -52,7 +50,7 @@ while True:
             controller.send_command('CONTINUE')
         counter = 0
 
-    elif (distance < 10):
+    elif distance < 10:
         print("PICK")
         controller.send_command('PICK', G.ROBOT_HEADING, distance)
         counter += 1
@@ -64,6 +62,3 @@ while True:
         while(is_robot_position_correct(path, find_start_node())):
             pass
         controller.send_command('ABORT')
-        controller.send_command('ABORT')
-
-
