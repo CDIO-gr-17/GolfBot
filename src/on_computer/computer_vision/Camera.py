@@ -17,8 +17,10 @@ def capture_frames():
 
     while True:
         # Capture a frame
-        G.BIG_FRAME = cap.read()
-        G.SMALL_FRAME = cv.resize(G.BIG_FRAME, (320, 180))
+        ret, G.BIG_FRAME = cap.read()
+        print("HERE",G.BIG_FRAME)
+        if ret:
+            G.SMALL_FRAME = cv.resize(G.BIG_FRAME[1], (320, 180))
 
         # Wait for 200 ms
         time.sleep(0.1)

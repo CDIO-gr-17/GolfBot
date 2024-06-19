@@ -22,7 +22,7 @@ class Node:
             if neighbor_x >= 0 and neighbor_y >= 0 and neighbor_x < cols and neighbor_y < rows:
                 neighbors.append(self.grid[neighbor_y][neighbor_x])
         return neighbors
-    
+
     def to_json(self):
         return {"x": self.x, "y": self.y}
 
@@ -30,34 +30,34 @@ class Node:
     def from_json(cls, json_dict):
         return cls(json_dict["x"], json_dict["y"])
 
-rows = 24
-cols = 36
-grid = []
+# rows = 24
+# cols = 36
+# grid = []
 
-file = open('a_star.in', 'r')
-lines = file.read().split('\n')
-file.close()
+# file = open('a_star.in', 'r')
+# lines = file.read().split('\n')
+# file.close()
 
-start = None
-end = None
+# start = None
+# end = None
 
-# set test data. THIS IS THE GRID THAT IS BEING USED RIGHT NOW.
-for i in range(rows):
-    row = list(map(int, lines[i].split()))
-    row_nodes = []
-    for j in range(len(row)):
-        node = Node(grid, j, i)
-        element = row[j]
-        if element == 1:
-            node.type = 'wall'
-        elif element == 2:
-            if not start:
-                start = node
-            elif not end:
-                end = node
+# # set test data. THIS IS THE GRID THAT IS BEING USED RIGHT NOW.
+# for i in range(rows):
+#     row = list(map(int, lines[i].split()))
+#     row_nodes = []
+#     for j in range(len(row)):
+#         node = Node(grid, j, i)
+#         element = row[j]
+#         if element == 1:
+#             node.type = 'wall'
+#         elif element == 2:
+#             if not start:
+#                 start = node
+#             elif not end:
+#                 end = node
 
-        row_nodes.append(node)
-    grid.append(row_nodes)
+#         row_nodes.append(node)
+#     grid.append(row_nodes)
 
 # g score, estimated distance
 

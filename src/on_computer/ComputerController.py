@@ -1,4 +1,4 @@
-class RobotController:
+class ComputerController:
     def __init__(self, socket):
         self.socket = socket
 

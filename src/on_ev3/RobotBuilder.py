@@ -8,6 +8,7 @@ from pybricks.robotics import DriveBase
 from pybricks.tools import wait
 
 from Heading import Heading
+from src.on_ev3.RobotController import RobotController
 
 
 def calculate_heading(current_position, next_position):
@@ -165,7 +166,7 @@ class Robot:
         self.front_motor.run(1200)
         wait(2000)
         self.robot.settings(100, 200)
-        self.robot.straight(distance * 1.5)
+        self.robot.straight(distance * self.GRID_DISTANCE*1.2)
         self.front_motor.stop()
 
     def deposit(self):
@@ -281,13 +282,11 @@ class Robot:
         print("")
         return currentHeading
 
-    def move_through_path(self, start_node, end_node, current_heading, path, socket):
-        start_x = start_node[0]
-        start_y = start_node[1]
-        clientsocket = socket
+    def move_through_path(self,path, current_heading, controller):
+        start_node = path[0]
+        end_node = path[len(path)-1]
 
         # We will later need to keep track of both the current heading and the heading that the robot initially recieved # noqa: E501
-        recieved_heading = current_heading
         self.current_heading = current_heading
 
         # This loops runs the robot through the path, unless stopped by the computer # noqa: E501
@@ -295,37 +294,34 @@ class Robot:
         while (start_node != end_node):
             self.current_heading = self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)  # noqa: E501
             start_node = path[self.step]
-            start_x = start_node[0]
-            start_y = start_node[1]
 
-            clientsocket.send('DONE'.encode('utf-8'))  # Inform the computer that the step is completed # noqa: E501
-            course_notice = clientsocket.recv(4).decode('utf-8')  # Receive an update from the computer, after traversing the first node # noqa: E501
+            checkin = controller.recieve_command()
 
-            if course_notice == 'STOP':  # Happens if the computer detects the robot to be off course # noqa: E501
-                checkin = 'STOPPED'
-                clientsocket.send(checkin.encode('utf-8'))
-                print('Stopped due to drift')
-                self.step = 0  # Reset the step counter, so that the robot will start from the beginning of the next path # noqa: E501
-                return  # We return to EV3Main, as the robot is no longer on the path # noqa: E501
+            if checkin == "CONTINUE":
+                print('Recieved command: CONTINUE')
             else:
-                if self.current_heading != recieved_heading:  # In the event that the robot has adjusted it's heading # noqa: E501
-                    checkin = 'HEADING'
-                    clientsocket.send(checkin.encode('utf-8'))
-                    self.current_heading = int(clientsocket.recv(3).decode('utf-8').rstrip())  # Recieve the new heading from the computer, and updates the current heading # noqa: E501
-                    print('The heading has been updated to: ', self.current_heading)
-                    clientsocket.send('CONFIRM'.encode('utf-8'))
+                break
 
-                if self.step + 5 - len(path) >= 0:  # If the robot is within 5 steps of the end of the path # noqa: E501
-                    checkin = 'PICK'
-                    clientsocket.send(checkin.encode('utf-8'))
-                    self.step = 0
-                    return # We return to EV3Main, as the robot is no longer on the path, it should now attempt to pick up the ball # noqa: E501
 
-                else:
-                    checkin = 'ONGOING'
-                    clientsocket.send(checkin.encode('utf-8'))
-                    time.sleep(0.5)
-                    clientsocket.send('CONFIRM'.encode('utf-8'))
+            # else:
+            #     if self.current_heading != recieved_heading:  # In the event that the robot has adjusted it's heading # noqa: E501
+            #         checkin = 'HEADING'
+            #         socket.send(checkin.encode('utf-8'))
+            #         self.current_heading = int(socket.recv(3).decode('utf-8').rstrip())  # Recieve the new heading from the computer, and updates the current heading # noqa: E501
+            #         print('The heading has been updated to: ', self.current_heading)
+            #         socket.send('CONFIRM'.encode('utf-8'))
+
+            #     if self.step + 5 - len(path) >= 0:  # If the robot is within 5 steps of the end of the path # noqa: E501
+            #         checkin = 'PICK'
+            #         socket.send(checkin.encode('utf-8'))
+            #         self.step = 0
+            #         return # We return to EV3Main, as the robot is no longer on the path, it should now attempt to pick up the ball # noqa: E501
+
+            #     else:
+            #         checkin = 'ONGOING'
+            #         socket.send(checkin.encode('utf-8'))
+            #         time.sleep(0.5)
+            #         socket.send('CONFIRM'.encode('utf-8'))
 
 
 
