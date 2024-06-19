@@ -292,17 +292,17 @@ class Robot:
         # This loops runs the robot through the path, unless stopped by the computer # noqa: E501
         # It will always run at least once, as the robot will always be on the path when this function is called # noqa: E501
         while (start_node != end_node):
-            self.current_heading = self.moveToPoint(
-                path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)  # noqa: E501
+            self.current_heading = self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)  # noqa: E501
             start_node = path[self.step]
 
-
-            checkin = controller.recieve_command(5)
-            print(checkin)
-
-            if "ABORT" in checkin:
-                break
-
+            buffer = ""
+            data = controller.recieve_command()
+            if data:
+                buffer += data
+                while "\n" in buffer:
+                    command, buffer = buffer.split("\n", 1)
+                    if command == 'ABORT':
+                        return
 
             # else:
             #     if self.current_heading != recieved_heading:  # In the event that the robot has adjusted it's heading # noqa: E501

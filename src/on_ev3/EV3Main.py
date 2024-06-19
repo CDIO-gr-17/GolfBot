@@ -5,6 +5,7 @@ from RobotController import RobotController
 from EV3Connector import establish_socket
 
 socket = establish_socket()
+socket.setblocking(False)
 controller = RobotController(socket)
 buffer = ""
 

@@ -12,7 +12,10 @@ class RobotController:
         self.robot = Robot()
 
     def recieve_command(self, size = 1024):
-        return self.client_socket.recv(size).decode('utf-8').strip()
+        try:
+            return self.client_socket.recv(size).decode('utf-8').strip()
+        except BlockingIOError:
+            return ""
 
 
     def handle_command(self, command):
@@ -20,6 +23,13 @@ class RobotController:
         if not parts:
             return
 
+
+        #We could instead do the below with
+        # def send_message(command, payload):
+        #     message = json.dumps({'command': command, 'payload': payload})
+        #     client_socket.send((message + "\n").encode('utf-8'))
+        #But on computer and then put it together as json object and acces everything with ['command'] and ['payload']
+        # and easier to understand and more secure to use with None and shit like that
         cmd = parts[0]
         params = parts[1:]
 
