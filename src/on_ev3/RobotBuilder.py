@@ -1,14 +1,11 @@
 import math
 import time
-
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 from pybricks.tools import wait
-
 from Heading import Heading
-from src.on_ev3.RobotController import RobotController
 
 
 def calculate_heading(current_position, next_position):
@@ -120,7 +117,7 @@ class Robot:
 
     def shortest_turn(self, current_degrees, target_degrees):
         delta = (target_degrees - current_degrees) % 360
-        print('The calculated delta is: ', delta)
+        print('The calculated delta is: ' + str(delta))
         if delta > 180:
             delta -= 360
         return delta
@@ -285,6 +282,9 @@ class Robot:
     def move_through_path(self,path, current_heading, controller):
         start_node = path[0]
         end_node = path[len(path)-1]
+        print(path)
+        start_x = path[0][0]
+        start_y = path[0][1]
 
         # We will later need to keep track of both the current heading and the heading that the robot initially recieved # noqa: E501
         self.current_heading = current_heading
@@ -292,14 +292,15 @@ class Robot:
         # This loops runs the robot through the path, unless stopped by the computer # noqa: E501
         # It will always run at least once, as the robot will always be on the path when this function is called # noqa: E501
         while (start_node != end_node):
-            self.current_heading = self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)  # noqa: E501
+            self.current_heading = self.moveToPoint(
+                path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)  # noqa: E501
             start_node = path[self.step]
 
-            checkin = controller.recieve_command()
 
-            if checkin == "CONTINUE":
-                print('Recieved command: CONTINUE')
-            else:
+            checkin = controller.recieve_command(5)
+            print(checkin)
+
+            if "ABORT" in checkin:
                 break
 
 

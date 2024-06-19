@@ -12,4 +12,4 @@ class ComputerController:
         self.socket.sendall(message.encode('utf-8'))
 
     def recieve_command(self):
-        return self.socket.recv(1024).decode('utf-8').strip()
+        return self.socket.recv(2048).decode('utf-8').strip()

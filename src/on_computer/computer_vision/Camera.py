@@ -14,13 +14,11 @@ def capture_frames():
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 
-
     while True:
         # Capture a frame
         ret, G.BIG_FRAME = cap.read()
-        print("HERE",G.BIG_FRAME)
         if ret:
-            G.SMALL_FRAME = cv.resize(G.BIG_FRAME[1], (320, 180))
+            G.SMALL_FRAME = cv.resize(G.BIG_FRAME, (320, 180))
 
         # Wait for 200 ms
         time.sleep(0.1)

@@ -52,6 +52,7 @@ def get_robot_pos_and_heading(frame):
             heading_degrees = np.degrees(heading)
             # Adjust the heading so that 0 degrees is up and increases in a clockwise direction
             adjusted_heading_degrees = (heading_degrees + 90) % 360
+            new_adjusted_heading_degrees = int(adjusted_heading_degrees)
 
 
             # Full resolution of the image
@@ -76,4 +77,4 @@ def get_robot_pos_and_heading(frame):
             # Check if the angles are within the range expected for a triangle
             if np.all(np.logical_and(angles > min_angle, angles < max_angle)):
                 cv.drawContours(frame, [contour], -1, (0, 255, 0), 2)
-                return adjusted_heading_degrees, farthest_vertex_low_res_adjusted
+                return new_adjusted_heading_degrees, farthest_vertex_low_res_adjusted
