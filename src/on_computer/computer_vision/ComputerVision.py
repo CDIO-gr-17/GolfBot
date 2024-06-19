@@ -1,8 +1,7 @@
+"""This is for doing somehting"""
 from computer_vision.CourseDetection import get_masks_from_frame, get_grid
 from computer_vision.RobotDetection import get_robot_pos_and_heading
 from pathfinding.Convert_to_node_grid import convert_to_grid
-import cv2 as cv
-import numpy as np
 import Globals as G
 
 def update_positions():
