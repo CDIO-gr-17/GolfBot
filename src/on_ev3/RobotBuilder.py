@@ -1,6 +1,5 @@
 import math
-import socket
-#sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+import time
 
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor
@@ -12,7 +11,7 @@ from Heading import Heading
 
 
 def calculate_heading(current_position, next_position):
-    if next_position == None or current_position == None:
+    if next_position is None or current_position is None:
         print("Tail or head is not found")
         return
     # Calculate differences
@@ -20,14 +19,13 @@ def calculate_heading(current_position, next_position):
     dx = next_position[0] - current_position[0]
     dy = next_position[1] - current_position[1]
 
-
     # Calculate the angle in radians from the positive x-axis
     angle_radians = math.atan2(dy, dx)
 
     # Convert radians to degrees
     angle_degrees = math.degrees(angle_radians)
 
-    # Adjust the angle so that 0 degrees is north (up), 90 is east, 180 is south, and 270 is west
+    # Adjust the angle so that 0 degrees is north (up), 90 is east, 180 is south, and 270 is west # noqa: E501
     heading = (90 + angle_degrees) % 360
 
     print("the calculated heading: ", heading)
@@ -36,7 +34,6 @@ def calculate_heading(current_position, next_position):
 
 
 class Robot:
-
     # Initialize the EV3 Brick.
     def __init__(self):
         self.ev3 = EV3Brick()
@@ -49,16 +46,17 @@ class Robot:
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
         self.AXLE_TRACK = 110
-        self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
+        self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)  # noqa: E501
 
         self.GRID_DISTANCE = 7.5
-        self.current_heading = None 
+        self.current_heading = None
         self.step = 0
 
-    def get_next_point(self,path):
+    def get_next_point(self, path):
         if (self.step == len(path)-1):
-            nextpoint = [self.step] #fix later?
-        else: nextpoint = path[self.step+1]
+            nextpoint = [self.step]  # fix later?, aner ikke hvem der har skrevet dette - Johan # noqa: E501
+        else:
+            nextpoint = path[self.step+1]
         return nextpoint
 
     def get_current_point(self, path):
@@ -87,14 +85,15 @@ class Robot:
         for nex_pos in path:
 
             if loop_counter == len(path)-1:
-                    break
+                break
             nex_pos = path[loop_counter+1]
             print('next position in calculate_drive_factor: ' + str(nex_pos))
 
             calc_heading = calculate_heading(curr_pos, nex_pos)
             print('     if statement starts: if heading (' + str(heading) + ') == new_heading (' + str(heading) + ')')
             print('     heading in calculate_drive_factor: ' + str(heading))
-            if(calc_heading == heading):
+
+            if (calc_heading == heading):
                 print(          'heading: ' + str(heading) + ' == new_heading: ' + str(heading))
                 acc_steps += 1
                 heading = calc_heading
@@ -142,7 +141,6 @@ class Robot:
         self.robot.straight(self.GRID_DISTANCE * 1.414*factor)
         print('moved forward cross ' + str(self.GRID_DISTANCE * 1.414*factor) + ' mm')
 
-
     def moveBackward(self):
         self.robot.straight(-100)
 
@@ -162,7 +160,7 @@ class Robot:
             self.shoot_one_ball(wiggle)
             wiggle += 40
         self.front_motor.stop()
-    
+
     def pickup_ball(self, distance):
         self.front_motor.run(1200)
         wait(2000)
@@ -184,18 +182,18 @@ class Robot:
 
     # # Notes and durations based on the sheet music
     #     melody = [
-    #         ('F4', 1.5 * eighth_note_duration), ('E4', 0.5 * eighth_note_duration), ('F4', eighth_note_duration), 
-    #         ('E4', eighth_note_duration), ('C4', 1.5 * eighth_note_duration), ('A4', 0.5 * eighth_note_duration), 
-    #         ('D4', eighth_note_duration), ('A4', eighth_note_duration), ('C4', eighth_note_duration), 
+    #         ('F4', 1.5 * eighth_note_duration), ('E4', 0.5 * eighth_note_duration), ('F4', eighth_note_duration),
+    #         ('E4', eighth_note_duration), ('C4', 1.5 * eighth_note_duration), ('A4', 0.5 * eighth_note_duration),
+    #         ('D4', eighth_note_duration), ('A4', eighth_note_duration), ('C4', eighth_note_duration),
     #         ('F4', 2 * eighth_note_duration), ('G4', 0.5 * eighth_note_duration), ('A4', 1.5 * eighth_note_duration),
-    #         ('B4', eighth_note_duration), ('C4', eighth_note_duration), ('D4', eighth_note_duration), 
+    #         ('B4', eighth_note_duration), ('C4', eighth_note_duration), ('D4', eighth_note_duration),
     #         ('B4', eighth_note_duration), ('G4', 2 * eighth_note_duration), ('A4', eighth_note_duration),
     #         ('B4', 2 * eighth_note_duration), ('G4', 2 * eighth_note_duration), ('C4', eighth_note_duration),
     #         ('B4', eighth_note_duration), ('A4', eighth_note_duration), ('G4', eighth_note_duration),
-    #         ('E4', eighth_note_duration), ('G4', eighth_note_duration), ('D4', eighth_note_duration), 
+    #         ('E4', eighth_note_duration), ('G4', eighth_note_duration), ('D4', eighth_note_duration),
     #         ('C5', eighth_note_duration), ('B4', 2 * eighth_note_duration), ('A4', 1.5 * eighth_note_duration),
-    #         ('G4', 0.5 * eighth_note_duration), ('E4', eighth_note_duration), ('D4', eighth_note_duration), 
-    #         ('G4', eighth_note_duration), ('A4', eighth_note_duration), ('B4', eighth_note_duration), 
+    #         ('G4', 0.5 * eighth_note_duration), ('E4', eighth_note_duration), ('D4', eighth_note_duration),
+    #         ('G4', eighth_note_duration), ('A4', eighth_note_duration), ('B4', eighth_note_duration),
     #         ('G4', 2 * eighth_note_duration)
     #     ]
 
@@ -215,16 +213,19 @@ class Robot:
         print('target heading in moveToNeighbor before turn_to_heading: ' + str(target))
         if (currentHeading != target):
 
+
             currentHeading = self.turn_to_heading(target)
             print('current heading in moveToNeighbor after turn_to_heading: ' + str(currentHeading))
             print('target heading in moveToNeighbor after turn_to_heading: ' + str(target))
 
+
         if target == 45:
-            self.moveForwardCross(path) #not pretty but works.
+            self.moveForwardCross(path)  # not pretty but works., aner ikke hvem der har skrevet dette - Johan # noqa: E501
         if target % 90 != 0:
             self.moveForwardCross(path)
         else:
             self.moveForward(path)
+
 
         print("")
         print('----------------------------- End of moveToNeighbor -----------------------------')
@@ -240,6 +241,7 @@ class Robot:
         print('current position in moveToPoint: ' + str(currentX) + ', ' + str(currentY))
         print('target position in moveToPoint: ' + str(target_x) + ', ' + str(target_y))
 
+
         if currentX != target_x or currentY != target_y:
             if target_x > currentX:
                 if target_y > currentY:
@@ -247,6 +249,7 @@ class Robot:
                     print('current heading after moveToPoint: ' + str(currentHeading))
                 elif target_y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTHEAST, currentHeading, path)
+
 
                     print('current heading after moveToPoint: ' + str(currentHeading))
                 else:
@@ -279,51 +282,50 @@ class Robot:
         return currentHeading
 
     def move_through_path(self, start_node, end_node, current_heading, path, socket):
-        path_length = len(path)
         start_x = start_node[0]
         start_y = start_node[1]
         clientsocket = socket
 
+        # We will later need to keep track of both the current heading and the heading that the robot initially recieved # noqa: E501
         recieved_heading = current_heading
-
         self.current_heading = current_heading
 
-        while(start_node != end_node):
-            print('step before while loop: ' + str(self.step) + 'with node ' + str(path[self.step]))
-            print('before ', start_x, ' ' + str(start_y))
-            print('before ' + str(path[path_length-1][0]) + ' ' + str(path[path_length-1][1]))
-            self.current_heading = self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)
+        # This loops runs the robot through the path, unless stopped by the computer # noqa: E501
+        # It will always run at least once, as the robot will always be on the path when this function is called # noqa: E501
+        while (start_node != end_node):
+            self.current_heading = self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)  # noqa: E501
             start_node = path[self.step]
             start_x = start_node[0]
             start_y = start_node[1]
 
-            course_notice = clientsocket.recv(4).decode('utf-8').strip()
-            if course_notice == 'STOP':
+            clientsocket.send('DONE'.encode('utf-8'))  # Inform the computer that the step is completed # noqa: E501
+            course_notice = clientsocket.recv(4).decode('utf-8')  # Receive an update from the computer, after traversing the first node # noqa: E501
+
+            if course_notice == 'STOP':  # Happens if the computer detects the robot to be off course # noqa: E501
                 checkin = 'STOPPED'
                 clientsocket.send(checkin.encode('utf-8'))
                 print('Stopped due to drift')
-                self.step = 0
-                return
-
-            if self.current_heading != recieved_heading:
-                checkin = 'HEADING'
-                clientsocket.send(checkin.encode('utf-8'))
-                self.current_heading = int(clientsocket.recv(3).decode('utf-8').strip()) #Recieve the new heading from the computer, and updates the current heading
-                print('The heading has been updated to: ', self.current_heading)
-
-            if self.step + 5 - len(path) >= 0:
-                checkin = 'PICK'
-                clientsocket.send(checkin.encode('utf-8'))
-                self.step = 0
-                return
-
+                self.step = 0  # Reset the step counter, so that the robot will start from the beginning of the next path # noqa: E501
+                return  # We return to EV3Main, as the robot is no longer on the path # noqa: E501
             else:
-                checkin = 'ONGOING'
-                clientsocket.send(checkin.encode('utf-8'))
+                if self.current_heading != recieved_heading:  # In the event that the robot has adjusted it's heading # noqa: E501
+                    checkin = 'HEADING'
+                    clientsocket.send(checkin.encode('utf-8'))
+                    self.current_heading = int(clientsocket.recv(3).decode('utf-8').rstrip())  # Recieve the new heading from the computer, and updates the current heading # noqa: E501
+                    print('The heading has been updated to: ', self.current_heading)
+                    clientsocket.send('CONFIRM'.encode('utf-8'))
 
-   
+                if self.step + 5 - len(path) >= 0:  # If the robot is within 5 steps of the end of the path # noqa: E501
+                    checkin = 'PICK'
+                    clientsocket.send(checkin.encode('utf-8'))
+                    self.step = 0
+                    return # We return to EV3Main, as the robot is no longer on the path, it should now attempt to pick up the ball # noqa: E501
 
-
+                else:
+                    checkin = 'ONGOING'
+                    clientsocket.send(checkin.encode('utf-8'))
+                    time.sleep(0.5)
+                    clientsocket.send('CONFIRM'.encode('utf-8'))
 
 
 
