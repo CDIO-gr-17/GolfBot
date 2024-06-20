@@ -304,25 +304,16 @@ class Robot:
                     if command == 'ABORT':
                         return
 
-            # else:
-            #     if self.current_heading != recieved_heading:  # In the event that the robot has adjusted it's heading # noqa: E501
-            #         checkin = 'HEADING'
-            #         socket.send(checkin.encode('utf-8'))
-            #         self.current_heading = int(socket.recv(3).decode('utf-8').rstrip())  # Recieve the new heading from the computer, and updates the current heading # noqa: E501
-            #         print('The heading has been updated to: ', self.current_heading)
-            #         socket.send('CONFIRM'.encode('utf-8'))
+            else:
+                if self.current_heading != recieved_heading:  # In the event that the robot has adjusted it's heading # noqa: E501
+                    checkin = 'HEADING'
+                    print('The heading has been updated to: ', self.current_heading)
 
-            #     if self.step + 5 - len(path) >= 0:  # If the robot is within 5 steps of the end of the path # noqa: E501
-            #         checkin = 'PICK'
-            #         socket.send(checkin.encode('utf-8'))
-            #         self.step = 0
-            #         return # We return to EV3Main, as the robot is no longer on the path, it should now attempt to pick up the ball # noqa: E501
+                if self.step + 5 - len(path) >= 0:  # If the robot is within 5 steps of the end of the path # noqa: E501
+                    checkin = 'PICK'
+                    self.step = 0
+                    return # We return to EV3Main, as the robot is no longer on the path, it should now attempt to pick up the ball # noqa: E501
 
-            #     else:
-            #         checkin = 'ONGOING'
-            #         socket.send(checkin.encode('utf-8'))
-            #         time.sleep(0.5)
-            #         socket.send('CONFIRM'.encode('utf-8'))
 
 
 
