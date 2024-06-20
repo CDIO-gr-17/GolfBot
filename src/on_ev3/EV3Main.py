@@ -16,7 +16,8 @@ print('Connection established')
 
 print('running...')
 
-def recv_all(sock, length): #Helper function to receive exactly 'length' bytes from 'sock'
+
+def recv_all(sock, length):  # Helper function to receive exactly 'length' bytes from 'sock'
     data = bytearray()
     while len(data) < length:
         packet = sock.recv(length - len(data))
@@ -24,6 +25,7 @@ def recv_all(sock, length): #Helper function to receive exactly 'length' bytes f
             return None
         data.extend(packet)
     return data
+
 
 while True:
     # Establish a connection
@@ -34,7 +36,7 @@ while True:
     if command == 'PATH':
         print('Recieved command')
 
-        currentHeading_as_string = clientsocket.recv(3).decode('utf-8').strip()
+        currentHeading_as_string = clientsocket.recv(3).decode('utf-8').rstrip('\x00')
         currentHeading = int(currentHeading_as_string)
         print(currentHeading)
 
@@ -46,9 +48,9 @@ while True:
             # Receive the path
             path_data = recv_all(clientsocket, length).decode('utf-8')
 
-            path_as_dictionaries = json.loads(path_data)
+            path_as_touples = json.loads(path_data)
 
-            path = [(d['x'], d['y']) for d in path_as_dictionaries]
+            path = [(d[0], d[1]) for d in path_as_touples]
 
             print(path)
 
@@ -61,5 +63,3 @@ while True:
             robot.move_through_path(path[0],path[path_length-1],currentHeading, path, clientsocket)
 
             print("Awaiting new command...")
-
-    #clientsocket.close()
