@@ -1,14 +1,18 @@
-import socket
 import json
-import time
+import socket
 import threading
-from pathfinding.feedback import is_robot_position_correct
-from pathfinding.PathfindingAlgorithm import a_star
-from positions.Positions import find_start_node, find_first_ball
+import time
+
+import cv2 as cv
+
+import Globals as G
 from computer_vision.Camera import capture_frames
 from computer_vision.ComputerVision import update_positions
-import Globals as G
-import cv2 as cv
+from pathfinding.PathfindingAlgorithm import a_star
+from pathfinding.feedback import is_robot_position_correct
+from positions.Positions import find_first_ball, find_start_node
+
+capture_frames()
 
 # Assign thread to capture continous frames
 threading.Thread(target=capture_frames).start()
