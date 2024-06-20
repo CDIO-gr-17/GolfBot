@@ -31,6 +31,9 @@ def capture_frames():
             invGamma_low = 1.0 / gamma_low
             table = np.array([((i / 255.0) ** invGamma_high) * 255 if i > threshold else ((i / 255.0) ** invGamma_low) * 255 for i in np.arange(0, 256)]).astype("uint8")
             result = cv.LUT(frame, table)
+            # We are not making a margin around the area so maybe we still get bright spots that is abov
+
+
 
 
             # Apply the CLAHE algorithm to the frame
