@@ -106,6 +106,8 @@ class Robot:
         print("")
         print('-------------------------' + ' end of calculate_drive_factor ' + '-------------------------')
         print("")
+        if (acc_steps == 0):
+            acc_steps = 1
 
         return acc_steps
 
