@@ -287,6 +287,7 @@ class Robot:
         start_y = path[0][1]
 
         # We will later need to keep track of both the current heading and the heading that the robot initially recieved # noqa: E501
+        recieved_heading = current_heading
         self.current_heading = current_heading
 
         # This loops runs the robot through the path, unless stopped by the computer # noqa: E501
