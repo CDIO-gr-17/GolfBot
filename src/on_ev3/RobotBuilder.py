@@ -118,11 +118,9 @@ class Robot:
         self.turn(turn_degrees)
         return target_heading
 
-    def moveForward(self, path):
-        factor = self.calculate_drive_factor(self.current_heading, path)
-        print('heading right before moveForward: ' + str(self.current_heading))
-        self.robot.straight(self.GRID_DISTANCE*factor)
-        print('moved forward ' + str(self.GRID_DISTANCE*factor) + ' mm')
+    def moveForward(self, distance):
+        self.robot.straight(distance)
+
 
     def moveForwardCross(self, path):
         factor = self.calculate_drive_factor(self.current_heading, path)
@@ -306,7 +304,7 @@ class Robot:
                     self.step = 0
                     return # We return to EV3Main, as the robot is no longer on the path, it should now attempt to pick up the ball # noqa: E501
 
-    def move_robot_smoothly(self, path, heading):
+    def move_robot_smoothly(self, path, heading, controller):
         i = 0
         while i < len(path) - 1:
             current_position = path[i]
@@ -318,7 +316,7 @@ class Robot:
             # If the necessary heading is the same as the current heading, count the number of consecutive cells with the same heading
             if necessary_heading == heading:
                 steps = 1
-                while i + steps < len(path) - 1:
+                while i + steps < len(path) - 1 or steps < 20:
                     next_next_position = path[i + steps + 1]
                     next_necessary_heading = calculate_heading(next_position, next_next_position)
                     if next_necessary_heading == necessary_heading:
@@ -327,8 +325,13 @@ class Robot:
                     else:
                         break
 
+                if necessary_heading % 90 != 0:            # Given we only can turn 45 degrees
+                    distance = steps*self.GRID_DISTANCE*1.41421356
+                else:
+                    distance = steps*self.GRID_DISTANCE
+
                 # Move the robot forward by the number of steps
-                self.moveForward(steps*self.GRID_DISTANCE)
+                self.moveForward(distance)
                 i += steps
             else:
                 # Calculate the difference in heading
@@ -337,10 +340,24 @@ class Robot:
                 # Turn the robot to the necessary heading
                 self.turn(heading_difference)
 
+                if necessary_heading % 90 != 0:            # Given we only can turn 45 degrees
+                    distance = self.GRID_DISTANCE*1.41421356
+                else:
+                    distance = self.GRID_DISTANCE
+
                 # Move the robot forward
-                self.moveForward(1)
+                self.moveForward(distance)
 
                 i += 1
+
+            buffer = ""
+            data = controller.recieve_command()
+            if data:
+                buffer += data
+                while "\n" in buffer:
+                    command, buffer = buffer.split("\n", 1)
+                    if command == 'ABORT':
+                        return
 
             # Update the current heading
             heading = necessary_heading

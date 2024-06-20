@@ -21,6 +21,7 @@ def move_robot_smoothly(path, heading, robot):
                     break
 
             # Move the robot forward by the number of steps
+            distance =
             robot.move_forward(steps)
             i += steps
         else:

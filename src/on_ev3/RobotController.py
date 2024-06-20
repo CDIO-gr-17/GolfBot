@@ -26,7 +26,7 @@ class RobotController:
     def handle_command(self, command):
         try:
             command_data = json.loads(command)
-        except json.JSONDecodeError:
+        except ValueError:
             print("Invalid command format")
             return
 
@@ -37,7 +37,7 @@ class RobotController:
             if not isinstance(params, dict) or 'heading' not in params or 'path' not in params:
                 print("Invalid parameters for DEPO command")
                 return
-            self.robot.move_through_path(params['path'], params['heading'], self)
+            self.robot.move_robot_smoothly(params['path'], params['heading'], self)
             self.robot.deposit()
         elif cmd == "PICK":
             if not isinstance(params, dict) or 'heading' not in params or 'distance' not in params:
@@ -49,6 +49,6 @@ class RobotController:
             if not isinstance(params, dict) or 'heading' not in params or 'path' not in params:
                 print("Invalid parameters for PATH command")
                 return
-            self.robot.move_through_path(params['path'], params['heading'], self)
+            self.robot.move_robot_smoothly(params['path'], params['heading'], self)
         else:
             print("Invalid command")
