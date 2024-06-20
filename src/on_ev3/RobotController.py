@@ -1,10 +1,19 @@
 import json
+import time
+import errno
 from RobotBuilder import Robot
 
 class RobotController:
     def __init__(self, socket):
         self.socket = socket
-        self.client_socket, self.client_address = socket.accept()
+        while True:
+            try:
+                self.client_socket, self.client_address = self.socket.accept()
+                break
+            except OSError as e:
+                if hasattr(e, 'errno') and e.errno != errno.EAGAIN:
+                    raise
+            time.sleep(0.1)
         self.robot = Robot()
 
     def recieve_command(self, size = 1024):
@@ -26,8 +35,12 @@ class RobotController:
         #     client_socket.send((message + "\n").encode('utf-8'))
         #But on computer and then put it together as json object and acces everything with ['command'] and ['payload']
         # and easier to understand and more secure to use with None and shit like that
+
+
         cmd = parts[0]
         params = parts[1:]
+        print("cmd:", cmd)
+        print("params", params)
 
 
         if cmd == "DEPO":
@@ -38,8 +51,8 @@ class RobotController:
             self.robot.pickup_ball(params[1])
         elif cmd == "PATH":
             heading = int(params[-1])
-            json_string = ' '.join(params[:-1])
-            path_as_dictionaries = json.loads(json_string)
+            # json_string = ' '.join(params[:-1]) No need anymore cause we dont split Json into different params
+            path_as_dictionaries = json.loads(params[0])
             path = [(d['x'], d['y']) for d in path_as_dictionaries]
             self.robot.move_through_path(path, heading, self)
         else:

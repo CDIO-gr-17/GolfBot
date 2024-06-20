@@ -38,7 +38,9 @@ counter = 0
 while True:
     print("LOOP")
     first_ball = find_first_ball(G.GRID)
-    distance = distance_between(G.ROBOT_POSITION, G.BALLS[0])
+    distance = 1000
+    if G.BALLS is not None:
+        distance = distance_between(G.ROBOT_POSITION, G.BALLS[0])
     path = a_star(G.GRID, find_start_node(), first_ball)
 
     if counter == 3:
