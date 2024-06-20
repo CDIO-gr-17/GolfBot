@@ -49,6 +49,7 @@ class RobotController:
             if not isinstance(params, dict) or 'heading' not in params or 'path' not in params:
                 print("Invalid parameters for PATH command")
                 return
+            print(params['path'])
             self.robot.move_robot_smoothly(params['path'], params['heading'], self)
         else:
             print("Invalid command")

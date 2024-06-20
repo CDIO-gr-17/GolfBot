@@ -19,7 +19,6 @@ def calculate_heading(current_position, next_position):
 
     return heading
 
-
 class Robot:
     # Initialize the EV3 Brick.
     def __init__(self):
@@ -38,68 +37,6 @@ class Robot:
         self.GRID_DISTANCE = 7.5
         self.current_heading = None
         self.step = 0
-
-    def get_next_point(self, path):
-        if (self.step == len(path)-1):
-            nextpoint = [self.step]  # fix later?, aner ikke hvem der har skrevet dette - Johan # noqa: E501
-        else:
-            nextpoint = path[self.step+1]
-        return nextpoint
-
-    def get_current_point(self, path):
-        currentpoint = path[self.step]
-        return currentpoint
-
-    def get_current_point_x(self, path):
-        currentpoint = path[self.step][0]
-        return currentpoint
-
-    def get_current_point_y(self, path):
-        currentpoint = path[self.step][1]
-        return currentpoint
-
-    def calculate_drive_factor(self, heading, path):
-        print("")
-        print('-------------------------' + ' run of calculate_drive_factor: ' + str(path[self.step]) + '-------------------------')
-        print("")
-        acc_steps = 0
-        loop_counter = self.step
-
-        print('current heading in calculate_drive_factor: ' + str(heading))
-        curr_pos = path[loop_counter]
-        print('current position in calculate_drive_factor: ' + str(curr_pos))
-        print('The for loop starts')
-        for nex_pos in path:
-
-            if loop_counter == len(path)-1:
-                break
-            nex_pos = path[loop_counter+1]
-            print('next position in calculate_drive_factor: ' + str(nex_pos))
-
-            calc_heading = calculate_heading(curr_pos, nex_pos)
-            print('     if statement starts: if heading (' + str(heading) + ') == new_heading (' + str(heading) + ')')
-            print('     heading in calculate_drive_factor: ' + str(heading))
-
-            if (calc_heading == heading):
-                print(          'heading: ' + str(heading) + ' == new_heading: ' + str(heading))
-                acc_steps += 1
-                heading = calc_heading
-                curr_pos = nex_pos
-                print(          'curr_pos: ' + str(curr_pos) + ' == nex_pos: ' + str(nex_pos))
-                if loop_counter == len(path)-1:
-                    break
-                loop_counter += 1
-                self.step += 1
-            else:
-                break
-        print("")
-        print('-------------------------' + ' end of calculate_drive_factor ' + '-------------------------')
-        print("")
-        if (acc_steps == 0):
-            acc_steps = 1
-
-        return acc_steps
-
 
     def turn(self, degrees):
         self.robot.turn(degrees)
@@ -121,12 +58,6 @@ class Robot:
     def moveForward(self, distance):
         self.robot.straight(distance)
 
-
-    def moveForwardCross(self, path):
-        factor = self.calculate_drive_factor(self.current_heading, path)
-        print('heading right before moveForward cross: ' + str(self.current_heading))
-        self.robot.straight(self.GRID_DISTANCE * 1.414*factor)
-        print('moved forward cross ' + str(self.GRID_DISTANCE * 1.414*factor) + ' mm')
 
     def moveBackward(self):
         self.robot.straight(-100)
@@ -192,118 +123,6 @@ class Robot:
         self.ev3.speaker.beep(frequency=440, duration=1000)  # Play a 440 Hz tone for 1000 ms (1 second)
         wait(1000)  # Wait for 1 second to hear the beep
 
-    def moveToNeighbor(self, target: Heading, currentHeading: Heading, path):
-        print("")
-        print('----------------------------- Start of moveToNeighbor for path step ' + str(path[self.step]) + '-----------------------------')
-        print("")
-        print('current heading in moveToNeighbor before turn_to_heading: ' + str(currentHeading))
-        print('target heading in moveToNeighbor before turn_to_heading: ' + str(target))
-        if (currentHeading != target):
-
-
-            currentHeading = self.turn_to_heading(target)
-            print('current heading in moveToNeighbor after turn_to_heading: ' + str(currentHeading))
-            print('target heading in moveToNeighbor after turn_to_heading: ' + str(target))
-
-
-        if target == 45:
-            self.moveForwardCross(path)  # not pretty but works., aner ikke hvem der har skrevet dette - Johan # noqa: E501
-        if target % 90 != 0:
-            self.moveForwardCross(path)
-        else:
-            self.moveForward(path)
-
-
-        print("")
-        print('----------------------------- End of moveToNeighbor -----------------------------')
-        print("")
-        return currentHeading
-
-    def moveToPoint(self, target_x: int, target_y: int, currentX: int, currentY: int, currentHeading: Heading, path):
-        print("")
-        print('--------------- Start of moveToPoint for path step ' + str(path[self.step]) + '---------------')
-        print("")
-
-        print('current heading in moveToPoint: ' + str(currentHeading))
-        print('current position in moveToPoint: ' + str(currentX) + ', ' + str(currentY))
-        print('target position in moveToPoint: ' + str(target_x) + ', ' + str(target_y))
-
-
-        if currentX != target_x or currentY != target_y:
-            if target_x > currentX:
-                if target_y > currentY:
-                    currentHeading = self.moveToNeighbor(Heading.SOUTHEAST, currentHeading, path)
-                    print('current heading after moveToPoint: ' + str(currentHeading))
-                elif target_y < currentY:
-                    currentHeading = self.moveToNeighbor(Heading.NORTHEAST, currentHeading, path)
-
-
-                    print('current heading after moveToPoint: ' + str(currentHeading))
-                else:
-                    currentHeading = self.moveToNeighbor(Heading.EAST, currentHeading, path)
-
-                    print('current heading after moveToPoint: ' + str(currentHeading))
-            elif target_x < currentX:
-                if target_y > currentY:
-                    currentHeading = self.moveToNeighbor(Heading.SOUTHWEST, currentHeading, path)
-
-                    print('current heading after moveToPoint: ' + str(currentHeading))
-                elif target_y < currentY:
-                    currentHeading = self.moveToNeighbor(Heading.NORTHWEST, currentHeading, path)
-
-                    print('current heading after moveToPoint: ' + str(currentHeading))
-                else:
-                    currentHeading = self.moveToNeighbor(Heading.WEST, currentHeading, path)
-                    print('current heading after moveToPoint: ' + str(currentHeading))
-            else:
-                if target_y > currentY:
-                    currentHeading = self.moveToNeighbor(Heading.SOUTH, currentHeading, path)
-                    print('current heading after moveToPoint: ' + str(currentHeading))
-                elif target_y < currentY:
-                    currentHeading = self.moveToNeighbor(Heading.NORTH, currentHeading, path)
-                    print('current heading after moveToPoint: ' + str(currentHeading))
-
-        print("")
-        print('--------------- End of moveToPoint for path step ' + str(path[self.step]) +  '---------------')
-        print("")
-        return currentHeading
-
-    def move_through_path(self,path, current_heading, controller):
-        start_node = path[0]
-        end_node = path[len(path)-1]
-        print(path)
-        start_x = path[0][0]
-        start_y = path[0][1]
-
-        # We will later need to keep track of both the current heading and the heading that the robot initially recieved # noqa: E501
-        recieved_heading = current_heading
-        self.current_heading = current_heading
-
-        # This loops runs the robot through the path, unless stopped by the computer # noqa: E501
-        # It will always run at least once, as the robot will always be on the path when this function is called # noqa: E501
-        while (start_node != end_node):
-            self.current_heading = self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)  # noqa: E501
-            start_node = path[self.step]
-
-            buffer = ""
-            data = controller.recieve_command()
-            if data:
-                buffer += data
-                while "\n" in buffer:
-                    command, buffer = buffer.split("\n", 1)
-                    if command == 'ABORT':
-                        return
-
-            else:
-                if self.current_heading != recieved_heading:  # In the event that the robot has adjusted it's heading # noqa: E501
-                    checkin = 'HEADING'
-                    print('The heading has been updated to: ', self.current_heading)
-
-                if self.step + 5 - len(path) >= 0:  # If the robot is within 5 steps of the end of the path # noqa: E501
-                    checkin = 'PICK'
-                    self.step = 0
-                    return # We return to EV3Main, as the robot is no longer on the path, it should now attempt to pick up the ball # noqa: E501
-
     def move_robot_smoothly(self, path, heading, controller):
         i = 0
         while i < len(path) - 1:
@@ -333,9 +152,10 @@ class Robot:
                 # Move the robot forward by the number of steps
                 self.moveForward(distance)
                 i += steps
+                print('step++:', steps, "moved forward a lot")
             else:
                 # Calculate the difference in heading
-                heading_difference = necessary_heading - heading
+                heading_difference = self.shortest_turn(necessary_heading, heading)
 
                 # Turn the robot to the necessary heading
                 self.turn(heading_difference)
@@ -349,6 +169,7 @@ class Robot:
                 self.moveForward(distance)
 
                 i += 1
+                print("moved forward")
 
             buffer = ""
             data = controller.recieve_command()
@@ -361,6 +182,7 @@ class Robot:
 
             # Update the current heading
             heading = necessary_heading
+            self.current_heading = heading
 
 
 
