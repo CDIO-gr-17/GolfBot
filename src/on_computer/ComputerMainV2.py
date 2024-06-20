@@ -44,11 +44,13 @@ while True:
     if counter == 3:
         print("DEPO")
         goal_path = get_path_to_goal()
-        path_as_json = json.dumps(goal_path)
-        controller.send_command('DEPO', path, G.ROBOT_HEADING)
-        while(is_robot_position_correct(path, find_start_node())):
-            controller.send_command('CONTINUE')
+        path_as_tuples = [(node.x, node.y) for node in goal_path]
+        path_as_json = json.dumps(path_as_tuples)
+        controller.send_command('DEPO', path_as_json, G.ROBOT_HEADING)
+        while(is_robot_position_correct(goal_path, find_start_node())):
+            pass
         counter = 0
+        controller.send_command('ABORT')
 
     elif distance < 10:
         print("PICK")
@@ -56,8 +58,8 @@ while True:
         counter += 1
 
     elif counter < 3:
-        path_as_dictionaries = [{'x': node.x, 'y': node.y} for node in path]
-        path_as_json = json.dumps(path_as_dictionaries)
+        path_as_tuples = [(node.x, node.y) for node in path]
+        path_as_json = json.dumps(path_as_tuples)
         controller.send_command('PATH', path_as_json, G.ROBOT_HEADING)
         while(is_robot_position_correct(path, find_start_node())):
             pass

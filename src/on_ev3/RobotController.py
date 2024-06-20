@@ -30,8 +30,11 @@ class RobotController:
         params = parts[1:]
 
 
-        if cmd == "DEPO":
-            self.robot.move_through_path(params[0], params[1], self)
+        if cmd == "DEPO": 
+            heading = int(params[-1])
+            json_string = ' '.join(params[:-1])
+            path_as_tuples = json.loads(json_string)
+            self.robot.move_through_path(path_as_tuples, heading, self)
             self.robot.deposit()
         elif cmd == "PICK":
             self.robot.turn_to_heading(params[0])
@@ -39,8 +42,8 @@ class RobotController:
         elif cmd == "PATH":
             heading = int(params[-1])
             json_string = ' '.join(params[:-1])
-            path_as_dictionaries = json.loads(json_string)
-            path = [(d['x'], d['y']) for d in path_as_dictionaries]
-            self.robot.move_through_path(path, heading, self)
+            path_as_tuples = json.loads(json_string)
+            self.robot.move_through_path(path_as_tuples, heading, self)
         else:
             return
+
