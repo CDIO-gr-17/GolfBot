@@ -1,6 +1,5 @@
-import socket
 import json
-import time
+import socket
 import threading
 import copy
 import Globals as G
