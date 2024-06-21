@@ -16,6 +16,7 @@ while True:
         buffer += data
         while "\n" in buffer:
             command, buffer = buffer.split("\n", 1)
+            print (command)
             controller.handle_command(command)
     else:
         time.sleep(0.05)

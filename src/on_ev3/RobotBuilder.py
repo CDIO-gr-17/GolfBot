@@ -31,7 +31,7 @@ class Robot:
 
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
-        self.AXLE_TRACK = 110
+        self.AXLE_TRACK = 98
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)  # noqa: E501
 
         self.GRID_DISTANCE = 7.5

@@ -1,6 +1,7 @@
 import socket
 import json
 import time
+import copy
 import threading
 from pathfinding.feedback import is_robot_position_correct
 from pathfinding.PathfindingAlgorithm import a_star
@@ -30,7 +31,7 @@ threading.Thread(target=update_positions).start()
 # We are in danger of going on old data cause we dont check if a new position is found in pictures
 # Dont really know if it is a problem, shouldnt be if recognition is good enough
 while G.ROBOT_POSITION is None or G.ROBOT_HEADING is None or G.GRID is None or G.BALLS is None:
-    time.sleep(0.2)
+    time.sleep(0.2) 
 
 print(G.ROBOT_POSITION)
 
@@ -40,8 +41,10 @@ while True:
     first_ball = find_first_ball(G.GRID)
     distance = 1000
     if G.BALLS is not None:
-        distance = distance_between(G.ROBOT_POSITION, G.BALLS[0])
-    path = a_star(G.GRID, find_start_node(), first_ball)
+        distance = distance_between(G.ROBOT_POSITION, G.BALLS[counter])
+    grid_snap_shot =  copy.deepcopy(G.GRID)
+    start_node = copy.deepcopy(find_start_node())
+    path = a_star(grid_snap_shot, start_node, first_ball)
 
     if counter == 3:
         print("DEPO")
@@ -56,12 +59,14 @@ while True:
                 counter = 0
         continue
 
-    elif distance < 10:
+    elif distance < 25:
         print("PICK")
         controller.send_command('PICK', {'heading': G.ROBOT_HEADING, 'distance': distance})
         counter += 1
+        del G.BALLS[0]
 
     elif counter < 3:
+        print ('PATH')
         path_as_tuples = [(node.x, node.y) for node in path]
         controller.send_command('PATH', {'heading': G.ROBOT_HEADING, 'path': path_as_tuples})
         while(is_robot_position_correct(path, find_start_node())):
