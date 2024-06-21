@@ -50,15 +50,17 @@ while True:
         path_as_tuples = [(node.x, node.y) for node in goal_path]
 
     # If statement for picking up balls
-    elif distance_between(G.ROBOT_POSITION, G.BALLS[0]) < 50:
+    elif distance_between(G.ROBOT_POSITION, (end_node.x, end_node.y)) < 50:
         if G.BALLS is not None:
-            heading_to_ball = calculate_heading(G.ROBOT_POSITION, G.BALLS[0])
+            heading_to_ball = calculate_heading(G.ROBOT_POSITION, (end_node.x, end_node.y))
             distance = distance_between(G.ROBOT_POSITION, G.BALLS[0])
             client_socket.send('PICK'.encode('utf-8'))
             client_socket.send(str(distance).encode('utf-8'))
             client_socket.send(str(int(heading_to_ball)).encode('utf-8'))
+            client_socket.send(str(int(G.ROBOT_HEADING)).encode('utf-8'))
             response = client_socket.recv(7).decode('utf-8').strip()
             balls_picked_up += 1
+            end_node = find_first_ball(G.GRID)  # We make sure the robot is going to the next ball
 
     # The robot will follow a path to the first ball in G.BALLS
     else:
@@ -82,7 +84,7 @@ while True:
             print('The algorithm could not find a path')
         else:
             print('Path: OK')
-            path_as_touples = [(node.x, node.y) for node in path]
+            path_as_touples = [(node.x, node.y) for node in path[:-5]]
             path_as_json = json.dumps(path_as_touples)
             json_length = len(path_as_json)
             client_socket.send(json_length.to_bytes(4, 'big'))

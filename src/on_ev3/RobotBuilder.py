@@ -50,6 +50,7 @@ class Robot:
         self.GRID_DISTANCE = 7.5
         self.current_heading = None
         self.step = 0
+        self.settings = (1000, 200, 50, 25)
 
     def pickup_ball(self, distance, heading):
         self.turn_to_heading(heading)

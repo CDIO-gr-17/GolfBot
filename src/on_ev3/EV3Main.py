@@ -54,6 +54,8 @@ while True:
 
         distance_to_ball = float(clientsocket.recv(4).decode('utf-8').rstrip('\x00'))
         heading_to_ball = int(clientsocket.recv(3).decode('utf-8').rstrip('\x00'))
-
+        print('The robot should be at', heading_to_ball, 'degrees')
+        robot.current_heading = int(clientsocket.recv(3).decode('utf-8').rstrip('\x00'))
+        print('The robot is at', robot.current_heading, 'degrees')
         print('Picking up ball')
         robot.pickup_ball(distance_to_ball, heading_to_ball)
