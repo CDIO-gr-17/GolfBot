@@ -22,7 +22,7 @@ def capture_frames():
             G.SMALL_FRAME = cv.resize(G.BIG_FRAME, (320, 180))
 
         # Wait for 200 ms
-        time.sleep(0.1)
+        time.sleep(1)
 
     # Release the camera when done
     cap.release()

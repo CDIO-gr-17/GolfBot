@@ -85,6 +85,7 @@ def reconstruct_path(grid, came_from, current):
 # Performs the pathfinding algorithm. start are end are (x, y) tuples
 # Credit: https://en.wikipedia.org/wiki/A*_search_algorithm
 def a_star(grid, start, end):
+    print(start, end)
     open_set = []
     closed_set = []
     came_from = {}

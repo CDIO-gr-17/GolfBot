@@ -1,24 +1,22 @@
 import math
-import socket
-#sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
+from pybricks.tools import wait
 
 from Heading import Heading
 
 
 def calculate_heading(current_position, next_position):
-    if next_position == None or current_position == None:
+    if next_position is None or current_position is None:
         print("Tail or head is not found")
         return None
     # Calculate differences
 
     dx = next_position[0] - current_position[0]
     dy = next_position[1] - current_position[1]
-
 
     # Calculate the angle in radians from the positive x-axis
     angle_radians = math.atan2(dy, dx)
@@ -35,7 +33,6 @@ def calculate_heading(current_position, next_position):
 
 
 class Robot:
-
     # Initialize the EV3 Brick.
     def __init__(self):
         self.ev3 = EV3Brick()
@@ -43,21 +40,30 @@ class Robot:
         # Initialize the motors.
         self.left_motor = Motor(Port.D)
         self.right_motor = Motor(Port.A)
-        #self.front_motor = Motor(Port.C)
+        self.front_motor = Motor(Port.C)
 
         # Initialize the drive base.
         self.WHEEL_DIAMETER = 55
-        self.AXLE_TRACK = 110
+        self.AXLE_TRACK = 98
         self.robot = DriveBase(self.left_motor, self.right_motor, self.WHEEL_DIAMETER, self.AXLE_TRACK)
 
         self.GRID_DISTANCE = 7.5
-        self.current_heading = None 
+        self.current_heading = None
         self.step = 0
 
-    def get_next_point(self,path):
+    def pickup_ball(self, distance, heading):
+        self.turn_to_heading(heading)
+        self.front_motor.run(1200)
+        wait(2000)
+        # self.robot.settings(100, 200)
+        self.robot.straight(distance * self.GRID_DISTANCE*1.2)
+        self.front_motor.stop()
+
+    def get_next_point(self, path):
         if (self.step == len(path)-1):
-            nextpoint = [self.step] #fix later?
-        else: nextpoint = path[self.step+1]
+            nextpoint = [self.step]  # fix later?
+        else:
+            nextpoint = path[self.step+1]
         return nextpoint
 
     def get_current_point(self, path):
@@ -67,18 +73,18 @@ class Robot:
     def get_current_point_x(self, path):
         currentpoint = path[self.step][0]
         return currentpoint
-        
+
     def get_current_point_y(self, path):
         currentpoint = path[self.step][1]
         return currentpoint
-       
+
     def calculate_drive_factor(self, heading, path):
         print("")
         print('-------------------------' + ' run of calculate_drive_factor: ' + str(path[self.step]) + '-------------------------')
         print("")
         acc_steps = 0
         loop_counter = self.step
-        
+
         print('current heading in calculate_drive_factor: ' + str(heading))
         curr_pos = path[loop_counter]
         print('current position in calculate_drive_factor: ' + str(curr_pos))
@@ -108,9 +114,8 @@ class Robot:
         print("")
         print('-------------------------' + ' end of calculate_drive_factor ' + '-------------------------')
         print("")
-        
+
         return acc_steps
-        
 
     def turn(self, degrees):
         self.robot.turn(degrees)
@@ -119,7 +124,6 @@ class Robot:
 
     def shortest_turn(self, current_degrees, target_degrees):
         delta = (target_degrees - current_degrees) % 360
-        print('The calculated delta is: ', delta)
         if delta > 180:
             delta -= 360
         return delta
@@ -131,113 +135,83 @@ class Robot:
 
     def moveForward(self, path):
         factor = self.calculate_drive_factor(self.current_heading, path)
-        print('heading right before moveForward: ' + str(self.current_heading))
         self.robot.straight(self.GRID_DISTANCE*factor)
         print('moved forward ' + str(self.GRID_DISTANCE*factor) + ' mm')
 
     def moveForwardCross(self, path):
         factor = self.calculate_drive_factor(self.current_heading, path)
-        print('heading right before moveForward cross: ' + str(self.current_heading))
         self.robot.straight(self.GRID_DISTANCE * 1.414*factor)
         print('moved forward cross ' + str(self.GRID_DISTANCE * 1.414*factor) + ' mm')
-
 
     def moveBackward(self):
         self.robot.straight(-100)
 
     def moveToNeighbor(self, target: Heading, currentHeading: Heading, path):
-        print("")
-        print('----------------------------- Start of moveToNeighbor for path step ' + str(path[self.step]) + '-----------------------------')
-        print("")
-        print('current heading in moveToNeighbor before turn_to_heading: ' + str(currentHeading))
-        print('target heading in moveToNeighbor before turn_to_heading: ' + str(target))
         if (currentHeading != target):
-            
             currentHeading = self.turn_to_heading(target)
-            print('current heading in moveToNeighbor after turn_to_heading: ' + str(currentHeading))
-            print('target heading in moveToNeighbor after turn_to_heading: ' + str(target))
-        
+
         if target == 45:
-            self.moveForwardCross(path) #not pretty but works.
+            self.moveForwardCross(path)  # not pretty but works.
         if target % 90 != 0:
             self.moveForwardCross(path)
         else:
             self.moveForward(path)
-        
+
         print("")
         print('----------------------------- End of moveToNeighbor -----------------------------')
         print("")
         return currentHeading
 
     def moveToPoint(self, target_x: int, target_y: int, currentX: int, currentY: int, currentHeading: Heading, path):
-        print("")
-        print('--------------- Start of moveToPoint for path step ' + str(path[self.step]) + '---------------')
-        print("")
-
-        print('current heading in moveToPoint: ' + str(currentHeading))
-        print('current position in moveToPoint: ' + str(currentX) + ', ' + str(currentY))
-        print('target position in moveToPoint: ' + str(target_x) + ', ' + str(target_y))
-        
         if currentX != target_x or currentY != target_y:
             if target_x > currentX:
                 if target_y > currentY:
                     currentHeading = self.moveToNeighbor(Heading.SOUTHEAST, currentHeading, path)
-                    print('current heading after moveToPoint: ' + str(currentHeading))
                 elif target_y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTHEAST, currentHeading, path)
-             
-                    print('current heading after moveToPoint: ' + str(currentHeading))
                 else:
                     currentHeading = self.moveToNeighbor(Heading.EAST, currentHeading, path)
-                    
-                    print('current heading after moveToPoint: ' + str(currentHeading))
             elif target_x < currentX:
                 if target_y > currentY:
                     currentHeading = self.moveToNeighbor(Heading.SOUTHWEST, currentHeading, path)
-                   
-                    print('current heading after moveToPoint: ' + str(currentHeading))
                 elif target_y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTHWEST, currentHeading, path)
-                   
-                    print('current heading after moveToPoint: ' + str(currentHeading))
                 else:
                     currentHeading = self.moveToNeighbor(Heading.WEST, currentHeading, path)
-                    print('current heading after moveToPoint: ' + str(currentHeading))
             else:
                 if target_y > currentY:
                     currentHeading = self.moveToNeighbor(Heading.SOUTH, currentHeading, path)
-                    print('current heading after moveToPoint: ' + str(currentHeading))
                 elif target_y < currentY:
                     currentHeading = self.moveToNeighbor(Heading.NORTH, currentHeading, path)
-                    print('current heading after moveToPoint: ' + str(currentHeading))
-        
+
         print("")
         print('--------------- End of moveToPoint for path step ' + str(path[self.step]) +  '---------------')
         print("")
         return currentHeading
 
-    def move_through_path(self, start_node, end_node, current_heading, path, socket):
-        path_length = len(path)
+    def move_through_path(self, start_node, end_node, initial_heading, path, active_socket):
         start_x = start_node[0]
         start_y = start_node[1]
-        clientsocket = socket
+        clientsocket = active_socket
 
-        self.current_heading = current_heading
+        self.current_heading = initial_heading
 
         while (start_node != end_node):
-            print('step before while loop: ' + str(self.step) + 'with node ' + str(path[self.step]))
-            print('before ', start_x, ' ' + str(start_y))
-            print('before ' + str(path[path_length-1][0]) + ' ' + str(path[path_length-1][1]))
-            self.current_heading = self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, current_heading, path)
+            self.current_heading = self.moveToPoint(path[self.step+1][0], path[self.step+1][1], start_x, start_y, initial_heading, path)
             start_node = path[self.step]
             start_x = start_node[0]
             start_y = start_node[1]
 
-            course_notice = clientsocket.recv(4).decode('utf-8').strip()
-            print(course_notice)
-            if course_notice == 'STOP':
-                checkin = 'STOPPED'
-                clientsocket.send(checkin.encode('utf-8'))
-                print('Stopped due to drift')
+            buffer = ""
+            data = clientsocket.recv(1024).decode('utf-8').strip()
+            buffer += data
+
+            print('buffer: ', buffer)
+
+            if 'STOP' in buffer:
+                clientsocket.send('STOPPED'.encode('utf-8'))
+                print('Stopped by computer')
                 self.step = 0
                 return
+
+            print('buffer: ', buffer)
