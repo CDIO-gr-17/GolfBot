@@ -1,7 +1,6 @@
 import cv2 as cv
 import numpy as np
 import Globals as G
-from scipy.ndimage import label
 
 
 def get_masks_from_frame(frame):
@@ -90,7 +89,7 @@ def get_grid(masks):
     grid[coordinates[:, 0], coordinates[:, 1]] = 1
 
     #Here overwrite all balls outside walls
-# Use connectedComponents to label the connected components in the grid
+    # Use connectedComponents to label the connected components in the grid
     num_labels, labeled_grid = cv.connectedComponents(grid)
 
     # Find the label of the largest component of 1's
