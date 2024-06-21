@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import Globals as G
+from positions.Positions import sort_balls_by_distance
 
 def get_masks_from_frame(frame):
 
@@ -78,9 +79,9 @@ def find_clusters_center(stats):
         centers.append((x, y))
     return centers
 
-
 def get_grid(masks):
     G.BALLS = find_clusters_center(find_clusters(masks['balls'])['stats'])
+    G.BALLS = sort_balls_by_distance()
     coordinates = np.argwhere(masks['red'] != 0)
     grid = np.zeros_like(masks['red'])
     for center in G.BALLS:

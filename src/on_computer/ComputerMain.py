@@ -7,7 +7,7 @@ import Globals as G
 
 from pathfinding.feedback import is_robot_position_correct
 from pathfinding.PathfindingAlgorithm import a_star
-from positions.Positions import find_start_node, find_first_ball
+from positions.Positions import find_start_node, find_first_ball, sort_balls_by_distance
 from computer_vision.Camera import capture_frames
 from computer_vision.ComputerVision import update_positions
 from helpers.end_of_path_pickup import distance_between
@@ -37,7 +37,8 @@ HOST = "192.168.8.111"
 PORT = 9999
 client_socket.connect((HOST, PORT))
 
-end_node = find_first_ball(G.GRID)
+G.BALLS = sort_balls_by_distance() # Is this the right place for this?
+end_node = G.GRID[G.BALLS[0].y][G.BALLS[0].x] #Is it possible to do this?
 
 balls_picked_up = 0
 
@@ -52,7 +53,7 @@ while True:
     # If statement for picking up balls
     elif distance_between(G.ROBOT_POSITION, G.BALLS[0]) < 50:
         if G.BALLS is not None:
-            heading_to_ball = calculate_heading(G.ROBOT_POSITION, G.BALLS[0])
+            heading_to_ball = calculate_heading(G.ROBOT_POSITION, end_node)
             distance = distance_between(G.ROBOT_POSITION, G.BALLS[0])
             client_socket.send('PICK'.encode('utf-8'))
             client_socket.send(str(distance).encode('utf-8'))
