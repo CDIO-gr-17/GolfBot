@@ -11,6 +11,7 @@ from positions.Positions import find_start_node, find_first_ball
 from computer_vision.Camera import capture_frames
 from computer_vision.ComputerVision import update_positions
 from helpers.end_of_path_pickup import distance_between
+from helpers.get_path_to_goal import get_path_to_goal
 from positions.Robot_direction import calculate_heading
 
 # Assign thread to capture continous frames
@@ -39,21 +40,29 @@ client_socket.connect((HOST, PORT))
 
 end_node = find_first_ball(G.GRID)
 
-balls_picked_up = 0
+balls_picked_up = 3
 
 while True:
     # If statement for depositing the balls in goal
     if balls_picked_up == 3:
-        ammount_balls_left = len(G.BALLS)
         client_socket.send('GOAL'.encode('utf-8'))
         goal_path = get_path_to_goal()
-        path_as_tuples = [(node.x, node.y) for node in goal_path]
+        if goal_path is None:
+            print('The algorithm could not find a path to the goal')
+            time.sleep(5)
+        else:
+            path_as_tuples = [(node.x, node.y) for node in goal_path]
+            path_as_json = json.dumps(path_as_tuples)
+            json_length = len(path_as_json)
+            client_socket.send(json_length.to_bytes(4, 'big'))
+            client_socket.send(path_as_json.encode('utf-8'))
 
     # If statement for picking up balls
     elif distance_between(G.ROBOT_POSITION, (end_node.x, end_node.y)) < 50:
         if G.BALLS is not None:
             heading_to_ball = calculate_heading(G.ROBOT_POSITION, (end_node.x, end_node.y))
-            distance = distance_between(G.ROBOT_POSITION, G.BALLS[0])
+            print(heading_to_ball)
+            distance = distance_between(G.ROBOT_POSITION, (end_node.x, end_node.y))
             client_socket.send('PICK'.encode('utf-8'))
             client_socket.send(str(distance).encode('utf-8'))
             client_socket.send(str(int(heading_to_ball)).encode('utf-8'))
@@ -94,7 +103,7 @@ while True:
             client_socket.send('KEEP'.encode('utf-8'))
             time.sleep(1)
             start_node = find_start_node()
-            if (distance_between(G.ROBOT_POSITION, G.BALLS[0]) < 50):
+            if (distance_between(G.ROBOT_POSITION, (end_node.x, end_node.y)) < 50):
                 break
 
         # Send the stop command to the robot

@@ -1,9 +1,12 @@
 import numpy as np
+from pathfinding.PathfindingAlgorithm import Node
+
 
 # Find the coordinates of the goals in the grid based on the position of the walls
 # Returns a list of tuples [0]=west goal, [1]=east goal
 def find_goal_coordinates(grid):
     # Find the number of rows and columns in the grid
+    print('GRID:', grid[1][1])
     num_rows = len(grid)
     num_cols = len(grid[0]) if num_rows > 0 else 0
 
@@ -24,9 +27,11 @@ def find_goal_coordinates(grid):
     # Check if both wall indices are found
     if first_wall_index != -1 and last_wall_index != -1:
         # Return the coordinates of the goals
+        print('WE MADE IT!')
         return [(middle_row, first_wall_index), (middle_row, last_wall_index)]
     else:
         # Return None if walls are not found
+        print('NO GOALS FOUND!')
         return None
 
 # Example usage

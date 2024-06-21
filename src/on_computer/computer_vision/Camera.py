@@ -22,11 +22,11 @@ def capture_frames():
         ret, frame = cap.read()
         if ret:
             # Define the threshold
-            # threshold = 250   # change the value as needed
+            #threshold = 250   # change the value as needed
 
-            # # Apply gamma correction to pixels above the threshold
+            # Apply gamma correction to pixels above the threshold
             # gamma_high = 0.01  # gamma value for high intensity pixels, change the value as needed
-            # gamma_low = 1.5  # gamma value for low intensity pixels, change the value as needed
+            # gamma_low = 1.0  # gamma value for low intensity pixels, change the value as needed
             # invGamma_high = 1.0 / gamma_high
             # invGamma_low = 1.0 / gamma_low
             # table = np.array([((i / 255.0) ** invGamma_high) * 255 if i > threshold else ((i / 255.0) ** invGamma_low) * 255 for i in np.arange(0, 256)]).astype("uint8")
