@@ -2,6 +2,7 @@ import json
 import socket
 import threading
 import copy
+import time
 import Globals as G
 
 from pathfinding.feedback import is_robot_position_correct
@@ -38,14 +39,15 @@ client_socket.connect((HOST, PORT))
 
 end_node = find_first_ball(G.GRID)
 
-amount_balls_left = len(G.BALLS)
+balls_picked_up = 0
 
 while True:
     # If statement for depositing the balls in goal
-    if len(G.BALLS) == amount_balls_left - 3:
+    if balls_picked_up == 3:
         ammount_balls_left = len(G.BALLS)
-        COMMAND = 'GOAL'
-        # TODO: Implement the goal scoring method.
+        client_socket.send('GOAL'.encode('utf-8'))
+        goal_path = get_path_to_goal()
+        path_as_tuples = [(node.x, node.y) for node in goal_path]
 
     # If statement for picking up balls
     elif distance_between(G.ROBOT_POSITION, G.BALLS[0]) < 50:
@@ -54,6 +56,9 @@ while True:
             distance = distance_between(G.ROBOT_POSITION, G.BALLS[0])
             client_socket.send('PICK'.encode('utf-8'))
             client_socket.send(str(distance).encode('utf-8'))
+            client_socket.send(str(int(heading_to_ball)).encode('utf-8'))
+            response = client_socket.recv(7).decode('utf-8').strip()
+            balls_picked_up += 1
 
     # The robot will follow a path to the first ball in G.BALLS
     else:
@@ -87,6 +92,8 @@ while True:
             client_socket.send('KEEP'.encode('utf-8'))
             time.sleep(1)
             start_node = find_start_node()
+            if (distance_between(G.ROBOT_POSITION, G.BALLS[0]) < 50):
+                break
 
         # Send the stop command to the robot
         print('attempting to stop robot')
