@@ -1,6 +1,8 @@
 import cv2 as cv
 import numpy as np
 import Globals as G
+from scipy.ndimage import label
+
 
 def get_masks_from_frame(frame):
 
@@ -86,4 +88,15 @@ def get_grid(masks):
     for center in G.BALLS:
         grid[center[1], center[0]] = 2
     grid[coordinates[:, 0], coordinates[:, 1]] = 1
+
+    #Here overwrite all balls outside walls
+# Use connectedComponents to label the connected components in the grid
+    num_labels, labeled_grid = cv.connectedComponents(grid)
+
+    # Find the label of the largest component of 1's
+    court_label = np.argmax(np.bincount(labeled_grid[grid == 1].flat))
+
+    # Set all the balls that are not in the court to 0
+    grid[(labeled_grid != court_label) & (grid == 2)] = 0
+
     return grid
