@@ -9,7 +9,7 @@ def get_robot_pos_and_heading(frame):
     grayscale = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
     # Apply Gaussian blur to the image
-    blurred = cv.GaussianBlur(grayscale, (7, 7), 0)
+    blurred = cv.GaussianBlur(grayscale, (3, 3), 0)
 
     # Apply Canny edge detection
     edges = cv.Canny(blurred, 25, 150)
