@@ -92,11 +92,16 @@ def get_grid(masks):
     # Use connectedComponents to label the connected components in the grid
     num_labels, labeled_grid = cv.connectedComponents(grid)
 
-    # Find the label of the largest component of 1's
-    court_label = np.argmax(np.bincount(labeled_grid[grid == 1].flat))
+    # Check if there are any 1's in the grid
+    if np.any(grid == 1):
+        # Find the label of the largest component of 1's
+        court_label = np.argmax(np.bincount(labeled_grid[grid == 1].flat))
 
-    # Set all the balls that are not in the court to 0
-    grid[(labeled_grid != court_label) & (grid == 2)] = 0
+        # Set all the balls that are not in the court to 0
+        grid[(labeled_grid != court_label) & (grid == 2)] = 0
+    else:
+        # Handle the case where there are no 1's (e.g., by logging or passing)
+        print("No 1's found in the grid.")
 
 
     return grid
