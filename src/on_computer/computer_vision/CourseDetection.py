@@ -79,15 +79,14 @@ def find_clusters_center(stats):
     return centers
 
 def filter_clusters_by_size(clusters):
-    max_size = 8   # (max_size X max_size) pixels
+    max_pixels = 30  # Maximum number of pixels in a cluster
     filtered_clusters = {
         'amount': 0,
         'stats': []
     }
     for stat in clusters['stats']:
-        width = stat[cv.CC_STAT_WIDTH]
-        height = stat[cv.CC_STAT_HEIGHT]
-        if width <= max_size and height <= max_size:
+        area = stat[cv.CC_STAT_AREA]
+        if area <= max_pixels:
             filtered_clusters['amount'] += 1
             filtered_clusters['stats'].append(stat)
     return filtered_clusters
