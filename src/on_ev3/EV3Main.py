@@ -50,10 +50,11 @@ try:
                 initialX = path[0][0]
                 initialY = path[0][1]
 
-                path_length = len(path)
-                robot.move_through_path(path[0], path[path_length-1], initial_heading, path, clientsocket)
-            while 'PATH' in robot.buffer:
-                robot.buffer = robot.buffer.replace('PATH', '')
+            path_length = len(path)
+            robot.move_through_path(path[0], path[path_length-1], initial_heading, path, clientsocket)
+            robot.step = 0
+        while 'PATH' in robot.buffer:
+            robot.buffer = robot.buffer.replace('PATH', '')
 
         if 'PICK' in robot.buffer:
             print('Recieved command: PICK')
@@ -73,20 +74,24 @@ try:
         if 'GOAL' in robot.buffer:
             print('Recieved command: GOAL')
 
-            data_length = clientsocket.recv(4)
-            if data_length is not None:
-                length = int.from_bytes(data_length, 'big')
-                path_data = recv_all(clientsocket, length).decode('utf-8')
-                path = [(node[0], node[1]) for node in json.loads(path_data)]
+        data_length = clientsocket.recv(4)
+        if data_length is not None:
+            length = int.from_bytes(data_length, 'big')
+            path_data = recv_all(clientsocket, length).decode('utf-8')
+            path = [(node[0], node[1]) for node in json.loads(path_data)]
+            print(path)
 
-                initialX = path[0][0]
-                initialY = path[0][1]
+            initialX = path[0][0]
+            initialY = path[0][1]
 
-                path_length = len(path)
-                robot.move_through_path(path[0], path[path_length-1], 0, path, clientsocket)
+            path_length = len(path)
+            robot.move_through_path(path[0], path[path_length-1], 0, path, clientsocket)
+            if robot.step == len(path):
                 robot.deposit()
-            while 'GOAL' in robot.buffer:
-                robot.buffer = robot.buffer.replace('GOAL', '')
+            robot.step = 0
+        while 'GOAL' in robot.buffer:
+            robot.buffer = robot.buffer.replace('GOAL', '')
+        clientsocket.send('STOPPED'.encode('utf-8'))
 
 except Exception as e:
     print('An error occurred:', e)

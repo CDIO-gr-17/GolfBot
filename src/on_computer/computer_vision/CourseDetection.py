@@ -92,6 +92,7 @@ def filter_clusters_by_size(clusters):
             filtered_clusters['stats'].append(stat)
     return filtered_clusters
 
+
 def get_grid(masks):
     clusters = find_clusters(masks['balls'])
     filtered_clusters = filter_clusters_by_size(clusters)

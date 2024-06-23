@@ -61,7 +61,7 @@ class Robot:
         wait(2000)
 
     def shoot_all_balls(self):
-        self.robot.settings(100, 200)
+        #self.settings(100, 200)
         wiggle = 40
         for i in range(3):
             self.shoot_one_ball(wiggle)
@@ -233,7 +233,6 @@ class Robot:
             if 'STOP' in self.buffer:
                 clientsocket.send('STOPPED'.encode('utf-8'))
                 print('Stopped by computer')
-                self.step = 0
                 return
 
             while 'KEEP' in self.buffer or 'STOP' in self.buffer:
