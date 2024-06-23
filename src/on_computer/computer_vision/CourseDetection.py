@@ -38,7 +38,7 @@ def get_masks_from_frame(frame):
     # mask_ball = cv.bitwise_or(mask_orange, mask_white) #Combine orange and white to see the ball
 
     #Apply dilation
-    obstacle_kernel = np.ones((15, 15), np.uint8)
+    obstacle_kernel = np.ones((30, 30), np.uint8)
     ball_kernel = np.ones((3, 3), np.uint8)
     mask_white = cv.dilate(mask_white, ball_kernel)
     mask_orange = cv.dilate(mask_orange, ball_kernel)
