@@ -79,7 +79,7 @@ class Robot:
         self.front_motor.run(1200)
         wait(2000)
         # self.robot.settings(100, 200)
-        self.robot.straight(distance * self.GRID_DISTANCE*1.2)
+        self.robot.straight(distance * self.GRID_DISTANCE*1.05)
         self.front_motor.stop()
 
     def get_next_point(self, path):
@@ -132,7 +132,7 @@ class Robot:
                     break
                 loop_counter += 1
                 self.step += 1
-            else: 
+            else:
                 break
         print("")
         print('-------------------------' + ' end of calculate_drive_factor ' + '-------------------------')
