@@ -91,8 +91,11 @@ def filter_clusters_by_size(clusters):
             filtered_clusters['stats'].append(stat)
     return filtered_clusters
 
+
 def get_grid(masks):
-    G.BALLS = find_clusters_center(filter_clusters_by_size(find_clusters(masks['balls'])['stats']))
+    clusters = find_clusters(masks['balls'])
+    filtered_clusters = filter_clusters_by_size(clusters)
+    G.BALLS = find_clusters_center(filtered_clusters['stats'])
     coordinates = np.argwhere(masks['red'] != 0)
     grid = np.zeros_like(masks['red'])
     for center in G.BALLS:

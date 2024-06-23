@@ -43,6 +43,7 @@ client_socket.connect((HOST, PORT))
 
 end_node = find_first_ball(G.GRID)
 
+
 balls_picked_up = 3
 
 while True:
@@ -50,15 +51,26 @@ while True:
     if balls_picked_up == 3:
         client_socket.send('GOAL'.encode('utf-8'))
         goal_path = get_path_to_goal()
+        to_goal_start_node = goal_path[0]
         if goal_path is None:
             print('The algorithm could not find a path to the goal')
             time.sleep(5)
         else:
             path_as_tuples = [(node.x, node.y) for node in goal_path]
+            print(path_as_tuples)
             path_as_json = json.dumps(path_as_tuples)
             json_length = len(path_as_json)
             client_socket.send(json_length.to_bytes(4, 'big'))
             client_socket.send(path_as_json.encode('utf-8'))
+            balls_picked_up = 0
+            while is_robot_position_correct(G.ROBOT_HEADING, goal_path, to_goal_start_node):
+                client_socket.send('KEEP'.encode('utf-8'))
+                time.sleep(1)
+                to_goal_start_node = find_start_node()
+            print('attempting to stop robot')
+            for i in range(10):
+                client_socket.send('STOP'.encode('utf-8'))
+            response = client_socket.recv(7).decode('utf-8').strip()
 
     # If statement for picking up balls
     elif distance_between(G.ROBOT_POSITION, (end_node.x, end_node.y)) < 50:
@@ -75,7 +87,7 @@ while True:
             end_node = find_first_ball(G.GRID)  # We make sure the robot is going to the next ball
 
     # The robot will follow a path to the first ball in G.BALLS
-    else:
+    if balls_picked_up != 3:
         client_socket.send('PATH'.encode('utf-8'))
 
         start_node = find_start_node()  # Function for diffing the calculated robot position with the camera robot position
