@@ -1,14 +1,15 @@
 import math
 import numpy as np
+import Globals as G
 # grid_length = 300 #cm
 # grid_width = 300 #cm
 
 # resolution = (300,170)
 # grid = np.zeros(resolution)
 
-grid_size = 1.3  # cm
-camera_height = 141 / grid_size
-robot_height = 16 / grid_size
+grid_size = G.GRID_SIZE             #TODO
+camera_height = 185 / grid_size
+robot_height = 17 / grid_size
 
 #Find the middle of the grid$
 def find_middle(grid):

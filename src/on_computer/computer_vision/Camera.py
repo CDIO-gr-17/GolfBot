@@ -46,7 +46,7 @@ def capture_frames():
 
 
             G.BIG_FRAME = frame
-            G.SMALL_FRAME = cv.resize(G.BIG_FRAME, (320, 180))
+            G.SMALL_FRAME = cv.resize(G.BIG_FRAME, G.RESOLUTION)
 
         # Wait for 200 ms
         time.sleep(0.1)

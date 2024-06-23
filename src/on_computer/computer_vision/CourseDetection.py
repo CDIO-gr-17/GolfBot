@@ -38,7 +38,7 @@ def get_masks_from_frame(frame):
     # mask_ball = cv.bitwise_or(mask_orange, mask_white) #Combine orange and white to see the ball
 
     #Apply dilation
-    obstacle_kernel = np.ones((15, 15), np.uint8)
+    obstacle_kernel = np.ones((30, 30), np.uint8)
     ball_kernel = np.ones((3, 3), np.uint8)
     mask_white = cv.dilate(mask_white, ball_kernel)
     mask_orange = cv.dilate(mask_orange, ball_kernel)
@@ -78,9 +78,22 @@ def find_clusters_center(stats):
         centers.append((x, y))
     return centers
 
+def filter_clusters_by_size(clusters):
+    max_size = 8   # (max_size X max_size) pixels
+    filtered_clusters = {
+        'amount': 0,
+        'stats': []
+    }
+    for stat in clusters['stats']:
+        width = stat[cv.CC_STAT_WIDTH]
+        height = stat[cv.CC_STAT_HEIGHT]
+        if width <= max_size and height <= max_size:
+            filtered_clusters['amount'] += 1
+            filtered_clusters['stats'].append(stat)
+    return filtered_clusters
 
 def get_grid(masks):
-    G.BALLS = find_clusters_center(find_clusters(masks['balls'])['stats'])
+    G.BALLS = find_clusters_center(filter_clusters_by_size(find_clusters(masks['balls'])['stats']))
     coordinates = np.argwhere(masks['red'] != 0)
     grid = np.zeros_like(masks['red'])
     for center in G.BALLS:
