@@ -32,12 +32,8 @@ threading.Thread(target=update_positions).start()
 # We are in danger of going on old data cause we dont check if a new position is found in pictures
 # Dont really know if it is a problem, shouldnt be if recognition is good enough
 while G.ROBOT_POSITION is None or G.ROBOT_HEADING is None or G.GRID is None or G.BALLS is None:
-    print("robot pos: ", G.ROBOT_POSITION)
-    print("balls: ", G.BALLS)
     time.sleep(0.2)
 
-print(G.ROBOT_POSITION)
-end_node = find_first_ball(G.GRID)
 counter = 0
 while True:
     print("LOOP")
@@ -48,6 +44,7 @@ while True:
     grid_snap_shot =  copy.deepcopy(G.GRID)
     end_node = grid_snap_shot[end_node.y][end_node.x]
     start_node = grid_snap_shot[G.ROBOT_POSITION[1]][G.ROBOT_POSITION[0]]
+
     print("Start node: ", start_node)
     print("End node: ", end_node)
     path = a_star(grid_snap_shot, start_node, end_node)

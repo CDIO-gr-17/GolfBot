@@ -18,7 +18,7 @@ class RobotController:
 
     def recieve_command(self, size = 1024):
         try:
-            return self.client_socket.recv(size).decode('utf-8').strip()
+            return self.client_socket.recv_all(size).decode('utf-8').strip()
         except BlockingIOError:
             return ""
 
