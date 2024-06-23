@@ -81,8 +81,8 @@ try:
             path = [(node[0], node[1]) for node in json.loads(path_data)]
             print(path)
 
-                initialX = path[0][0]
-                initialY = path[0][1]
+            initialX = path[0][0]
+            initialY = path[0][1]
 
             path_length = len(path)
             robot.move_through_path(path[0], path[path_length-1], 0, path, clientsocket)
