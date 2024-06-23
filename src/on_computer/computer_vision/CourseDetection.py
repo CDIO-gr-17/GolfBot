@@ -97,7 +97,6 @@ def get_grid(masks):
     clusters = find_clusters(masks['balls'])
     filtered_clusters = filter_clusters_by_size(clusters)
     G.BALLS = find_clusters_center(filtered_clusters['stats'])
-    G.BALLS = sort_balls_by_distance()
     coordinates = np.argwhere(masks['red'] != 0)
     grid = np.zeros_like(masks['red'])
     for center in G.BALLS:

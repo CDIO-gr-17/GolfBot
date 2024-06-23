@@ -45,11 +45,11 @@ HOST = "192.168.8.111"
 PORT = 9999
 client_socket.connect((HOST, PORT))
 
-G.BALLS = sort_balls_by_distance() # Is this the right place for this?
-end_node = G.GRID[G.BALLS[0].y][G.BALLS[0].x] #Is it possible to do this?
+print(G.ROBOT_POSITION, G.ROBOT_HEADING, G.BALLS[0])
+end_node = G.GRID[G.BALLS[0][1]][G.BALLS[0][0]] #Is it possible to do this?
 
 
-balls_picked_up = 3
+balls_picked_up = 0
 
 while True:
     # If statement for depositing the balls in goal
@@ -80,7 +80,7 @@ while True:
     # If statement for picking up balls
     elif distance_between(G.ROBOT_POSITION, (end_node.x, end_node.y)) < 50:
         if G.BALLS is not None:
-            heading_to_ball = calculate_heading(G.ROBOT_POSITION, end_node)
+            heading_to_ball = calculate_heading(G.ROBOT_POSITION, G.BALLS[0])
             distance = distance_between(G.ROBOT_POSITION, G.BALLS[0])
             client_socket.send('PICK'.encode('utf-8'))
             client_socket.send(str(distance).encode('utf-8'))
@@ -88,7 +88,7 @@ while True:
             client_socket.send(str(int(G.ROBOT_HEADING)).encode('utf-8'))
             response = client_socket.recv(7).decode('utf-8').strip()
             balls_picked_up += 1
-            end_node = find_first_ball(G.GRID)  # We make sure the robot is going to the next ball
+            end_node = G.GRID[G.BALLS[0][1]][G.BALLS[0][0]]  # We make sure the robot is going to the next ball
 
     # The robot will follow a path to the first ball in G.BALLS
     if balls_picked_up != 3:

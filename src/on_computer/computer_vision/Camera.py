@@ -7,7 +7,7 @@ import numpy as np
 # Function to capture frames
 def capture_frames():
     # Open the camera
-    cap = cv.VideoCapture(0)
+    cap = cv.VideoCapture(1, cv.CAP_DSHOW)
 
     if not cap.isOpened():
         print("Error: Could not open the camera.")

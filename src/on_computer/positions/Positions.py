@@ -17,7 +17,7 @@ def find_first_ball(grid):
 
 def sort_balls_by_distance():
     if G.ROBOT_POSITION is None or G.BALLS is None:
-        return []
+        return None
     balls = G.BALLS
     balls.sort(key=lambda ball: distance_between(G.ROBOT_POSITION, ball))
     return balls
