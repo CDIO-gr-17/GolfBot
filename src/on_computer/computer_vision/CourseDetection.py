@@ -79,12 +79,45 @@ def find_clusters_center(stats):
         centers.append((x, y))
     return centers
 
+def filter_clusters_by_size(clusters):
+    max_pixels = 30  # Maximum number of pixels in a cluster
+    filtered_clusters = {
+        'amount': 0,
+        'stats': []
+    }
+    for stat in clusters['stats']:
+        area = stat[cv.CC_STAT_AREA]
+        if area <= max_pixels:
+            filtered_clusters['amount'] += 1
+            filtered_clusters['stats'].append(stat)
+    return filtered_clusters
+
 def get_grid(masks):
-    G.BALLS = find_clusters_center(find_clusters(masks['balls'])['stats'])
+    clusters = find_clusters(masks['balls'])
+    filtered_clusters = filter_clusters_by_size(clusters)
+    G.BALLS = find_clusters_center(filtered_clusters['stats'])
     G.BALLS = sort_balls_by_distance()
     coordinates = np.argwhere(masks['red'] != 0)
     grid = np.zeros_like(masks['red'])
     for center in G.BALLS:
         grid[center[1], center[0]] = 2
     grid[coordinates[:, 0], coordinates[:, 1]] = 1
+
+
+    #Here overwrite all balls outside walls
+    # Use connectedComponents to label the connected components in the grid
+    num_labels, labeled_grid = cv.connectedComponents(grid)
+
+    # Check if there are any 1's in the grid
+    if np.any(grid == 1):
+        # Find the label of the largest component of 1's
+        court_label = np.argmax(np.bincount(labeled_grid[grid == 1].flat))
+
+        # Set all the balls that are not in the court to 0
+        grid[(labeled_grid != court_label) & (grid == 2)] = 0
+    else:
+        # Handle the case where there are no 1's (e.g., by logging or passing)
+        print("No 1's found in the grid.")
+
+
     return grid

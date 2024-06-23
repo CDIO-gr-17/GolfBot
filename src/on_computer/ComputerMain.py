@@ -1,8 +1,9 @@
+import copy
 import json
 import socket
 import threading
-import copy
 import time
+
 import Globals as G
 
 from pathfinding.feedback import is_robot_position_correct
@@ -11,10 +12,17 @@ from positions.Positions import find_start_node, find_first_ball, sort_balls_by_
 from computer_vision.Camera import capture_frames
 from computer_vision.ComputerVision import update_positions
 from helpers.end_of_path_pickup import distance_between
+from helpers.get_path_to_goal import get_path_to_goal
+from pathfinding.PathfindingAlgorithm import a_star
+from pathfinding.feedback import is_robot_position_correct
+from positions.Positions import find_first_ball, find_start_node
 from positions.Robot_direction import calculate_heading
+
+
 
 # Assign thread to capture continous frames
 threading.Thread(target=capture_frames).start()
+
 
 while G.BIG_FRAME is None or G.SMALL_FRAME is None:
     time.sleep(0.2)
@@ -40,26 +48,35 @@ client_socket.connect((HOST, PORT))
 G.BALLS = sort_balls_by_distance() # Is this the right place for this?
 end_node = G.GRID[G.BALLS[0].y][G.BALLS[0].x] #Is it possible to do this?
 
-balls_picked_up = 0
+balls_picked_up = 3
 
 while True:
     # If statement for depositing the balls in goal
     if balls_picked_up == 3:
-        ammount_balls_left = len(G.BALLS)
         client_socket.send('GOAL'.encode('utf-8'))
         goal_path = get_path_to_goal()
-        path_as_tuples = [(node.x, node.y) for node in goal_path]
+        if goal_path is None:
+            print('The algorithm could not find a path to the goal')
+            time.sleep(5)
+        else:
+            path_as_tuples = [(node.x, node.y) for node in goal_path]
+            path_as_json = json.dumps(path_as_tuples)
+            json_length = len(path_as_json)
+            client_socket.send(json_length.to_bytes(4, 'big'))
+            client_socket.send(path_as_json.encode('utf-8'))
 
     # If statement for picking up balls
-    elif distance_between(G.ROBOT_POSITION, G.BALLS[0]) < 50:
+    elif distance_between(G.ROBOT_POSITION, (end_node.x, end_node.y)) < 50:
         if G.BALLS is not None:
             heading_to_ball = calculate_heading(G.ROBOT_POSITION, end_node)
             distance = distance_between(G.ROBOT_POSITION, G.BALLS[0])
             client_socket.send('PICK'.encode('utf-8'))
             client_socket.send(str(distance).encode('utf-8'))
             client_socket.send(str(int(heading_to_ball)).encode('utf-8'))
+            client_socket.send(str(int(G.ROBOT_HEADING)).encode('utf-8'))
             response = client_socket.recv(7).decode('utf-8').strip()
             balls_picked_up += 1
+            end_node = find_first_ball(G.GRID)  # We make sure the robot is going to the next ball
 
     # The robot will follow a path to the first ball in G.BALLS
     else:
@@ -83,7 +100,7 @@ while True:
             print('The algorithm could not find a path')
         else:
             print('Path: OK')
-            path_as_touples = [(node.x, node.y) for node in path]
+            path_as_touples = [(node.x, node.y) for node in path[:-5]]
             path_as_json = json.dumps(path_as_touples)
             json_length = len(path_as_json)
             client_socket.send(json_length.to_bytes(4, 'big'))
@@ -93,7 +110,7 @@ while True:
             client_socket.send('KEEP'.encode('utf-8'))
             time.sleep(1)
             start_node = find_start_node()
-            if (distance_between(G.ROBOT_POSITION, G.BALLS[0]) < 50):
+            if (distance_between(G.ROBOT_POSITION, (end_node.x, end_node.y)) < 50):
                 break
 
         # Send the stop command to the robot

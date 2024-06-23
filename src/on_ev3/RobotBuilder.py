@@ -50,13 +50,36 @@ class Robot:
         self.GRID_DISTANCE = 7.5
         self.current_heading = None
         self.step = 0
+        self.settings = (1000, 200, 50, 25)
+        self.buffer = ""
+
+    def shoot_one_ball(self, distance):
+        self.front_motor.run(-1200)
+        self.robot.straight(-distance)
+        wait(2000)
+        self.robot.straight(distance)
+        wait(2000)
+
+    def shoot_all_balls(self):
+        self.robot.settings(100, 200)
+        wiggle = 40
+        for i in range(3):
+            self.shoot_one_ball(wiggle)
+            wiggle += 40
+        self.front_motor.stop()
+
+    def deposit(self):
+        goal_heading = 90  # directly east
+        # Send command containing the following:
+        self.turn_to_heading(goal_heading)
+        self.shoot_all_balls()
 
     def pickup_ball(self, distance, heading):
         self.turn_to_heading(heading)
         self.front_motor.run(1200)
         wait(2000)
         # self.robot.settings(100, 200)
-        self.robot.straight(distance * self.GRID_DISTANCE*1.2)
+        self.robot.straight(distance * self.GRID_DISTANCE*1.05)
         self.front_motor.stop()
 
     def get_next_point(self, path):
@@ -109,7 +132,7 @@ class Robot:
                     break
                 loop_counter += 1
                 self.step += 1
-            else: 
+            else:
                 break
         print("")
         print('-------------------------' + ' end of calculate_drive_factor ' + '-------------------------')
@@ -202,16 +225,20 @@ class Robot:
             start_x = start_node[0]
             start_y = start_node[1]
 
-            buffer = ""
             data = clientsocket.recv(1024).decode('utf-8').strip()
-            buffer += data
+            self.buffer += data
 
-            print('buffer: ', buffer)
+            print('buffer: ', self.buffer)
 
-            if 'STOP' in buffer:
+            if 'STOP' in self.buffer:
                 clientsocket.send('STOPPED'.encode('utf-8'))
                 print('Stopped by computer')
                 self.step = 0
                 return
 
-            print('buffer: ', buffer)
+            while 'KEEP' in self.buffer or 'STOP' in self.buffer:
+                self.buffer = self.buffer.replace('KEEP', '')
+                self.buffer = self.buffer.replace('STOP', '')
+                print(self.buffer)
+
+            print('buffer: ', self.buffer)
