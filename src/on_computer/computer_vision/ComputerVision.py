@@ -9,6 +9,7 @@ def update_positions():
     while True:
         masks = get_masks_from_frame(G.SMALL_FRAME)
         grid_data = get_grid(masks)
+        # print(grid_data.astype)
         G.GRID = convert_to_grid(grid_data)
         robot_data = get_robot_pos_and_heading(G.BIG_FRAME)
         if robot_data is not None:

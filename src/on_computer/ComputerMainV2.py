@@ -1,3 +1,4 @@
+from re import S
 import socket
 import json
 import time
@@ -31,20 +32,26 @@ threading.Thread(target=update_positions).start()
 # We are in danger of going on old data cause we dont check if a new position is found in pictures
 # Dont really know if it is a problem, shouldnt be if recognition is good enough
 while G.ROBOT_POSITION is None or G.ROBOT_HEADING is None or G.GRID is None or G.BALLS is None:
-    time.sleep(0.2) 
+    print("robot pos: ", G.ROBOT_POSITION)
+    print("balls: ", G.BALLS)
+    time.sleep(0.2)
 
 print(G.ROBOT_POSITION)
-
+end_node = find_first_ball(G.GRID)
 counter = 0
 while True:
     print("LOOP")
-    first_ball = find_first_ball(G.GRID)
     distance = 1000
     if G.BALLS is not None:
-        distance = distance_between(G.ROBOT_POSITION, G.BALLS[counter])
+        distance = distance_between(G.ROBOT_POSITION, G.BALLS[0])
+
     grid_snap_shot =  copy.deepcopy(G.GRID)
-    start_node = copy.deepcopy(find_start_node())
-    path = a_star(grid_snap_shot, start_node, first_ball)
+    end_node = grid_snap_shot[end_node.y][end_node.x]
+    start_node = grid_snap_shot[G.ROBOT_POSITION[1]][G.ROBOT_POSITION[0]]
+    print("Start node: ", start_node)
+    print("End node: ", end_node)
+    path = a_star(grid_snap_shot, start_node, end_node)
+    print("Path to first ball: ", path)
 
     if counter == 3:
         print("DEPO")
@@ -68,6 +75,7 @@ while True:
     elif counter < 3:
         print ('PATH')
         path_as_tuples = [(node.x, node.y) for node in path]
+        print(path_as_tuples)
         controller.send_command('PATH', {'heading': G.ROBOT_HEADING, 'path': path_as_tuples})
         while(is_robot_position_correct(path, find_start_node())):
             pass

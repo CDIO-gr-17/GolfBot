@@ -1,6 +1,5 @@
 import cv2 as cv
 import numpy as np
-import threading
 from positions.Displacement import move_point
 import Globals as G
 
@@ -9,17 +8,17 @@ def get_robot_pos_and_heading(frame):
     grayscale = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
     # Apply Gaussian blur to the image
-    blurred = cv.GaussianBlur(grayscale, (5, 5), 0)
+    blurred = cv.GaussianBlur(grayscale, (3, 3), 0)
 
     # Apply Canny edge detection
-    edges = cv.Canny(blurred, 30, 150)
+    edges = cv.Canny(blurred, 25, 150)
 
     # Find contours in the edged image
     contours, _ = cv.findContours(edges.copy(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-    min_area = 600  # Adjust this value based on your requirements
+    min_area = 400  # Adjust this value based on your requirements
     min_angle = np.pi *  1 / 8  # Minimum angle of a triangle (in radians)
-    max_angle = np.pi * 5 / 8  # Maximum angle of a triangle (in radians)
+    max_angle = np.pi * 4 / 8  # Maximum angle of a triangle (in radians)
 
     for contour in contours:
     # Filter out small contours
