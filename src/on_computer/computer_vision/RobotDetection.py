@@ -17,7 +17,7 @@ def get_robot_pos_and_heading(frame):
     # Find contours in the edged image
     contours, _ = cv.findContours(edges.copy(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-    min_area = 100  # Adjust this value based on your requirements
+    min_area = 500  # Adjust this value based on your requirements
     min_angle = np.pi *  1 / 8  # Minimum angle of a triangle (in radians)
     max_angle = np.pi * 1 / 2  # Maximum angle of a triangle (in radians)
 
@@ -76,5 +76,4 @@ def get_robot_pos_and_heading(frame):
             # Check if the angles are within the range expected for a triangle
             if np.all(np.logical_and(angles > min_angle, angles < max_angle)):
                 cv.drawContours(frame, [contour], -1, (0, 255, 0), 2)
-        cv.imwrite('Frame.jpg', frame)
-                # return adjusted_heading_degrees, farthest_vertex_low_res_adjusted
+                return adjusted_heading_degrees, farthest_vertex_low_res_adjusted
