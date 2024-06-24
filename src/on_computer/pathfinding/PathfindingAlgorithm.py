@@ -1,5 +1,6 @@
 import math
 
+
 class Node:
     def __init__(self, grid, x, y):
         self.x = x
@@ -40,7 +41,7 @@ file.close()
 start = None
 end = None
 
-# set test data
+# set test data. THIS IS THE GRID THAT IS BEING USED RIGHT NOW.
 for i in range(rows):
     row = list(map(int, lines[i].split()))
     row_nodes = []
