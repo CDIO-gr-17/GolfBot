@@ -10,13 +10,14 @@ from computer_vision.Camera import capture_frames
 from computer_vision.ComputerVision import update_positions
 from helpers.get_path_to_goal import get_path_to_goal
 from positions.Robot_direction import calculate_heading
-from path_navigator import move_through_path
+from path_navigator import move_through_path, send_instruction
 
 
 #  Helper function to move the robot through a path
-def move_robot(path, heading):
+def move_robot(path, robot_mode):
     path_as_tuples = [(node.x, node.y) for node in path]
-    return move_through_path(path_as_tuples[1], path[len(path_as_tuples)-5], heading, path_as_tuples)
+    reduced_path_as_tuples = path_as_tuples[:-20]
+    return move_through_path(path_as_tuples[1], path_as_tuples[-1], reduced_path_as_tuples, robot_mode)
 
 
 # Assign thread to capture continous frames
@@ -43,16 +44,17 @@ HOST = "192.168.8.111"
 PORT = 9999
 G.CLIENT_SOCKET.connect((HOST, PORT))
 
-balls_picked_up = 0
+balls_picked_up = 3
 
 while True:
     if balls_picked_up == 3:
         goal_path = get_path_to_goal()
         if goal_path is None:
             print('The algorithm could not find a path to the goal')
+            send_instruction('REVERSE', 0, -15)
             time.sleep(5)
         else:
-            if move_robot(goal_path, G.ROBOT_HEADING):
+            if move_robot(goal_path, 'GOAL'):
                 balls_picked_up = 0
             else:
                 print('Recalculating path to goal...')
@@ -66,9 +68,10 @@ while True:
         path = a_star(grid_copy, start_node_copy, end_node_copy)
         if path is None:
             print('No path found, waiting...')
+            send_instruction('REVERSE', 0, -15)
             time.sleep(5)
         else:
-            if move_robot(path, G.ROBOT_HEADING):
+            if move_robot(path, 'BALL'):
                 balls_picked_up += 1
             else:
                 print('Recalculating path to ball...')

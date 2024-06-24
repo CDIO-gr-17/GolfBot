@@ -3,7 +3,7 @@ import time
 import Globals as G
 
 from Heading import Heading
-from pathfinding.feedback import is_robot_position_correct
+from helpers.end_of_path_pickup import distance_between
 
 WHEEL_DIAMETER = 55
 AXLE_TRACK = 98
@@ -52,17 +52,21 @@ def send_instruction(instruction, degrees=None, distance=None):
             print("The robot should drive straight for: ", distance)
             time.sleep(4)
         case 'REVERSE':
-            payload = f"{instruction}"
+            payload = f"{instruction} {0} {distance}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
             time.sleep(2)
         case 'TURN':
             payload = f"{instruction} {degrees} {0}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
             time.sleep(2)
+        case 'PICKUP':
+            payload = f"{instruction} {degrees} {distance}"
+            G.CLIENT_SOCKET.send(payload.encode('utf-8'))
+            time.sleep(10)
 
 # def shoot_one_ball(self, distance):
-#     self.front_motor.run(-1200)
-#     self.robot.straight(-distance)
+#     robot.front_motor.run(-1200)
+#     robot.drivebase.straight(-distance)
 #     wait(2000)
 #     self.robot.straight(distance)
 #     wait(2000)
@@ -81,13 +85,9 @@ def send_instruction(instruction, degrees=None, distance=None):
 #     self.turn_to_heading(goal_heading)
 #     self.shoot_all_balls()
 
-# def pickup_ball(self, distance, heading):
-#     self.turn_to_heading(heading)
-#     self.front_motor.run(1200)
-#     wait(2000)
-#     # self.robot.settings(100, 200)
-#     self.robot.straight(distance * self.GRID_DISTANCE*1.2)
-#     self.front_motor.stop()
+
+def pickup_ball(distance, heading):
+    send_instruction('PICKUP', heading, distance * GRID_DISTANCE)
 
 
 def calculate_drive_factor(path):
@@ -108,7 +108,7 @@ def calculate_drive_factor(path):
         print('next position in calculate_drive_factor: ' + str(nex_pos))
 
         calc_heading = calculate_heading(curr_pos, nex_pos)
-        if calc_heading == G.ROBOT_HEADING + 10 or calc_heading == G.ROBOT_HEADING - 10:
+        if calc_heading < G.ROBOT_HEADING + 10 and calc_heading > G.ROBOT_HEADING - 10:
             acc_steps += 1
             curr_pos = nex_pos
             print(          'curr_pos: ' + str(curr_pos) + ' == nex_pos: ' + str(nex_pos))
@@ -202,11 +202,11 @@ def moveToPoint(target_x: int, target_y: int, currentX: int, currentY: int, curr
     return currentHeading
 
 
-def move_through_path(start_coordinate, end_coordinate, initial_heading, path):
+def move_through_path(start_coordinate, end_coordinate, path, robot_mode):
     start_x = start_coordinate[0]
     start_y = start_coordinate[1]
 
-    while (start_coordinate != end_coordinate):
+    while (G.STEP < len(path)):
         moveToPoint(path[G.STEP][0], path[G.STEP][1], start_x, start_y, G.ROBOT_HEADING, path)
         start_node = path[G.STEP]
         start_x = start_node[0]
@@ -214,7 +214,19 @@ def move_through_path(start_coordinate, end_coordinate, initial_heading, path):
         G.STEP += 1
 
         #  if not is_robot_position_correct(path, start_node):
-            #  return False
+        #  return False
 
-    #  TODO: Implement that the robot can pick up balls
-    return True
+    if robot_mode == 'BALL':
+        required_heading = calculate_heading(G.ROBOT_POSITION, end_coordinate)
+        distance_to_ball = distance_between(G.ROBOT_POSITION, end_coordinate)
+
+        degrees_delta = required_heading - G.ROBOT_HEADING
+        if degrees_delta > 180:
+            degrees_delta -= 360
+
+        pickup_ball(distance_to_ball, degrees_delta)
+        G.STEP = 0
+        return True
+
+    if robot_mode == 'GOAL':
+        pass

@@ -23,20 +23,26 @@ try:
         if data:
             parts = data.split()
             if len(parts) == 3:
-                instruction, x, y = parts
+                instruction, heading, distance = parts
                 try:
-                    x = int(x)
-                    y = int(y)
+                    heading = int(heading)
+                    distance = int(distance)
                 except ValueError:
-                    print("Error: x or y cannot be converted to an integer. Received x='{x}', y='{y}'".format(x=x, y=y))
+                    print("Error: x or y cannot be converted to an integer. Received x='{x}', y='{y}'".format(x=heading, y=distance))
                     continue
 
                 if instruction == 'DRIVE' or instruction == 'REVERSE':
-                    robot.drivebase.straight(y)
-                    print("Driving straight for: ", y)
+                    robot.drivebase.straight(distance)
+                    print("Driving straight for: ", distance)
+                elif instruction == 'PICKUP':
+                    print('The robot will turn to pickup balls: ', heading)
+                    robot.drivebase.turn(heading)
+                    robot.front_motor.run(1000)
+                    robot.drivebase.straight(distance)
+                    robot.front_motor.stop
                 elif instruction == 'TURN':
-                    print("Turning for: ", x)
-                    robot.drivebase.turn(x)
+                    print("Turning for: ", heading)
+                    robot.drivebase.turn(heading)
             else:
                 print("Error: Expected 3 parts from the split operation, got {}: {}".format(len(parts), parts))
         else:
