@@ -6,7 +6,7 @@ import numpy as np
 # resolution = (300,170)
 # grid = np.zeros(resolution)
 
-grid_size = 1.3 #cm
+grid_size = 0.75  # cm
 camera_height = 185 / grid_size
 robot_height = 16 / grid_size
 

@@ -1,4 +1,4 @@
-def is_robot_position_correct(heading, robot_path, camera_robot_position):
+def is_robot_position_correct(robot_path, camera_robot_position):
 
     slacked_path = []
     for node in robot_path:

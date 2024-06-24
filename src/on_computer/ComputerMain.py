@@ -40,7 +40,7 @@ client_socket.connect((HOST, PORT))
 
 end_node = find_first_ball(G.GRID)
 
-balls_picked_up = 3
+balls_picked_up = 0
 
 while True:
     # If statement for depositing the balls in goal
@@ -60,9 +60,11 @@ while True:
     # If statement for picking up balls
     elif distance_between(G.ROBOT_POSITION, (end_node.x, end_node.y)) < 50:
         if G.BALLS is not None:
+            time.sleep(1)
             heading_to_ball = calculate_heading(G.ROBOT_POSITION, (end_node.x, end_node.y))
             print(heading_to_ball)
             distance = distance_between(G.ROBOT_POSITION, (end_node.x, end_node.y))
+            print (distance)
             client_socket.send('PICK'.encode('utf-8'))
             client_socket.send(str(distance).encode('utf-8'))
             client_socket.send(str(int(heading_to_ball)).encode('utf-8'))

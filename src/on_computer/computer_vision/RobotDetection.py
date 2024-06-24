@@ -72,8 +72,9 @@ def get_robot_pos_and_heading(frame):
             if farthest_vertex_low_res_adjusted is None:
                 return None
             farthest_vertex_low_res_adjusted = (int(farthest_vertex_low_res_adjusted[0]), int(farthest_vertex_low_res_adjusted[1]))
-
+            
             # Check if the angles are within the range expected for a triangle
             if np.all(np.logical_and(angles > min_angle, angles < max_angle)):
                 cv.drawContours(frame, [contour], -1, (0, 255, 0), 2)
+                cv.imwrite('robot.jpg', frame)
                 return adjusted_heading_degrees, farthest_vertex_low_res_adjusted

@@ -18,4 +18,5 @@ def update_positions():
         G.GRID = convert_to_grid(grid_data)
         if robot_data is not None:
             G.ROBOT_HEADING, G.ROBOT_POSITION = robot_data
-        time.sleep(1)
+            print('Robot Heading: ', G.ROBOT_HEADING)
+        # time.sleep(0.1)
