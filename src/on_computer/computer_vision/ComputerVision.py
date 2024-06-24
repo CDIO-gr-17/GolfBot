@@ -13,9 +13,9 @@ def update_positions():
     while True:
         masks = get_masks_from_frame(G.SMALL_FRAME)
         cv.imwrite('ImageWindow.jpg', masks['balls'])
-        grid_data = get_grid(masks)
+        G.GRID_DATA = get_grid(masks)
         robot_data = get_robot_pos_and_heading(G.BIG_FRAME)
-        G.GRID = convert_to_grid(grid_data)
+        G.GRID = convert_to_grid(G.GRID_DATA)
         if robot_data is not None:
             G.ROBOT_HEADING, G.ROBOT_POSITION = robot_data
             print('Robot Heading: ', G.ROBOT_HEADING)
