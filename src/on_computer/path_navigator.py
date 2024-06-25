@@ -104,20 +104,14 @@ def calculate_drive_factor(path):
     loop_counter = G.STEP
 
     curr_pos = path[loop_counter]
-    print('current position in calculate_drive_factor: ' + str(curr_pos))
-    print('The for loop starts')
     for nex_pos in path:
-
         if loop_counter == len(path)-1:
             break
         nex_pos = path[loop_counter+1]
-        print('next position in calculate_drive_factor: ' + str(nex_pos))
-
         calc_heading = calculate_heading(curr_pos, nex_pos)
         if calc_heading < G.ROBOT_HEADING + 10 and calc_heading > G.ROBOT_HEADING - 10:
             acc_steps += 1
             curr_pos = nex_pos
-            print(          'curr_pos: ' + str(curr_pos) + ' == nex_pos: ' + str(nex_pos))
             if loop_counter == len(path)-1:
                 break
             loop_counter += 1
@@ -235,7 +229,8 @@ def move_through_path(start_coordinate, end_coordinate, path, robot_mode):
         return True
 
     if robot_mode == 'GOAL':
-        required_heading = calculate_heading(G.ROBOT_POSITION, end_coordinate[1] + 20)
+        end_coordinate_as_touple = (end_coordinate[0], end_coordinate[1]+20)
+        required_heading = calculate_heading(G.ROBOT_POSITION, end_coordinate_as_touple)
         degrees_delta = required_heading - G.ROBOT_HEADING
         if degrees_delta > 180:
             degrees_delta -= 360

@@ -12,13 +12,13 @@ def get_path_to_goal():
         print("goal is none")
         return None             #maybe do something else as failsafe here
     goal_coordinates = goal[1]
-    print('THE GOAL COORDINATES ARE: ', goal_coordinates)
-    adjusted_goal = (goal_coordinates[0], goal_coordinates[1] - 50)  # Adjust the goal coordinates later to fit grid
+    adjusted_goal = (goal_coordinates[0], goal_coordinates[1] - 40)  # Adjust the goal coordinates later to fit grid
+    print('THE GOAL COORDINATES ARE: ', adjusted_goal)
     if G.GRID is None:
         print('GRID IS NONE')
         return None
     grid_copy = copy.deepcopy(G.GRID)           #Taking snapshot of the grid | Taking long time to run
     end_node_copy = grid_copy[adjusted_goal[0]][adjusted_goal[1]]
-    start_node_copy = grid_copy[G.ROBOT_POSITION[0]][G.ROBOT_POSITION[1]]
+    start_node_copy = grid_copy[G.ROBOT_POSITION[1]][G.ROBOT_POSITION[0]]
     path = a_star(grid_copy, start_node_copy, end_node_copy)
     return path
