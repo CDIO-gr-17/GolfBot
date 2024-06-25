@@ -16,7 +16,7 @@ from path_navigator import move_through_path, send_instruction
 #  Helper function to move the robot through a path
 def move_robot(path, robot_mode):
     path_as_tuples = [(node.x, node.y) for node in path]
-    if robot_mode != 'GOAL':
+    if robot_mode == 'BALL':
         path_as_tuples = path_as_tuples[:-20]
     return move_through_path(path_as_tuples[1], path_as_tuples[-1], path_as_tuples, robot_mode)
 
@@ -45,7 +45,7 @@ HOST = "192.168.8.111"
 PORT = 9999
 G.CLIENT_SOCKET.connect((HOST, PORT))
 
-balls_picked_up = 3
+balls_picked_up = 0
 
 while True:
     if balls_picked_up == 3:
@@ -53,7 +53,7 @@ while True:
         if goal_path is None:
             print('The algorithm could not find a path to the goal')
             send_instruction('REVERSE', 0, -15)
-            time.sleep(5)
+            time.sleep(0.5)
         else:
             if move_robot(goal_path, 'GOAL'):
                 balls_picked_up = 0
@@ -69,8 +69,8 @@ while True:
         path = a_star(grid_copy, start_node_copy, end_node_copy)
         if path is None:
             print('No path found, waiting...')
-            send_instruction('REVERSE', 0, -15)
-            time.sleep(5)
+            send_instruction('REVERSE', 0, -20)
+            time.sleep(0.5)
         else:
             if move_robot(path, 'BALL'):
                 balls_picked_up += 1

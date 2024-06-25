@@ -49,7 +49,7 @@ while True:
         goal_path = get_path_to_goal()
         if goal_path is None:
             print('The algorithm could not find a path to the goal')
-            time.sleep(5)
+            time.sleep(0.5)
         else:
             path_as_tuples = [(node.x, node.y) for node in goal_path]
             path_as_json = json.dumps(path_as_tuples)
