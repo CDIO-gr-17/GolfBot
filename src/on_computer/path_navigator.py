@@ -66,7 +66,7 @@ def send_instruction(instruction, degrees=None, distance=None):
         case 'PICKUP':
             payload = f"{instruction} {degrees} {distance}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
-            time.sleep(10)
+            time.sleep(4)
         case 'EJECT':
             payload = f"{instruction} {degrees} {distance}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
@@ -238,6 +238,6 @@ def move_through_path(start_coordinate, end_coordinate, path, robot_mode):
         if degrees_delta > 180:
             degrees_delta -= 360
 
-        distance = 100
+        distance = 0
         send_instruction('EJECT', degrees_delta, distance)
         return True
