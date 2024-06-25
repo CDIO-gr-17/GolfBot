@@ -48,17 +48,15 @@ try:
                     print("Ejecting balls")
                     robot.drivebase.turn(heading)
                     robot.drivebase.straight(distance)
-                    #  robot.drivebase.settings(100, 200)
                     robot.front_motor.run(-1000)
                     for i in range(3):
                         timer = 1
-                        robot.drivebase.drive(-100,0)
+                        robot.drivebase.drive(1000,0)
                         time.sleep(1)
                         robot.drivebase.stop()
-                        robot.drivebase.drive(100,0)
+                        robot.drivebase.drive(-50,0)
                         time.sleep(1)
                         robot.drivebase.stop()
-                        timer += 1
 
 
             else:
