@@ -51,12 +51,12 @@ try:
                     #  robot.drivebase.settings(100, 200)
                     robot.front_motor.run(-1000)
                     for i in range(3):
-                        acc = 50
-                        robot.drivebase.straight(-acc)
+                        timer = 1
+                        robot.drivebase.drive(-100,0)
                         time.sleep(1)
-                        robot.drivebase.straight(acc)
+                        robot.drivebase.drive(100,0)
                         time.sleep(1)
-                        acc += 20
+                        timer += 1
 
 
             else:
