@@ -53,7 +53,7 @@ while True:
         if goal_path is None:
             print('The algorithm could not find a path to the goal')
             send_instruction('REVERSE', 0, -15)
-            time.sleep(5)
+            time.sleep(0.5)
         else:
             if move_robot(goal_path, 'GOAL'):
                 balls_picked_up = 0
@@ -69,8 +69,8 @@ while True:
         path = a_star(grid_copy, start_node_copy, end_node_copy)
         if path is None:
             print('No path found, waiting...')
-            send_instruction('REVERSE', 0, -15)
-            time.sleep(5)
+            send_instruction('REVERSE', 0, -20)
+            time.sleep(0.5)
         else:
             if move_robot(path, 'BALL'):
                 balls_picked_up += 1

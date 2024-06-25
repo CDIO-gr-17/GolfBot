@@ -50,11 +50,15 @@ def send_instruction(instruction, degrees=None, distance=None):
             payload = f"{instruction} {0} {distance}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
             print("The robot should drive straight for: ", distance)
-            time.sleep(distance / GRID_DISTANCE)
+            if distance:
+                timer = distance/GRID_DISTANCE*0.5
+            else:
+                timer = 1
+            time.sleep(timer)
         case 'REVERSE':
             payload = f"{instruction} {0} {distance}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
-            time.sleep(2)
+            time.sleep(1)
         case 'TURN':
             payload = f"{instruction} {degrees} {0}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
