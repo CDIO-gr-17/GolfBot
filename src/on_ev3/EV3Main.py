@@ -55,8 +55,8 @@ try:
                         robot.drivebase.drive(1000,0)
                         time.sleep(timer)
                         robot.drivebase.stop()
-                        robot.drivebase.drive(-125,0)
-                        time.sleep(timer*8)
+                        robot.drivebase.drive(-950,0)
+                        time.sleep(timer)
                         robot.drivebase.stop()
 
 
