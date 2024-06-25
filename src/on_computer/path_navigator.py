@@ -229,7 +229,7 @@ def move_through_path(start_coordinate, end_coordinate, path, robot_mode):
         return True
 
     if robot_mode == 'GOAL':
-        end_coordinate_as_touple = (end_coordinate[0], end_coordinate[1]+20)
+        end_coordinate_as_touple = (end_coordinate[0]+20, end_coordinate[1])
         required_heading = calculate_heading(G.ROBOT_POSITION, end_coordinate_as_touple)
         degrees_delta = required_heading - G.ROBOT_HEADING
         if degrees_delta > 180:
