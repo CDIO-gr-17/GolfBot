@@ -16,8 +16,9 @@ from path_navigator import move_through_path, send_instruction
 #  Helper function to move the robot through a path
 def move_robot(path, robot_mode):
     path_as_tuples = [(node.x, node.y) for node in path]
-    reduced_path_as_tuples = path_as_tuples[:-20]
-    return move_through_path(path_as_tuples[1], path_as_tuples[-1], reduced_path_as_tuples, robot_mode)
+    if robot_mode != 'GOAL':
+        path_as_tuples = path_as_tuples[:-20]
+    return move_through_path(path_as_tuples[1], path_as_tuples[-1], path_as_tuples, robot_mode)
 
 
 # Assign thread to capture continous frames
