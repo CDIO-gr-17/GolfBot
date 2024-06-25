@@ -62,7 +62,7 @@ def send_instruction(instruction, degrees=None, distance=None):
         case 'TURN':
             payload = f"{instruction} {degrees} {0}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
-            time.sleep(2)
+            time.sleep(1)
         case 'PICKUP':
             payload = f"{instruction} {degrees} {distance}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
