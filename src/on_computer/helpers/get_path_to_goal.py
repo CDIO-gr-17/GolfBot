@@ -12,7 +12,7 @@ def get_path_to_goal():
         print("goal is none")
         return None             #maybe do something else as failsafe here
     goal_coordinates = goal[1]
-    adjusted_goal = (goal_coordinates[0], goal_coordinates[1] - 40)  # Adjust the goal coordinates later to fit grid
+    adjusted_goal = (goal_coordinates[0], goal_coordinates[1] - 60)  # Adjust the goal coordinates later to fit grid
     print('THE GOAL COORDINATES ARE: ', adjusted_goal)
     if G.GRID is None:
         print('GRID IS NONE')
