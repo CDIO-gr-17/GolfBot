@@ -47,7 +47,7 @@ HOST = "192.168.8.111"
 PORT = 9999
 G.CLIENT_SOCKET.connect((HOST, PORT))
 
-balls_picked_up = 2
+balls_picked_up = 0
 
 while True:
     if balls_picked_up == 3:
