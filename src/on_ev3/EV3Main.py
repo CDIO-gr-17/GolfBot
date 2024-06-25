@@ -50,12 +50,12 @@ try:
                     robot.drivebase.straight(distance)
                     robot.front_motor.run(-1000)
                     for i in range(3):
-                        timer = 1
+                        timer = 0.8
                         robot.drivebase.drive(1000,0)
-                        time.sleep(1)
+                        time.sleep(timer)
                         robot.drivebase.stop()
-                        robot.drivebase.drive(-50,0)
-                        time.sleep(1)
+                        robot.drivebase.drive(-1000,0)
+                        time.sleep(timer)
                         robot.drivebase.stop()
 
 
