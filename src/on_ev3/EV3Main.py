@@ -54,8 +54,10 @@ try:
                         timer = 1
                         robot.drivebase.drive(-100,0)
                         time.sleep(1)
+                        robot.drivebase.stop()
                         robot.drivebase.drive(100,0)
                         time.sleep(1)
+                        robot.drivebase.stop()
                         timer += 1
 
 
