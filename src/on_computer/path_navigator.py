@@ -51,7 +51,7 @@ def send_instruction(instruction, degrees=None, distance=None):
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
             print("The robot should drive straight for: ", distance)
             if distance:
-                timer = distance/GRID_DISTANCE*0.5
+                timer = distance/GRID_DISTANCE*0.1
             else:
                 timer = 1
             time.sleep(timer)
