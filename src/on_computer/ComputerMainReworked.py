@@ -17,8 +17,10 @@ from path_navigator import move_through_path, send_instruction
 def move_robot(path, robot_mode):
     path_as_tuples = [(node.x, node.y) for node in path]
     if robot_mode == 'BALL':
-        path_as_tuples = path_as_tuples[:-20]
-    return move_through_path(path_as_tuples[1], path_as_tuples[-1], path_as_tuples, robot_mode)
+        new_path_as_tuples = path_as_tuples[:-15]
+    else:
+        new_path_as_tuples = path_as_tuples
+    return move_through_path(path_as_tuples[1], path_as_tuples[-1], new_path_as_tuples, robot_mode)
 
 
 # Assign thread to capture continous frames
