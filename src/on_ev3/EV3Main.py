@@ -53,10 +53,10 @@ try:
                     for i in range(3):
                         timer = 1
                         robot.drivebase.drive(-100,0)
-                        time.sleep(1)
+                        #time.sleep(1)
                         robot.drivebase.stop()
                         robot.drivebase.drive(100,0)
-                        time.sleep(1)
+                        #time.sleep(1)
                         robot.drivebase.stop()
                         timer += 1
 

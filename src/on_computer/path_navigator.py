@@ -50,7 +50,7 @@ def send_instruction(instruction, degrees=None, distance=None):
             payload = f"{instruction} {0} {distance}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
             print("The robot should drive straight for: ", distance)
-            time.sleep(4)
+            time.sleep(distance / GRID_DISTANCE)
         case 'REVERSE':
             payload = f"{instruction} {0} {distance}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
@@ -229,7 +229,7 @@ def move_through_path(start_coordinate, end_coordinate, path, robot_mode):
         return True
 
     if robot_mode == 'GOAL':
-        end_coordinate_as_touple = (end_coordinate[0]+20, end_coordinate[1])
+        end_coordinate_as_touple = (end_coordinate[0]+15, end_coordinate[1])
         required_heading = calculate_heading(G.ROBOT_POSITION, end_coordinate_as_touple)
         degrees_delta = required_heading - G.ROBOT_HEADING
         if degrees_delta > 180:

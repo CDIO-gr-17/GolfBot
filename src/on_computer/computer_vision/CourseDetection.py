@@ -44,6 +44,7 @@ def get_masks_from_frame(frame):
     mask_orange = cv.dilate(mask_orange, ball_kernel)
     mask_red = cv.dilate(mask_red,obstacle_kernel)
     mask_ball = cv.bitwise_or(mask_orange, mask_white)
+    cv.imwrite('border.jpg', mask_red)
 
     masks = {
         'red': mask_red,
@@ -68,7 +69,7 @@ def find_clusters(mask):
     }
     return clusters
 
-#Returns a list of centers for each cluster
+# Returns a list of centers for each cluster
 def find_clusters_center(stats):
     centers = []
     for stat in stats:

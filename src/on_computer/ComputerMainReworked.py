@@ -17,8 +17,8 @@ from path_navigator import move_through_path, send_instruction
 def move_robot(path, robot_mode):
     path_as_tuples = [(node.x, node.y) for node in path]
     if robot_mode != 'GOAL':
-        path_as_tuples = path_as_tuples[:-20]
-    return move_through_path(path_as_tuples[1], path_as_tuples[-1], path_as_tuples, robot_mode)
+        reduced_path_as_touples = path_as_tuples[:-20]
+    return move_through_path(path_as_tuples[1], path_as_tuples[-1], reduced_path_as_touples, robot_mode)
 
 
 # Assign thread to capture continous frames
@@ -45,7 +45,7 @@ HOST = "192.168.8.111"
 PORT = 9999
 G.CLIENT_SOCKET.connect((HOST, PORT))
 
-balls_picked_up = 3
+balls_picked_up = 0
 
 while True:
     if balls_picked_up == 3:
