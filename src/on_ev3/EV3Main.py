@@ -53,7 +53,9 @@ try:
                     for i in range(3):
                         acc = 50
                         robot.drivebase.straight(-acc)
+                        time.sleep(1)
                         robot.drivebase.straight(acc)
+                        time.sleep(1)
                         acc += 20
 
 
