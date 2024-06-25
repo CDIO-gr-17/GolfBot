@@ -235,6 +235,6 @@ def move_through_path(start_coordinate, end_coordinate, path, robot_mode):
         if degrees_delta > 180:
             degrees_delta -= 360
 
-        distance = 10
+        distance = 50
         send_instruction('EJECT', degrees_delta, distance)
         return True
