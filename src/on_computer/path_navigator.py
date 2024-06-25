@@ -63,6 +63,12 @@ def send_instruction(instruction, degrees=None, distance=None):
             payload = f"{instruction} {degrees} {distance}"
             G.CLIENT_SOCKET.send(payload.encode('utf-8'))
             time.sleep(10)
+        case 'EJECT':
+            payload = f"{instruction} {degrees} {distance}"
+            G.CLIENT_SOCKET.send(payload.encode('utf-8'))
+
+            time.sleep(10)
+
 
 # def shoot_one_ball(self, distance):
 #     robot.front_motor.run(-1200)
@@ -229,4 +235,11 @@ def move_through_path(start_coordinate, end_coordinate, path, robot_mode):
         return True
 
     if robot_mode == 'GOAL':
-        pass
+        required_heading = calculate_heading(G.ROBOT_POSITION, end_coordinate[1] + 20)
+        degrees_delta = required_heading - G.ROBOT_HEADING
+        if degrees_delta > 180:
+            degrees_delta -= 360
+
+        distance = 10
+        send_instruction('EJECT', degrees_delta, distance)
+        return True

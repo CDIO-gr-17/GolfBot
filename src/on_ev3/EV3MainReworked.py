@@ -117,3 +117,4 @@ while True:
             robot.deposit()
         while 'GOAL' in robot.buffer:
             robot.buffer = robot.buffer.replace('GOAL', '')
+

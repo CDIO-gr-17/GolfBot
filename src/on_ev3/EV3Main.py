@@ -1,5 +1,6 @@
 #!/usr/bin/env pybricks-micropython
 import socket
+import time
 
 from RobotBuilderReworked import Robot
 
@@ -43,6 +44,20 @@ try:
                 elif instruction == 'TURN':
                     print("Turning for: ", heading)
                     robot.drivebase.turn(heading)
+                elif instruction == 'EJECT':
+                    print("Ejecting balls")
+                    robot.drivebase.turn(heading)
+                    robot.drivebase.straight(distance)
+                    robot.front_motor.run(-1000)
+                    for i in range(3):
+                        acc = 50
+                        robot.drivebase.straight(-50)
+                        time.sleep(1)
+                        robot.drivebase.straight(50)
+                        time.sleep(1)
+                        acc += 20
+
+
             else:
                 print("Error: Expected 3 parts from the split operation, got {}: {}".format(len(parts), parts))
         else:
