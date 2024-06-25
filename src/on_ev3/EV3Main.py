@@ -45,16 +45,16 @@ try:
                     print("Turning for: ", heading)
                     robot.drivebase.turn(heading)
                 elif instruction == 'EJECT':
+                    robot.front_motor.run(-2000)
                     print("Ejecting balls")
                     robot.drivebase.turn(heading)
                     robot.drivebase.straight(distance)
-                    robot.front_motor.run(-2000)
                     for i in range(5):
                         timer = 0.7
                         robot.drivebase.drive(1000,0)
                         time.sleep(timer)
                         robot.drivebase.stop()
-                        robot.drivebase.drive(-1000,0)
+                        robot.drivebase.drive(-950,0)
                         time.sleep(timer)
                         robot.drivebase.stop()
 
