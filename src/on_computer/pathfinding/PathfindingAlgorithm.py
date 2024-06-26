@@ -1,5 +1,6 @@
 import math
 
+# Credit to the original author of this module: Aaron He, 2021
 
 class Node:
     def __init__(self, grid, x, y):
