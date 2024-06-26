@@ -1,7 +1,5 @@
-import time
 import cv2 as cv
 import Globals as G
-import numpy as np
 
 
 # Function to capture frames
@@ -16,13 +14,12 @@ def capture_frames():
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 
-
     while True:
         # Capture a frame
         ret, frame = cap.read()
         if ret:
             # Define the threshold
-            #threshold = 250   # change the value as needed
+            # threshold = 250   # change the value as needed
 
             # Apply gamma correction to pixels above the threshold
             # gamma_high = 0.01  # gamma value for high intensity pixels, change the value as needed
@@ -32,10 +29,6 @@ def capture_frames():
             # table = np.array([((i / 255.0) ** invGamma_high) * 255 if i > threshold else ((i / 255.0) ** invGamma_low) * 255 for i in np.arange(0, 256)]).astype("uint8")
             # result = cv.LUT(frame, table)
             # We are not making a margin around the area so maybe we still get bright spots that is abov
-
-
-
-
             # Apply the CLAHE algorithm to the frame
             # ycrcb = cv.cvtColor(frame, cv.COLOR_BGR2YCrCb)
             # y, cr, cb = cv.split(ycrcb)
@@ -43,7 +36,6 @@ def capture_frames():
             # y = clahe.apply(y)
             # ycrcb = cv.merge((y, cr, cb))
             # result = cv.cvtColor(ycrcb, cv.COLOR_YCrCb2BGR)
-
 
             G.BIG_FRAME = frame
             G.SMALL_FRAME = cv.resize(G.BIG_FRAME, (320, 180))

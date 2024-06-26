@@ -2,7 +2,7 @@
 import socket
 import time
 
-from RobotBuilderReworked import Robot
+from RobotBuilder import Robot
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 HOST = '192.168.8.111'
@@ -52,13 +52,12 @@ try:
                     robot.drivebase.straight(distance)
                     for i in range(5):
                         timer = 0.7
-                        robot.drivebase.drive(1000,0)
+                        robot.drivebase.drive(1000, 0)
                         time.sleep(timer)
                         robot.drivebase.stop()
-                        robot.drivebase.drive(-950,0)
+                        robot.drivebase.drive(-950, 0)
                         time.sleep(timer)
                         robot.drivebase.stop()
-
 
             else:
                 print("Error: Expected 3 parts from the split operation, got {}: {}".format(len(parts), parts))
@@ -66,27 +65,3 @@ try:
             break
 finally:
     connection.close()
-
-
-###############
-
-# print('Waiting for a connection...')
-# connection, client_address = server_socket.accept()
-
-# try:
-#     print('Connection from', client_address)
-
-#     while True:
-#         data = connection.recv(1024).decode('utf-8')
-#         if data:
-#             instruction, x, y = data.split()
-#             if instruction == 'DRIVE':
-#                 robot.drivebase.straight(int(y))
-#             elif instruction == 'REVERSE':
-#                 robot.drivebase.straight(int(y))
-#             elif instruction == 'TURN':
-#                 robot.drivebase.turn(int(x))
-#         else:
-#             break
-# finally:
-#     connection.close()

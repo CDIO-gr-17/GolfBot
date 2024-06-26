@@ -1,7 +1,4 @@
 import math
-from positions.Goals import find_goal_coordinates
-from pathfinding.PathfindingAlgorithm import a_star
-import Globals as G
 
 
 def distance_between(point1, point2):

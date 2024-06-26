@@ -1,8 +1,8 @@
 import cv2 as cv
 import numpy as np
-import threading
 from positions.Displacement import move_point
 import Globals as G
+
 
 def get_robot_pos_and_heading(frame):
     # Convert the image to grayscale
@@ -18,12 +18,11 @@ def get_robot_pos_and_heading(frame):
     contours, _ = cv.findContours(edges.copy(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
     min_area = 500  # Adjust this value based on your requirements
-    min_angle = np.pi *  1 / 8  # Minimum angle of a triangle (in radians)
+    min_angle = np.pi * 1 / 8  # Minimum angle of a triangle (in radians)
     max_angle = np.pi * 1 / 2  # Maximum angle of a triangle (in radians)
 
     for contour in contours:
-    # Filter out small contours
-
+        # Filter out small contours
         if cv.contourArea(contour) < min_area:
             continue
 
@@ -53,7 +52,6 @@ def get_robot_pos_and_heading(frame):
             # Adjust the heading so that 0 degrees is up and increases in a clockwise direction
             adjusted_heading_degrees = (heading_degrees + 90) % 360
 
-
             # Full resolution of the image
             full_width, full_height = frame.shape[1], frame.shape[0]
 
@@ -68,11 +66,11 @@ def get_robot_pos_and_heading(frame):
             farthest_vertex_low_res = farthest_vertex * [width_ratio, height_ratio]
             # Round the coordinates and convert to integers
             farthest_vertex_low_res = np.round(farthest_vertex_low_res).astype(int)
-            farthest_vertex_low_res_adjusted = (move_point(farthest_vertex_low_res,G.GRID))
+            farthest_vertex_low_res_adjusted = (move_point(farthest_vertex_low_res, G.GRID))
             if farthest_vertex_low_res_adjusted is None:
                 return None
             farthest_vertex_low_res_adjusted = (int(farthest_vertex_low_res_adjusted[0]), int(farthest_vertex_low_res_adjusted[1]))
-            
+
             # Check if the angles are within the range expected for a triangle
             if np.all(np.logical_and(angles > min_angle, angles < max_angle)):
                 cv.drawContours(frame, [contour], -1, (0, 255, 0), 2)

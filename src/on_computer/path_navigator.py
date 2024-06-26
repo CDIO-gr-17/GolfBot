@@ -73,28 +73,6 @@ def send_instruction(instruction, degrees=None, distance=None):
             time.sleep(10)
 
 
-# def shoot_one_ball(self, distance):
-#     robot.front_motor.run(-1200)
-#     robot.drivebase.straight(-distance)
-#     wait(2000)
-#     self.robot.straight(distance)
-#     wait(2000)
-
-# def shoot_all_balls(self):
-#     self.robot.settings(100, 200)
-#     wiggle = 40
-#     for i in range(3):
-#         self.shoot_one_ball(wiggle)
-#         wiggle += 40
-#     self.front_motor.stop()
-
-# def deposit(self):
-#     goal_heading = 90  # directly east
-#     # Send command containing the following:
-#     self.turn_to_heading(goal_heading)
-#     self.shoot_all_balls()
-
-
 def pickup_ball(distance, heading):
     send_instruction('PICKUP', heading, distance * GRID_DISTANCE)
 

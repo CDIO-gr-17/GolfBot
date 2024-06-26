@@ -1,5 +1,6 @@
 import numpy as np
 
+
 # Find the coordinates of the goals in the grid based on the position of the walls
 # Returns a list of tuples [0]=west goal, [1]=east goal
 def find_goal_coordinates(grid):
@@ -23,14 +24,3 @@ def find_goal_coordinates(grid):
     last_wall_index = np.where(middle_row == 1)[0][-1]
 
     return (middle_row_index, first_wall_index), (middle_row_index, last_wall_index)
-
-# Example usage
-# grid = [
-#     [1, 1, 1, 0, 0],
-#     [1, 0, 0, 1, 1],
-#     [0, 1, 0, 0, 1],
-#     [0, 1, 1, 0, 1],
-#     [0, 0, 1, 1, 1]
-# ]
-# start_pos, end_pos = find_edges_in_middle_row_of_ones(grid)
-# print(f"Start position: {start_pos}, End position: {end_pos}")

@@ -22,13 +22,14 @@ class Node:
             if neighbor_x >= 0 and neighbor_y >= 0 and neighbor_x < cols and neighbor_y < rows:
                 neighbors.append(self.grid[neighbor_y][neighbor_x])
         return neighbors
-    
+
     def to_json(self):
         return {"x": self.x, "y": self.y}
 
     @classmethod
     def from_json(cls, json_dict):
         return cls(json_dict["x"], json_dict["y"])
+
 
 rows = 24
 cols = 36
@@ -61,9 +62,11 @@ for i in range(rows):
 
 # g score, estimated distance
 
+
 # returns distance between two nodes
 def distance(node1, node2):
     return math.sqrt(math.pow(node1.x - node2.x, 2) + math.pow(node1.y - node2.y, 2))
+
 
 # Measures distance from node to endpoint with nodes only being able to travel vertically, horizontally, or diagonally
 def h_score(start, end):
@@ -73,6 +76,7 @@ def h_score(start, end):
     straight_steps = y_dist + x_dist - 2 * diagonal_steps
     return diagonal_steps * math.sqrt(2) + straight_steps
 
+
 def reconstruct_path(grid, came_from, current):
     path = [current]
     current_key = str(current.x) + ' ' + str(current.y)
@@ -81,6 +85,7 @@ def reconstruct_path(grid, came_from, current):
         current_key = str(current.x) + ' ' + str(current.y)
         path.insert(0, current)
     return path
+
 
 # Performs the pathfinding algorithm. start are end are (x, y) tuples
 # Credit: https://en.wikipedia.org/wiki/A*_search_algorithm
@@ -123,6 +128,7 @@ def a_star(grid, start, end):
             came_from[str(neighbor.x) + ' ' + str(neighbor.y)] = current
             neighbor.g_score = tentative_g_score
             neighbor.f_score = neighbor.g_score + h_score(neighbor, end)
+
 
 def lowest_f_score(node_list):
     final_node = None

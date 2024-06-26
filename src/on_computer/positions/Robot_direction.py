@@ -1,7 +1,8 @@
 import math
 
+
 def calculate_heading(tail, head):
-    if tail == None or head == None:
+    if tail is None or head is None:
         print("Tail or head is not found")
         return None
     # Calculate differences
@@ -22,4 +23,3 @@ def calculate_heading(tail, head):
     heading = (90 + angle_degrees) % 360
 
     return heading
-

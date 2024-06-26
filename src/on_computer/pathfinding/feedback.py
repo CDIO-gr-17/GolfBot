@@ -1,3 +1,5 @@
+#  This is not currently in use, but could support further development of the project
+
 def is_robot_position_correct(robot_path, camera_robot_position):
 
     slacked_path = []

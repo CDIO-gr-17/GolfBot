@@ -1,6 +1,5 @@
 """This is for doing somehting"""
 import Globals as G
-import time
 import cv2 as cv
 
 from computer_vision.CourseDetection import get_masks_from_frame, get_grid
@@ -18,4 +17,3 @@ def update_positions():
         G.GRID = convert_to_grid(G.GRID_DATA)
         if robot_data is not None:
             G.ROBOT_HEADING, G.ROBOT_POSITION = robot_data
-        # time.sleep(0.1)
