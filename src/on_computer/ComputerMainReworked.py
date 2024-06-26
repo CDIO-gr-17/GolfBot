@@ -58,7 +58,8 @@ while True:
             time.sleep(0.5)
         else:
             if move_robot(goal_path, 'GOAL'):
-                balls_picked_up = 0
+                # balls_picked_up = 0
+                break
             else:
                 print('Recalculating path to goal...')
     else:
