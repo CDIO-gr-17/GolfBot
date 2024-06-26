@@ -36,6 +36,8 @@ def capture_calibration_images():
     video_capture.release()
     cv2.destroyAllWindows()
 
+
+# Credit: https://nikatsanka.github.io/camera-calibration-using-opencv-and-python.html
 def calibrate_camera():
     chessboardCorners = (6, 9)
 
